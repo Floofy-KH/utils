@@ -5,12 +5,16 @@ generate_export_header(DialogueManager)
 
 target_include_directories(DialogueManager PUBLIC ../ PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 
+set_target_properties(DialogueManager PROPERTIES CXX_STANDARD 17)
+
 INSTALL(TARGETS DialogueManager DESTINATION lib)
 INSTALL(FILES dialogue_manager_api.h dialogue_manager.hpp DESTINATION dialogue_manager)
 INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/dialoguemanager_export.h DESTINATION .)
 
 if(BUILD_TESTING)
     add_executable(DialogueManager_tests src/dialogue_manager_tests.cpp)
+
+    set_target_properties(DialogueManager_tests PROPERTIES CXX_STANDARD 17)
 
     target_link_libraries(DialogueManager_tests CONAN_PKG::gtest DialogueManager)
 
