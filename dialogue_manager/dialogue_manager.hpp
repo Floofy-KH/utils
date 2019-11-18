@@ -3,7 +3,6 @@
 #include "dialoguemanager_export.h"
 
 #include <string>
-#include <optional>
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -13,8 +12,11 @@ class DialogueManagerImpl;
 class Dialogue;
 class DialogueImpl;
 class Choice;
+class ChoiceImpl;
 class DialogueEntry;
+class DialogueEntryImpl;
 class Participant;
+class ParticipantImpl;
 /////////////////////////////////////////////////////////////////////////////
 
 /////////////////////////////////////////////////////////////////////////////
@@ -24,8 +26,8 @@ class DIALOGUEMANAGER_EXPORT DialogueManager
 public:    
     DialogueManager();
     ~DialogueManager();
-    std::optional<Dialogue> addDialogue(std::string name, std::string greeting);
-    std::optional<Dialogue> dialogue(const std::string &name);
+    Dialogue addDialogue(std::string name, std::string greeting);
+    Dialogue dialogue(const std::string &name);
     void removeDialogue(const std::string &name);
 private:
     DialogueManagerImpl* _impl;
@@ -52,7 +54,7 @@ public:
     DialogueEntry dialogueEntry(size_t index) const;
     void removeDialogueEntry(size_t index);
 
-    Choice addChoice(DialogueEntry dialogueEntry, std::string choice);
+    Choice addChoice(DialogueEntry dialogueEntry, std::string choiceStr, DialogueEntry dst);
     size_t numChoices() const;
     Choice choice(size_t index) const;
     Choice choice(const std::string& name) const;
@@ -61,6 +63,7 @@ public:
     bool operator ==(const Dialogue& other) const;
     bool operator !=(const Dialogue& other) const;
     Dialogue& operator =(const Dialogue& other);
+    operator bool() const;
 
 private:
     Dialogue(DialogueImpl& impl);
@@ -72,13 +75,14 @@ private:
 //Participant
 class DIALOGUEMANAGER_EXPORT Participant
 {
+    friend class Dialogue;
 public:
     Participant() = default;
 
     bool operator ==(const Participant& other) const;
     bool operator !=(const Participant& other) const;
 private:
-    explicit Participant(std::string name);
+    explicit Participant(ParticipantImpl& name);
 };
 /////////////////////////////////////////////////////////////////////////////
 
@@ -86,11 +90,16 @@ private:
 //DialogueEntry
 class DIALOGUEMANAGER_EXPORT DialogueEntry
 {
+    friend class Dialogue;
 public:
     DialogueEntry() = default;
 
     bool operator ==(const DialogueEntry& other) const;
     bool operator !=(const DialogueEntry& other) const;
+
+private:
+    explicit DialogueEntry(DialogueEntryImpl& entry);
+    DialogueEntryImpl *_impl = nullptr;
 };
 /////////////////////////////////////////////////////////////////////////////
 
@@ -98,6 +107,7 @@ public:
 //Choice
 class DIALOGUEMANAGER_EXPORT Choice
 {
+    friend class Dialogue;
 public:
     Choice() = default;
 
@@ -108,9 +118,9 @@ public:
     bool operator ==(const Choice& other) const;
     bool operator !=(const Choice& other) const;
 private:
-    explicit Choice(std::string option, DialogueManager& manager);
+    explicit Choice(ChoiceImpl& impl);
 
-    DialogueManager& _mgr;
+    ChoiceImpl *_impl = nullptr;
 };
 /////////////////////////////////////////////////////////////////////////////
 

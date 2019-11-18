@@ -46,7 +46,7 @@ class DialogueTest : public ::testing::Test
 protected:
     void SetUp() override
     {
-        _dlg = _dlgMgr.addDialogue(_dlgName, _dlgText).value();
+        _dlg = _dlgMgr.addDialogue(_dlgName, _dlgText);
     }
 
     DialogueManager _dlgMgr;
