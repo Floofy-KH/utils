@@ -4,7 +4,6 @@
 
 /////////////////////////////////////////////////////////////////////////////
 // DialogueManager Tests
-/////////////////////////////////////////////////////////////////////////////
 
 class DialogueManagerTest : public ::testing::Test
 {
@@ -39,7 +38,6 @@ TEST_F(DialogueManagerTest, RemovedDialogueNoLongerRetrieved)
 
 /////////////////////////////////////////////////////////////////////////////
 //Dialogue Tests
-/////////////////////////////////////////////////////////////////////////////
 
 class DialogueTest : public ::testing::Test
 {
@@ -60,6 +58,8 @@ class DialogueTestWithParticipants : public DialogueTest
 protected:
     void SetUp() override
     {
+        DialogueTest::SetUp();
+
         _part1 = _dlg.addParticipant("Participant 1");
         _part2 = _dlg.addParticipant("Participant 2");
         _part3 = _dlg.addParticipant("Participant 3");
@@ -98,7 +98,7 @@ TEST_F(DialogueTest, ParticipantReturnsTheCorrectParticipant)
     auto bob = _dlg.addParticipant("Bob");
     auto sue = _dlg.addParticipant("Sue");
 
-    auto ret = _dlg.participant("bob");
+    auto ret = _dlg.participant("Bob");
 
     EXPECT_EQ(ret, bob);
     EXPECT_NE(ret, sue);
@@ -137,7 +137,7 @@ TEST_F(DialogueTestWithParticipants, DialogueEntryReturnsTheCorrectEntry)
     auto entry1 = _dlg.addDialogueEntry(_part1, "1");
     auto entry2 = _dlg.addDialogueEntry(_part2, "2");
 
-    auto ret = _dlg.dialogueEntry(1);
+    auto ret = _dlg.dialogueEntry(0);
 
     EXPECT_EQ(ret, entry1);
     EXPECT_NE(ret, entry2);
@@ -146,17 +146,17 @@ TEST_F(DialogueTestWithParticipants, DialogueEntryReturnsTheCorrectEntry)
 TEST_F(DialogueTestWithParticipants, RemoveDialogueEntryDecrementsNumEntries)
 {
     _dlg.addDialogueEntry(_part1, "1");
-    _dlg.removeDialogueEntry(1);
+    _dlg.removeDialogueEntry(0);
     EXPECT_EQ(_dlg.numDialogueEntries(), 0);
 
     _dlg.addDialogueEntry(_part1, "1");
     _dlg.addDialogueEntry(_part2, "2");
-    _dlg.removeDialogueEntry(2);
+    _dlg.removeDialogueEntry(1);
     EXPECT_EQ(_dlg.numDialogueEntries(), 1);
 
     _dlg.addDialogueEntry(_part1, "1");
     _dlg.addDialogueEntry(_part3, "3");
-    _dlg.removeDialogueEntry(3);
+    _dlg.removeDialogueEntry(2);
     EXPECT_EQ(_dlg.numDialogueEntries(), 2);
 }
 

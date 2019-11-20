@@ -83,6 +83,8 @@ public:
     bool operator !=(const Participant& other) const;
 private:
     explicit Participant(ParticipantImpl& name);
+
+    ParticipantImpl* _impl = nullptr;
 };
 /////////////////////////////////////////////////////////////////////////////
 
@@ -110,11 +112,7 @@ class DIALOGUEMANAGER_EXPORT Choice
     friend class Dialogue;
 public:
     Choice() = default;
-
-    void endsDialogue();
-    Dialogue leadsToNewDialogue(std::string dialogue);
-    Dialogue leadsToDialogue(Dialogue dialogue);
-
+    
     bool operator ==(const Choice& other) const;
     bool operator !=(const Choice& other) const;
 private:

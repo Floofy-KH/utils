@@ -41,7 +41,16 @@ public:
 class DialogueImpl
 {
 public:
-    DialogueImpl(std::string name) : name(std::move(name)) {}
+    DialogueImpl(std::string name) : name(std::move(name)) 
+    {
+        //Arbitrary limits setup to stop memory allocations.
+        //This is currently also necessary for the API design to work. 
+        //Needs redesigned. 
+        participants.reserve(32);
+        choices.reserve(1024);
+        entries.reserve(1024);
+    }
+
     std::string name;
     std::vector<ParticipantImpl> participants;
     std::vector<ChoiceImpl> choices;
@@ -122,7 +131,7 @@ Participant Dialogue::participant(size_t index) const
 {
     return Participant(_impl->participants.at(index));
 }
-
+ 
 Participant Dialogue::participant(const std::string& name) const
 {
     const auto pred = [&name](const ParticipantImpl& other) 
@@ -246,6 +255,21 @@ Dialogue::operator bool() const
 /////////////////////////////////////////////////////////////////////////////
 //Participant
 
+Participant::Participant(ParticipantImpl& impl) : _impl(&impl)
+{
+
+}
+
+bool Participant::operator ==(const Participant& other) const
+{
+    return _impl == other._impl;
+}
+
+bool Participant::operator !=(const Participant& other) const
+{
+    return !(*this == other);
+}
+
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -253,11 +277,41 @@ Dialogue::operator bool() const
 /////////////////////////////////////////////////////////////////////////////
 //DialogueEntry
 
+DialogueEntry::DialogueEntry(DialogueEntryImpl& entry) : _impl(&entry)
+{
+
+}
+
+bool DialogueEntry::operator ==(const DialogueEntry& other) const
+{
+    return _impl == other._impl;
+}
+
+bool DialogueEntry::operator !=(const DialogueEntry& other) const
+{
+    return !(*this == other);
+}
+
 /////////////////////////////////////////////////////////////////////////////
 
 
 
 /////////////////////////////////////////////////////////////////////////////
 //Choice
+
+Choice::Choice(ChoiceImpl& impl) : _impl(&impl)
+{
+
+}
+
+bool Choice::operator ==(const Choice& other) const
+{
+    return _impl == other._impl;
+}
+
+bool Choice::operator !=(const Choice& other) const
+{
+    return !(*this == other);
+}    
 
 /////////////////////////////////////////////////////////////////////////////
