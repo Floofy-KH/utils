@@ -12,6 +12,7 @@ target_compile_definitions(DialogueManager_CPP PRIVATE DialogueManager_EXPORTS)
 set_target_properties(DialogueManager_CPP PROPERTIES CXX_STANDARD 17)
 
 target_link_libraries(DialogueManager_C PRIVATE DialogueManager::CPP)
+target_include_directories(DialogueManager_C PUBLIC ../)
 
 INSTALL(TARGETS DialogueManager_CPP DialogueManager_C DESTINATION lib)
 INSTALL(FILES dialogue_manager_api.h dialogue_manager.hpp DESTINATION dialogue_manager)
@@ -22,7 +23,7 @@ if(BUILD_TESTING)
 
     set_target_properties(DialogueManager_tests PROPERTIES CXX_STANDARD 17)
 
-    target_link_libraries(DialogueManager_tests CONAN_PKG::gtest DialogueManager::CPP)
+    target_link_libraries(DialogueManager_tests CONAN_PKG::gtest DialogueManager::C)
 
     add_test(NAME DialogueManager_tests COMMAND DialogueManager_tests)
 endif()

@@ -1,6 +1,11 @@
 #pragma once
 
-#define dlgmgr_handle unsigned long
+struct HDialogueManager;
+struct HDialogue;
+struct HParticipant;
+struct HDialogueEntry;
+struct HChoice;
+
 #define dlgmgr_result unsigned long
 #define dlgmgr_size unsigned long
 
@@ -10,34 +15,33 @@
 extern "C"{
 #endif
 
-EXPORT dlgmgr_handle beginNewDialogueManager();
-EXPORT dlgmgr_result resumePreviousDialogueManager();
-EXPORT dlgmgr_result endDialogueManager( dlgmgr_handle mgr );
+EXPORT HDialogueManager* newDialogueManager();
+EXPORT dlgmgr_result freeDialogueManager(HDialogueManager* mgr);
 
-EXPORT dlgmgr_handle addDialogue(dlgmgr_handle mgr);
-EXPORT void removeDialogue(dlgmgr_handle mgr);
-EXPORT dlgmgr_handle dialogue(dlgmgr_handle mgr, const char* name, dlgmgr_size size);
+EXPORT HDialogue* addDialogue(HDialogueManager* mgr, const char* name, dlgmgr_size nameSize, const char* contents, dlgmgr_size contentsSize);
+EXPORT void removeDialogue(HDialogueManager* mgr, const char* name, dlgmgr_size nameSize);
+EXPORT HDialogue* dialogueFromName(HDialogueManager* mgr, const char* name, dlgmgr_size size);
 
-EXPORT dlgmgr_handle addParticipant(dlgmgr_handle dialogue);
-EXPORT dlgmgr_size numParticipants(dlgmgr_handle dialogue);
-EXPORT dlgmgr_handle participantFromIndex(dlgmgr_handle dialogue, dlgmgr_size index);
-EXPORT dlgmgr_handle participantFromName(dlgmgr_handle dialogue, const char* name, dlgmgr_size size);
-EXPORT void removeParticipant(dlgmgr_handle dialogue, const char* name, dlgmgr_size size);
+EXPORT HParticipant* addParticipant(HDialogue* dialogue, const char* name, dlgmgr_size nameSize);
+EXPORT dlgmgr_size numParticipants(HDialogue* dialogue);
+EXPORT HParticipant* participantFromIndex(HDialogue* dialogue, dlgmgr_size index);
+EXPORT HParticipant* participantFromName(HDialogue* dialogue, const char* name, dlgmgr_size size);
+EXPORT void removeParticipant(HDialogue* dialogue, const char* name, dlgmgr_size size);
 
-EXPORT dlgmgr_handle addDialogueEntry(dlgmgr_handle dialogue);
-EXPORT dlgmgr_size numDialogueEntries(dlgmgr_handle dialogue);
-EXPORT dlgmgr_handle dialogueEntryFromIndex(dlgmgr_handle dialogue, dlgmgr_size index);
-EXPORT void removeDialogueEntry(dlgmgr_handle dialogue, dlgmgr_size index);
+EXPORT HDialogueEntry* addDialogueEntry(HDialogue* dialogue, HParticipant* part, const char* name, dlgmgr_size size);
+EXPORT dlgmgr_size numDialogueEntries(HDialogue* dialogue);
+EXPORT HDialogueEntry* dialogueEntryFromIndex(HDialogue* dialogue, dlgmgr_size index);
+EXPORT void removeDialogueEntry(HDialogue* dialogue, dlgmgr_size index);
 
-EXPORT dlgmgr_handle addChoice(dlgmgr_handle dialogue, 
-                    dlgmgr_handle dialogueEntry, 
+EXPORT HChoice* addChoice(HDialogue* dialogue, 
+                    HDialogueEntry* dialogueEntry, 
                     const char* name, 
                     dlgmgr_size size, 
-                    dlgmgr_handle destDialogueEntry);
-EXPORT dlgmgr_size numChoices();
-EXPORT dlgmgr_handle choiceFromIndex(dlgmgr_size index);
-EXPORT dlgmgr_handle choiceFromName(const char* name, dlgmgr_size size);
-EXPORT void removeChoice(const char* name, dlgmgr_size size);
+                    HDialogueEntry* destDialogueEntry);
+EXPORT dlgmgr_size numChoices(HDialogue* dialogue);
+EXPORT HChoice* choiceFromIndex(HDialogue* dialogue, dlgmgr_size index);
+EXPORT HChoice* choiceFromName(HDialogue* dialogue, const char* name, dlgmgr_size size);
+EXPORT void removeChoice(HDialogue* dialogue, const char* name, dlgmgr_size size);
 
 #if __cplusplus
 }

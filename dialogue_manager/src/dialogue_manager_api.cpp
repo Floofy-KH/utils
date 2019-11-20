@@ -2,106 +2,101 @@
 
 extern "C"
 {
-    dlgmgr_handle beginNewDialogueManager()
+    HDialogueManager* newDialogueManager()
     {
         return 0;
     }
 
-    dlgmgr_result resumePreviousDialogueManager()
+    dlgmgr_result freeDialogueManager(HDialogueManager* mgr)
     {
         return 0;
     }
 
-    dlgmgr_result endDialogueManager(dlgmgr_handle mgr)
+    HDialogue* addDialogue(HDialogueManager* mgr, const char* name, dlgmgr_size nameSize, const char* contents, dlgmgr_size contentsSize)
     {
         return 0;
     }
 
-    dlgmgr_handle addDialogue(dlgmgr_handle mgr)
+    void removeDialogue(HDialogueManager* mgr, const char* name, dlgmgr_size nameSize)
+    {
+
+    }
+
+    HDialogue* dialogueFromName(HDialogueManager* mgr, const char* name, dlgmgr_size size)
     {
         return 0;
     }
 
-    void removeDialogue(dlgmgr_handle mgr)
-    {
-
-    }
-
-    dlgmgr_handle dialogue(dlgmgr_handle mgr, const char* name, dlgmgr_size size)
+    HParticipant* addParticipant(HDialogue* dialogue, const char* name, dlgmgr_size nameSize)
     {
         return 0;
     }
 
-    dlgmgr_handle addParticipant(dlgmgr_handle dialogue)
+    dlgmgr_size numParticipants(HDialogue* dialogue)
     {
         return 0;
     }
 
-    dlgmgr_size numParticipants(dlgmgr_handle dialogue)
+    HParticipant* participantFromIndex(HDialogue* dialogue, dlgmgr_size index)
     {
         return 0;
     }
 
-    dlgmgr_handle participantFromIndex(dlgmgr_handle dialogue, dlgmgr_size index)
+    HParticipant* participantFromName(HDialogue* dialogue, const char* name, dlgmgr_size size)
     {
         return 0;
     }
 
-    dlgmgr_handle participantFromName(dlgmgr_handle dialogue, const char* name, dlgmgr_size size)
+    void removeParticipant(HDialogue* dialogue, const char* name, dlgmgr_size size)
+    {
+
+    }
+
+    HDialogueEntry* addDialogueEntry(HDialogue* dialogue, HParticipant* part, const char* name, dlgmgr_size size)
     {
         return 0;
     }
 
-    void removeParticipant(dlgmgr_handle dialogue, const char* name, dlgmgr_size size)
-    {
-
-    }
-
-    dlgmgr_handle addDialogueEntry(dlgmgr_handle dialogue)
+    dlgmgr_size numDialogueEntries(HDialogue* dialogue)
     {
         return 0;
     }
 
-    dlgmgr_size numDialogueEntries(dlgmgr_handle dialogue)
+    HDialogueEntry* dialogueEntryFromIndex(HDialogue* dialogue, dlgmgr_size index)
     {
         return 0;
     }
 
-    dlgmgr_handle dialogueEntryFromIndex(dlgmgr_handle dialogue, dlgmgr_size index)
-    {
-        return 0;
-    }
-
-    void removeDialogueEntry(dlgmgr_handle dialogue, dlgmgr_size index)
+    void removeDialogueEntry(HDialogue* dialogue, dlgmgr_size index)
     {
 
     }
 
-    dlgmgr_handle addChoice(dlgmgr_handle dialogue, 
-                            dlgmgr_handle dialogueEntry, 
+    HChoice* addChoice(HDialogue* dialogue, 
+                            HDialogueEntry* dialogueEntry, 
                             const char* name, 
                             dlgmgr_size size, 
-                            dlgmgr_handle destDialogueEntry)
+                            HDialogueEntry* destDialogueEntry)
     {
         return 0;
     }
 
-    dlgmgr_size numChoices()
+    dlgmgr_size numChoices(HDialogue* dialogue)
     {
         return 0;
     }
 
-    dlgmgr_handle choiceFromIndex(dlgmgr_size index)
+    HChoice* choiceFromIndex(HDialogue* dialogue, dlgmgr_size index)
     {
         return 0;
     }
 
-    dlgmgr_handle choiceFromName(const char* name, dlgmgr_size size)
+    HChoice* choiceFromName(HDialogue* dialogue, const char* name, dlgmgr_size size)
     {
         return 0;
     }
 
-    void removeChoice(const char* name, dlgmgr_size size)
+    void removeChoice(HDialogue* dialogue, const char* name, dlgmgr_size size)
     {
 
     }
