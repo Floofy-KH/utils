@@ -112,6 +112,8 @@ void DialogueManager::removeDialogue(const std::string &name)
 /////////////////////////////////////////////////////////////////////////////
 //Dialogue
 
+Dialogue::Dialogue() = default;
+
 Dialogue::Dialogue(DialogueImpl& impl) : _impl(&impl)
 {
 
@@ -255,6 +257,8 @@ Dialogue::operator bool() const
 /////////////////////////////////////////////////////////////////////////////
 //Participant
 
+Participant::Participant() = default;
+
 Participant::Participant(ParticipantImpl& impl) : _impl(&impl)
 {
 
@@ -276,6 +280,8 @@ bool Participant::operator !=(const Participant& other) const
 
 /////////////////////////////////////////////////////////////////////////////
 //DialogueEntry
+
+DialogueEntry::DialogueEntry() = default;
 
 DialogueEntry::DialogueEntry(DialogueEntryImpl& entry) : _impl(&entry)
 {

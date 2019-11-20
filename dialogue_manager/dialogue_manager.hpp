@@ -40,8 +40,7 @@ class DIALOGUEMANAGER_EXPORT Dialogue
 {
 public:
     friend class DialogueManager;
-    Dialogue() = default;
-    ~Dialogue() = default;
+    Dialogue();
 
     Participant addParticipant(std::string name);
     size_t numParticipants() const;
@@ -77,7 +76,7 @@ class DIALOGUEMANAGER_EXPORT Participant
 {
     friend class Dialogue;
 public:
-    Participant() = default;
+    Participant();
 
     bool operator ==(const Participant& other) const;
     bool operator !=(const Participant& other) const;
@@ -94,7 +93,7 @@ class DIALOGUEMANAGER_EXPORT DialogueEntry
 {
     friend class Dialogue;
 public:
-    DialogueEntry() = default;
+    DialogueEntry();
 
     bool operator ==(const DialogueEntry& other) const;
     bool operator !=(const DialogueEntry& other) const;
