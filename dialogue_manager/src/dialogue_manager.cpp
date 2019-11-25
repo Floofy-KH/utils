@@ -1,95 +1,22 @@
-#include "dialogue_manager/dialogue_manager.hpp"
+#include "dialogue_manager.hpp"
 
 #include <algorithm>
-#include <vector>
-
-/////////////////////////////////////////////////////////////////////////////
-//Private Impls
-
-class ParticipantImpl
-{
-public:
-    ParticipantImpl(std::string name) : name(std::move(name)) {}
-    std::string name;
-};
-
-class ChoiceImpl
-{
-public:
-    ChoiceImpl(std::string choice, DialogueEntry result) 
-    : choice(std::move(choice))
-    , result(std::move(result))
-    {}
-
-    std::string choice;
-    DialogueEntry result;
-};
-
-class DialogueEntryImpl
-{
-public:
-    DialogueEntryImpl(std::string entry, Participant participant) 
-    : entry(std::move(entry))
-    , activeParticipant(std::move(activeParticipant))
-    {}
-
-    std::string entry;
-    std::vector<Choice> choices;
-    Participant activeParticipant;
-};
-
-class DialogueImpl
-{
-public:
-    DialogueImpl(std::string name) : name(std::move(name)) 
-    {
-        //Arbitrary limits setup to stop memory allocations.
-        //This is currently also necessary for the API design to work. 
-        //Needs redesigned. 
-        participants.reserve(32);
-        choices.reserve(1024);
-        entries.reserve(1024);
-    }
-
-    std::string name;
-    std::vector<ParticipantImpl> participants;
-    std::vector<ChoiceImpl> choices;
-    std::vector<DialogueEntryImpl> entries;
-};
-
-class DialogueManagerImpl
-{
-public:
-    std::vector<DialogueImpl> dialogues;
-};
-
-/////////////////////////////////////////////////////////////////////////////
 
 /////////////////////////////////////////////////////////////////////////////
 //DialogueManager
 
-DialogueManager::DialogueManager() 
+DialoguePtr DialogueManager::addDialogue(std::string name, std::string greeting)
 {
-    _impl = new DialogueManagerImpl;
+    return dialogues.emplace_back(new Dialogue(name));
 }
 
-DialogueManager::~DialogueManager()
+DialoguePtr DialogueManager::dialogue(const std::string &name)
 {
-    delete _impl;
-}
-
-Dialogue DialogueManager::addDialogue(std::string name, std::string greeting)
-{
-    return Dialogue(_impl->dialogues.emplace_back(name));
-}
-
-Dialogue DialogueManager::dialogue(const std::string &name)
-{
-    for(auto& dialogue : _impl->dialogues)
+    for(auto& dialogue : dialogues)
     {
-        if(dialogue.name == name)
+        if(dialogue->name == name)
         {
-            return Dialogue(dialogue);
+            return dialogue;
         }
     }
 
@@ -98,12 +25,12 @@ Dialogue DialogueManager::dialogue(const std::string &name)
 
 void DialogueManager::removeDialogue(const std::string &name)
 {
-    const auto pred = [&name](const DialogueImpl& other) 
+    const auto pred = [&name](const DialoguePtr& other) 
     {
-        return name == other.name;
+        return name == other->name;
     };
 
-    _impl->dialogues.erase(std::remove_if(_impl->dialogues.begin(), _impl->dialogues.end(), pred));
+    dialogues.erase(std::remove_if(dialogues.begin(), dialogues.end(), pred));
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -112,142 +39,114 @@ void DialogueManager::removeDialogue(const std::string &name)
 /////////////////////////////////////////////////////////////////////////////
 //Dialogue
 
-Dialogue::Dialogue() = default;
-
-Dialogue::Dialogue(DialogueImpl& impl) : _impl(&impl)
+ParticipantPtr Dialogue::addParticipant(std::string name)
 {
-
-}
-
-Participant Dialogue::addParticipant(std::string name)
-{
-    return Participant(_impl->participants.emplace_back(name));
+    return participants.emplace_back(new Participant(name));
 }
 
 size_t Dialogue::numParticipants() const
 {
-    return _impl->participants.size();
+    return participants.size();
 }
 
-Participant Dialogue::participant(size_t index) const
+ParticipantPtr Dialogue::participant(size_t index) const
 {
-    return Participant(_impl->participants.at(index));
+    return participants.at(index);
 }
  
-Participant Dialogue::participant(const std::string& name) const
+ParticipantPtr Dialogue::participant(const std::string& name) const
 {
-    const auto pred = [&name](const ParticipantImpl& other) 
+    const auto pred = [&name](const ParticipantPtr& other) 
     {
-        return name == other.name;
+        return name == other->name;
     };
 
-    auto findParticipant = std::find_if(_impl->participants.cbegin(), _impl->participants.cend(), pred);
+    auto findParticipant = std::find_if(participants.cbegin(), participants.cend(), pred);
 
-    if(findParticipant == _impl->participants.end())
+    if(findParticipant == participants.end())
     {
         return {};
     }
     else
     {
-        return Participant(const_cast<ParticipantImpl&>(*findParticipant));
+        return *findParticipant;
     }
 }
 
 void Dialogue::removeParticipant(const std::string& name)
 {
-    const auto pred = [&name](const ParticipantImpl& other) 
+    const auto pred = [&name](const ParticipantPtr& other) 
     {
-        return name == other.name;
+        return name == other->name;
     };
 
-    _impl->participants.erase(std::remove_if(_impl->participants.begin(), _impl->participants.end(), pred));
+    participants.erase(std::remove_if(participants.begin(), participants.end(), pred));
 }
 
-DialogueEntry Dialogue::addDialogueEntry(Participant activeParticipant, std::string entry)
+DialogueEntryPtr Dialogue::addDialogueEntry(ParticipantPtr activeParticipant, std::string entry)
 {
-    return DialogueEntry(_impl->entries.emplace_back(entry, activeParticipant));
+    return entries.emplace_back(new DialogueEntry(entry, activeParticipant));
 }
 
 size_t Dialogue::numDialogueEntries() const
 {
-    return _impl->entries.size();
+    return entries.size();
 }
 
-DialogueEntry Dialogue::dialogueEntry(size_t index) const
+DialogueEntryPtr Dialogue::dialogueEntry(size_t index) const
 {
-    return DialogueEntry(_impl->entries.at(index));
+    return entries.at(index);
 }
 
 void Dialogue::removeDialogueEntry(size_t index)
 {
-    _impl->entries.erase(_impl->entries.begin() + index);
+    entries.erase(entries.begin() + index);
 }
 
-Choice Dialogue::addChoice(DialogueEntry src, std::string choiceStr, DialogueEntry dst)
+ChoicePtr Dialogue::addChoice(DialogueEntryPtr src, std::string choiceStr, DialogueEntryPtr dst)
 {
-    auto& choiceImpl = _impl->choices.emplace_back(choiceStr, dst);
-    Choice choice{choiceImpl};
-    src._impl->choices.push_back(choice);
+    auto choice = choices.emplace_back(new Choice(choiceStr, dst));
+    src->choices.push_back(choice);
 
     return choice;
 }
 
 size_t Dialogue::numChoices() const
 {
-    return _impl->choices.size();
+    return choices.size();
 }
 
-Choice Dialogue::choice(size_t index) const
+ChoicePtr Dialogue::choice(size_t index) const
 {
-    return Choice(_impl->choices.at(index));
+    return choices.at(index);
 }
 
-Choice Dialogue::choice(const std::string& name) const
+ChoicePtr Dialogue::choice(const std::string& name) const
 {
-    const auto pred = [&name](const ChoiceImpl& other) 
+    const auto pred = [&name](const ChoicePtr& other) 
     {
-        return name == other.choice;
+        return name == other->choice;
     };
 
-    auto findChoice = std::find_if(_impl->choices.begin(), _impl->choices.end(), pred);
-    if(findChoice == _impl->choices.end())
+    auto findChoice = std::find_if(choices.begin(), choices.end(), pred);
+    if(findChoice == choices.end())
     {
         return {};
     }
     else
     {
-        return Choice(*findChoice);
+        return *findChoice;
     }    
 }
 
 void Dialogue::removeChoice(const std::string& name)
 {
-    const auto pred = [&name](const ChoiceImpl& other) 
+    const auto pred = [&name](const ChoicePtr& other) 
     {
-        return name == other.choice;
+        return name == other->choice;
     };
 
-    _impl->choices.erase(std::remove_if(_impl->choices.begin(), _impl->choices.end(), pred));
-}
-
-bool Dialogue::operator ==(const Dialogue& other) const
-{
-    return _impl == other._impl;
-}
-
-bool Dialogue::operator !=(const Dialogue& other) const
-{
-    return !((*this) == other);
-}
-
-Dialogue& Dialogue::operator =(const Dialogue& other)
-{
-    _impl = other._impl;
-    return *this;
-}
-Dialogue::operator bool() const
-{
-    return _impl != nullptr;
+    choices.erase(std::remove_if(choices.begin(), choices.end(), pred));
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -257,23 +156,6 @@ Dialogue::operator bool() const
 /////////////////////////////////////////////////////////////////////////////
 //Participant
 
-Participant::Participant() = default;
-
-Participant::Participant(ParticipantImpl& impl) : _impl(&impl)
-{
-
-}
-
-bool Participant::operator ==(const Participant& other) const
-{
-    return _impl == other._impl;
-}
-
-bool Participant::operator !=(const Participant& other) const
-{
-    return !(*this == other);
-}
-
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -281,43 +163,11 @@ bool Participant::operator !=(const Participant& other) const
 /////////////////////////////////////////////////////////////////////////////
 //DialogueEntry
 
-DialogueEntry::DialogueEntry() = default;
-
-DialogueEntry::DialogueEntry(DialogueEntryImpl& entry) : _impl(&entry)
-{
-
-}
-
-bool DialogueEntry::operator ==(const DialogueEntry& other) const
-{
-    return _impl == other._impl;
-}
-
-bool DialogueEntry::operator !=(const DialogueEntry& other) const
-{
-    return !(*this == other);
-}
-
 /////////////////////////////////////////////////////////////////////////////
 
 
 
 /////////////////////////////////////////////////////////////////////////////
 //Choice
-
-Choice::Choice(ChoiceImpl& impl) : _impl(&impl)
-{
-
-}
-
-bool Choice::operator ==(const Choice& other) const
-{
-    return _impl == other._impl;
-}
-
-bool Choice::operator !=(const Choice& other) const
-{
-    return !(*this == other);
-}    
 
 /////////////////////////////////////////////////////////////////////////////

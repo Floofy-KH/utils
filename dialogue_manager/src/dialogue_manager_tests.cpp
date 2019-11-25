@@ -56,7 +56,13 @@ class DialogueTest : public ::testing::Test
 protected:
     void SetUp() override
     {
-    dlg = addDialogue(dlgMgr, dlgName.c_str(), dlgName.length(), dlgContents.c_str(), dlgContents.length());
+        dlgMgr = newDialogueManager();
+        dlg = addDialogue(dlgMgr, dlgName.c_str(), dlgName.length(), dlgContents.c_str(), dlgContents.length());
+    }
+
+    void TearDown() override
+    {
+        freeDialogueManager(dlgMgr);
     }
 
     HDialogueManager* dlgMgr; 
