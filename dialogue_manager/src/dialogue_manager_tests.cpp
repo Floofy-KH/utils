@@ -181,4 +181,56 @@ TEST_F(DialogueTestWithParticipants, RemoveDialogueEntryDecrementsNumEntries)
     EXPECT_EQ(numDialogueEntries(dlg), 2);
 }
 
+// TEST(MultipleDialogues, writeFile)
+// {
+//     auto dlgMgr = newDialogueManager();
+//     std::string dlg1Name = "Dialogue 1";
+//     std::string dlg1Entry1 = "Dialogue 1 Entry 1";
+//     std::string dlg1Entry2 = "Dialogue 1 Entry 2";
+//     std::string dlg1Entry3 = "Dialogue 1 Entry 3";
+//     std::string dlg1Choice1 = "Dialogue 1 Choice 1";
+//     std::string dlg1Choice2 = "Dialogue 1 Choice 2";
+//     std::string dlg1Choice3 = "Dialogue 1 Choice 3";
+//     std::string dlg1Participant1 = "Dialogue 1 Participant 1";
+//     std::string dlg1Participant2 = "Dialogue 1 Participant 2";
+//     std::string dlg1Participant3 = "Dialogue 1 Participant 3";
+//     std::string dlg2Name = "Dialogue 2";
+//     std::string dlg2Entry1 = "Dialogue 2 Entry 1";
+//     std::string dlg2Entry2 = "Dialogue 2 Entry 2";
+//     std::string dlg2Entry3 = "Dialogue 2 Entry 3";
+//     std::string dlg2Choice1 = "Dialogue 2 Choice 1";
+//     std::string dlg2Choice2 = "Dialogue 2 Choice 2";
+//     std::string dlg2Choice3 = "Dialogue 2 Choice 3";
+//     std::string dlg2Participant1 = "Dialogue 2 Participant 1";
+//     std::string dlg2Participant2 = "Dialogue 2 Participant 2";
+//     std::string dlg2Participant3 = "Dialogue 2 Participant 3";
+
+//     auto dlg1 = addDialogue(dlgMgr, dlg1Name.c_str(), dlg1Name.length(), dlg1Entry1.c_str(), dlg1Entry1.length());
+//     auto dlg2 = addDialogue(dlgMgr, dlg2Name.c_str(), dlg2Name.length(), dlg2Entry1.c_str(), dlg2Entry1.length());
+
+//     auto dlg1Part1 = addParticipant(dlg1, dlg1Participant1.c_str(), dlg1Participant1.length());
+//     auto dlg1Part2 = addParticipant(dlg1, dlg1Participant2.c_str(), dlg1Participant2.length());
+//     auto dlg1Part3 = addParticipant(dlg1, dlg1Participant3.c_str(), dlg1Participant3.length());
+//     auto dlg2Part1 = addParticipant(dlg2, dlg2Participant1.c_str(), dlg2Participant1.length());
+//     auto dlg2Part2 = addParticipant(dlg2, dlg2Participant2.c_str(), dlg2Participant2.length());
+//     auto dlg2Part3 = addParticipant(dlg2, dlg2Participant3.c_str(), dlg2Participant3.length());
+
+//     auto dlg1Entry1H = addDialogueEntry(dlg1, dlg1Part1, dlg1Entry1.c_str(), dlg1Entry1.length());
+//     auto dlg1Entry2H = addDialogueEntry(dlg1, dlg1Part2, dlg1Entry2.c_str(), dlg1Entry2.length());
+//     auto dlg1Entry3H = addDialogueEntry(dlg1, dlg1Part3, dlg1Entry3.c_str(), dlg1Entry3.length());
+//     auto dlg2Entry1H = addDialogueEntry(dlg2, dlg2Part1, dlg2Entry1.c_str(), dlg2Entry1.length());
+//     auto dlg2Entry2H = addDialogueEntry(dlg2, dlg2Part2, dlg2Entry2.c_str(), dlg2Entry2.length());
+//     auto dlg2Entry3H = addDialogueEntry(dlg2, dlg2Part3, dlg2Entry3.c_str(), dlg2Entry3.length());
+
+//     auto dlg1Choice1H = addChoice(dlg1, dlg1Entry1H, dlg1Choice1.c_str(), dlg1Choice1.length(), dlg1Entry2H);
+//     auto dlg1Choice2H = addChoice(dlg1, dlg1Entry2H, dlg1Choice2.c_str(), dlg1Choice2.length(), dlg1Entry3H);
+//     auto dlg1Choice3H = addChoice(dlg1, dlg1Entry3H, dlg1Choice3.c_str(), dlg1Choice3.length(), dlg1Entry1H);
+//     auto dlg2Choice1H = addChoice(dlg2, dlg2Entry1H, dlg2Choice1.c_str(), dlg2Choice1.length(), dlg2Entry2H);
+//     auto dlg2Choice2H = addChoice(dlg2, dlg2Entry2H, dlg2Choice2.c_str(), dlg2Choice2.length(), dlg2Entry3H);
+//     auto dlg2Choice3H = addChoice(dlg2, dlg2Entry3H, dlg2Choice3.c_str(), dlg2Choice3.length(), dlg2Entry1H);
+
+//     std::string dest = "C:/Users/Alter/Desktop/test.json";
+//     ASSERT_TRUE(writeDialogues(dlgMgr, dest.c_str(), dest.length()));
+// }
+
 /////////////////////////////////////////////////////////////////////////////

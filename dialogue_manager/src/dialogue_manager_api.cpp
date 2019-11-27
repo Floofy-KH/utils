@@ -36,6 +36,11 @@ extern "C"
         delete cast(mgr);
         return SUCCESS;
     }
+    
+    dlgmgr_result writeDialogues(HDialogueManager* mgr, const char* filePath, dlgmgr_size filePathSize)
+    {
+        return cast(mgr)->writeToFile(std::string(filePath, filePathSize));
+    }
 
     HDialogue* addDialogue(HDialogueManager* mgr, const char* name, dlgmgr_size nameSize, const char* contents, dlgmgr_size contentsSize)
     {

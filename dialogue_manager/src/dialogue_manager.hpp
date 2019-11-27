@@ -27,8 +27,12 @@ public:
     ~DialogueManager() = default;
 
     DialoguePtr addDialogue(std::string name, std::string greeting);
-    DialoguePtr dialogue(const std::string &name);
+    DialoguePtr dialogue(const std::string &name) const;
     void removeDialogue(const std::string &name);
+    
+    bool writeToFile(const std::string& filePath) const;
+
+    static DialogueManagerPtr readFromFile(const std::string& filePath);
     
     std::vector<DialoguePtr> dialogues;
 };
@@ -63,6 +67,9 @@ public:
     std::vector<ParticipantPtr> participants;
     std::vector<ChoicePtr> choices;
     std::vector<DialogueEntryPtr> entries;
+    size_t _nextParticipantId = 1;
+    size_t _nextChoiceId = 1;
+    size_t _nextEntryId = 1;
 };
 /////////////////////////////////////////////////////////////////////////////
 
@@ -71,8 +78,9 @@ public:
 class Participant
 {
 public:
-    Participant(std::string name) : name(std::move(name)) {}
+    Participant(size_t id, std::string name) : id(id), name(std::move(name)) {}
 
+    size_t id;
     std::string name;
 };
 /////////////////////////////////////////////////////////////////////////////
@@ -82,14 +90,16 @@ public:
 class DialogueEntry
 {
 public:
-    DialogueEntry(std::string entry, ParticipantPtr participant) 
-    : entry(std::move(entry))
+    DialogueEntry(size_t id, std::string entry, ParticipantPtr participant) 
+    : id(id)
+    , entry(std::move(entry))
     , activeParticipant(std::move(activeParticipant))
     {}
 
     bool operator ==(const DialogueEntry& other) const;
     bool operator !=(const DialogueEntry& other) const;
 
+    size_t id;
     std::string entry;
     std::vector<ChoicePtr> choices;
     ParticipantPtr activeParticipant;
@@ -101,14 +111,16 @@ public:
 class Choice
 {
 public:        
-    Choice(std::string choice, DialogueEntryPtr result) 
-    : choice(std::move(choice))
+    Choice(size_t id, std::string choice, DialogueEntryPtr result) 
+    : id(id)
+    , choice(std::move(choice))
     , result(std::move(result))
     {}
 
     bool operator ==(const Choice& other) const;
     bool operator !=(const Choice& other) const;
 
+    size_t id;
     std::string choice;
     DialogueEntryPtr result;
 };

@@ -17,6 +17,7 @@ extern "C"{
 
 EXPORT HDialogueManager* newDialogueManager();
 EXPORT dlgmgr_result freeDialogueManager(HDialogueManager* mgr);
+EXPORT dlgmgr_result writeDialogues(HDialogueManager* mgr, const char* filePath, dlgmgr_size filePathSize);
 
 EXPORT HDialogue* addDialogue(HDialogueManager* mgr, const char* name, dlgmgr_size nameSize, const char* contents, dlgmgr_size contentsSize);
 EXPORT void removeDialogue(HDialogueManager* mgr, const char* name, dlgmgr_size nameSize);
