@@ -4,7 +4,7 @@ project(Utils)
 
 option(Build_DialogueManager "Build DialogueManager project" ON)
 if(BUILD_TESTING)
-    set(CONAN_REQUIRES ${CONAN_REQUIRES} gtest/1.8.1@bincrafters/stable)
+    set(CONAN_REQUIRES ${CONAN_REQUIRES} gtest/1.8.1@bincrafters/stable jsonformoderncpp/3.7.2@vthiery/stable)
     enable_testing()
 endif()
 

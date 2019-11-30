@@ -3,37 +3,38 @@
 #include <string>
 #include <vector>
 
-
 /////////////////////////////////////////////////////////////////////////////
-//Forward Decls 
+//Forward Decls
 class DialogueManager;
-using DialogueManagerPtr = DialogueManager*;
+using DialogueManagerPtr = DialogueManager *;
 class Dialogue;
-using DialoguePtr = Dialogue*;
+using DialoguePtr = Dialogue *;
 class Choice;
-using ChoicePtr = Choice*;
+using ChoicePtr = Choice *;
 class DialogueEntry;
-using DialogueEntryPtr = DialogueEntry*;
+using DialogueEntryPtr = DialogueEntry *;
 class Participant;
-using ParticipantPtr = Participant*;
+using ParticipantPtr = Participant *;
 /////////////////////////////////////////////////////////////////////////////
 
 /////////////////////////////////////////////////////////////////////////////
 //DialogueManager
 class DialogueManager
 {
-public:    
+public:
     DialogueManager() = default;
     ~DialogueManager() = default;
 
-    DialoguePtr addDialogue(std::string name, std::string greeting);
+    DialoguePtr addDialogue(std::string name);
     DialoguePtr dialogue(const std::string &name) const;
+    DialoguePtr dialogue(size_t index) const;
     void removeDialogue(const std::string &name);
-    
-    bool writeToFile(const std::string& filePath) const;
+    size_t numDialogues() const;
 
-    static DialogueManagerPtr readFromFile(const std::string& filePath);
-    
+    bool writeToFile(const std::string &filePath) const;
+
+    static DialogueManagerPtr readFromFile(const std::string &filePath);
+
     std::vector<DialoguePtr> dialogues;
 };
 /////////////////////////////////////////////////////////////////////////////
@@ -42,26 +43,29 @@ public:
 //Dialogue
 class Dialogue
 {
+    friend class DialogueManager;
+
 public:
-    Dialogue(std::string name) : name(std::move(name)) 
-    {}
+    Dialogue(std::string name) : name(std::move(name))
+    {
+    }
 
     ParticipantPtr addParticipant(std::string name);
     size_t numParticipants() const;
     ParticipantPtr participant(size_t index) const;
-    ParticipantPtr participant(const std::string& name) const;
-    void removeParticipant(const std::string& name);
+    ParticipantPtr participant(const std::string &name) const;
+    void removeParticipant(const std::string &name);
 
     DialogueEntryPtr addDialogueEntry(ParticipantPtr activeParticipant, std::string entry);
     size_t numDialogueEntries() const;
     DialogueEntryPtr dialogueEntry(size_t index) const;
     void removeDialogueEntry(size_t index);
 
-    ChoicePtr addChoice(DialogueEntryPtr dialogueEntry, std::string choiceStr, DialogueEntryPtr dst);
+    ChoicePtr addChoice(DialogueEntryPtr src, std::string choiceStr, DialogueEntryPtr dst);
     size_t numChoices() const;
     ChoicePtr choice(size_t index) const;
-    ChoicePtr choice(const std::string& name) const;
-    void removeChoice(const std::string& name);
+    ChoicePtr choice(const std::string &name) const;
+    void removeChoice(const std::string &name);
 
     std::string name;
     std::vector<ParticipantPtr> participants;
@@ -70,6 +74,11 @@ public:
     size_t _nextParticipantId = 1;
     size_t _nextChoiceId = 1;
     size_t _nextEntryId = 1;
+
+private:
+    ParticipantPtr addParticipant(std::string name, size_t id);
+    DialogueEntryPtr addDialogueEntry(ParticipantPtr activeParticipant, std::string entry, size_t id);
+    ChoicePtr addChoice(DialogueEntryPtr dialogueEntry, std::string choiceStr, DialogueEntryPtr dst, size_t id);
 };
 /////////////////////////////////////////////////////////////////////////////
 
@@ -90,14 +99,13 @@ public:
 class DialogueEntry
 {
 public:
-    DialogueEntry(size_t id, std::string entry, ParticipantPtr participant) 
-    : id(id)
-    , entry(std::move(entry))
-    , activeParticipant(std::move(activeParticipant))
-    {}
+    DialogueEntry(size_t id, std::string entry, ParticipantPtr participant)
+        : id(id), entry(std::move(entry)), activeParticipant(std::move(participant))
+    {
+    }
 
-    bool operator ==(const DialogueEntry& other) const;
-    bool operator !=(const DialogueEntry& other) const;
+    bool operator==(const DialogueEntry &other) const;
+    bool operator!=(const DialogueEntry &other) const;
 
     size_t id;
     std::string entry;
@@ -110,19 +118,17 @@ public:
 //Choice
 class Choice
 {
-public:        
-    Choice(size_t id, std::string choice, DialogueEntryPtr result) 
-    : id(id)
-    , choice(std::move(choice))
-    , result(std::move(result))
-    {}
+public:
+    Choice(size_t id, DialogueEntryPtr src, std::string choice, DialogueEntryPtr dst)
+        : id(id), src(std::move(src)), choice(std::move(choice)), dst(std::move(dst))
+    {
+    }
 
-    bool operator ==(const Choice& other) const;
-    bool operator !=(const Choice& other) const;
+    bool operator==(const Choice &other) const;
+    bool operator!=(const Choice &other) const;
 
     size_t id;
     std::string choice;
-    DialogueEntryPtr result;
+    DialogueEntryPtr src, dst;
 };
 /////////////////////////////////////////////////////////////////////////////
-
