@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 
+namespace floofy
+{
 /////////////////////////////////////////////////////////////////////////////
 //Forward Decls
 class DialogueManager;
@@ -16,6 +18,34 @@ using DialogueEntryPtr = DialogueEntry *;
 class Participant;
 using ParticipantPtr = Participant *;
 /////////////////////////////////////////////////////////////////////////////
+
+struct ID
+{
+    explicit ID(size_t id) : _id(id) {}
+
+    ID operator+(size_t rhs) { return ID{_id + rhs}; }
+    ID operator-(size_t rhs) { return ID{_id - rhs}; }
+    ID operator++(int) { return ID{_id++}; }
+    ID operator--(int) { return ID{_id--}; }
+    ID &operator++()
+    {
+        ++_id;
+        return *this;
+    }
+    ID &operator--()
+    {
+        --_id;
+        return *this;
+    }
+
+    bool operator>=(const ID &rhs) const { return _id >= rhs._id; }
+    bool operator<=(const ID &rhs) const { return _id <= rhs._id; }
+    bool operator<(const ID &rhs) const { return _id < rhs._id; }
+    bool operator>(const ID &rhs) const { return _id > rhs._id; }
+    bool operator==(const ID &rhs) const { return _id == rhs._id; }
+
+    size_t _id;
+};
 
 /////////////////////////////////////////////////////////////////////////////
 //DialogueManager
@@ -54,31 +84,34 @@ public:
     size_t numParticipants() const;
     ParticipantPtr participant(size_t index) const;
     ParticipantPtr participant(const std::string &name) const;
+    ParticipantPtr participant(ID id) const;
     void removeParticipant(const std::string &name);
 
     DialogueEntryPtr addDialogueEntry(ParticipantPtr activeParticipant, std::string entry);
     size_t numDialogueEntries() const;
     DialogueEntryPtr dialogueEntry(size_t index) const;
+    DialogueEntryPtr dialogueEntry(ID id) const;
     void removeDialogueEntry(size_t index);
 
     ChoicePtr addChoice(DialogueEntryPtr src, std::string choiceStr, DialogueEntryPtr dst);
     size_t numChoices() const;
     ChoicePtr choice(size_t index) const;
     ChoicePtr choice(const std::string &name) const;
+    ChoicePtr choice(ID id) const;
     void removeChoice(const std::string &name);
 
     std::string name;
     std::vector<ParticipantPtr> participants;
     std::vector<ChoicePtr> choices;
     std::vector<DialogueEntryPtr> entries;
-    size_t _nextParticipantId = 1;
-    size_t _nextChoiceId = 1;
-    size_t _nextEntryId = 1;
+    ID _nextParticipantId = ID{1};
+    ID _nextChoiceId = ID{1};
+    ID _nextEntryId = ID{1};
 
 private:
-    ParticipantPtr addParticipant(std::string name, size_t id);
-    DialogueEntryPtr addDialogueEntry(ParticipantPtr activeParticipant, std::string entry, size_t id);
-    ChoicePtr addChoice(DialogueEntryPtr dialogueEntry, std::string choiceStr, DialogueEntryPtr dst, size_t id);
+    ParticipantPtr addParticipant(std::string name, ID id);
+    DialogueEntryPtr addDialogueEntry(ParticipantPtr activeParticipant, std::string entry, ID id);
+    ChoicePtr addChoice(DialogueEntryPtr dialogueEntry, std::string choiceStr, DialogueEntryPtr dst, ID id);
 };
 /////////////////////////////////////////////////////////////////////////////
 
@@ -87,9 +120,9 @@ private:
 class Participant
 {
 public:
-    Participant(size_t id, std::string name) : id(id), name(std::move(name)) {}
+    Participant(ID id, std::string name) : id(id), name(std::move(name)) {}
 
-    size_t id;
+    ID id;
     std::string name;
 };
 /////////////////////////////////////////////////////////////////////////////
@@ -99,7 +132,7 @@ public:
 class DialogueEntry
 {
 public:
-    DialogueEntry(size_t id, std::string entry, ParticipantPtr participant)
+    DialogueEntry(ID id, std::string entry, ParticipantPtr participant)
         : id(id), entry(std::move(entry)), activeParticipant(std::move(participant))
     {
     }
@@ -107,7 +140,7 @@ public:
     bool operator==(const DialogueEntry &other) const;
     bool operator!=(const DialogueEntry &other) const;
 
-    size_t id;
+    ID id;
     std::string entry;
     std::vector<ChoicePtr> choices;
     ParticipantPtr activeParticipant;
@@ -119,7 +152,7 @@ public:
 class Choice
 {
 public:
-    Choice(size_t id, DialogueEntryPtr src, std::string choice, DialogueEntryPtr dst)
+    Choice(ID id, DialogueEntryPtr src, std::string choice, DialogueEntryPtr dst)
         : id(id), src(std::move(src)), choice(std::move(choice)), dst(std::move(dst))
     {
     }
@@ -127,8 +160,9 @@ public:
     bool operator==(const Choice &other) const;
     bool operator!=(const Choice &other) const;
 
-    size_t id;
+    ID id;
     std::string choice;
     DialogueEntryPtr src, dst;
 };
 /////////////////////////////////////////////////////////////////////////////
+} // namespace floofy

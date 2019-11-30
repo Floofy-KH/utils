@@ -237,9 +237,9 @@ TEST(MultipleDialogues, fileIO)
     auto numDlgs = numDialogues(mgr);
     EXPECT_EQ(numDlgs, 2);
 
-    for (size_t dlgIndex = 0; dlgIndex < numDlgs; ++dlgIndex)
+    //Dialogue 1
     {
-        auto dlg = dialogueFromIndex(mgr, dlgIndex);
+        auto dlg = dialogueFromIndex(mgr, 0);
         ASSERT_NE(dlg, nullptr);
 
         constexpr size_t bufSize = 64;
@@ -247,6 +247,18 @@ TEST(MultipleDialogues, fileIO)
         char nameBuf[bufSize];
         getDialogueName(dlg, nameBuf, bufSize);
         ASSERT_STREQ(nameBuf, dlg1Name.c_str());
+    }
+
+    //Dialogue 2
+    {
+        auto dlg = dialogueFromIndex(mgr, 1);
+        ASSERT_NE(dlg, nullptr);
+
+        constexpr size_t bufSize = 64;
+
+        char nameBuf[bufSize];
+        getDialogueName(dlg, nameBuf, bufSize);
+        ASSERT_STREQ(nameBuf, dlg2Name.c_str());
     }
 }
 

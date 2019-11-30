@@ -15,6 +15,8 @@
         return reinterpret_cast<PtrTCpp *>(ptr); \
     }
 
+using namespace floofy;
+
 namespace
 {
 CAST_OPERATIONS(HDialogueManager, DialogueManager);

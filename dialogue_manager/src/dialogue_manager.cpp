@@ -5,6 +5,9 @@
 #include <algorithm>
 #include <fstream>
 
+namespace floofy
+{
+
 /////////////////////////////////////////////////////////////////////////////
 //DialogueManager
 
@@ -65,7 +68,7 @@ bool DialogueManager::writeToFile(const std::string &filePath) const
                     participantsJs.reserve(dlg->participants.size());
                     for (const auto &participant : dlg->participants)
                     {
-                        participantsJs.push_back({{"id", participant->id}, {"name", participant->name}});
+                        participantsJs.push_back({{"id", participant->id._id}, {"name", participant->name}});
                     }
                     dialogueJs["participants"] = participantsJs;
                 }
@@ -76,9 +79,9 @@ bool DialogueManager::writeToFile(const std::string &filePath) const
                     entriesJs.reserve(dlg->entries.size());
                     for (size_t i = 0; i < dlg->entries.size(); ++i)
                     {
-                        entriesJs.push_back({{"id", dlg->entries[i]->id},
+                        entriesJs.push_back({{"id", dlg->entries[i]->id._id},
                                              {"entry", dlg->entries[i]->entry},
-                                             {"activeParticipant", dlg->entries[i]->activeParticipant->id}});
+                                             {"activeParticipant", dlg->entries[i]->activeParticipant->id._id}});
                     }
                     dialogueJs["entries"] = entriesJs;
                 }
@@ -89,10 +92,10 @@ bool DialogueManager::writeToFile(const std::string &filePath) const
                     choicesJs.reserve(dlg->choices.size());
                     for (size_t i = 0; i < dlg->choices.size(); ++i)
                     {
-                        choicesJs.push_back({{"id", dlg->choices[i]->id},
+                        choicesJs.push_back({{"id", dlg->choices[i]->id._id},
                                              {"choice", dlg->choices[i]->choice},
-                                             {"src", dlg->choices[i]->src->id},
-                                             {"dst", dlg->choices[i]->dst->id}});
+                                             {"src", dlg->choices[i]->src->id._id},
+                                             {"dst", dlg->choices[i]->dst->id._id}});
                     }
                     dialogueJs["choices"] = choicesJs;
                 }
@@ -108,7 +111,7 @@ bool DialogueManager::writeToFile(const std::string &filePath) const
     }
 
     return false;
-}
+} // namespace floofy
 
 DialogueManagerPtr DialogueManager::readFromFile(const std::string &filePath)
 {
@@ -160,7 +163,7 @@ DialogueManagerPtr DialogueManager::readFromFile(const std::string &filePath)
                     return nullptr;
                 }
 
-                dlgPtr->addParticipant(part["name"], part["id"]);
+                dlgPtr->addParticipant(part["name"], ID{part["id"]});
             }
 
             //Entries
@@ -173,20 +176,20 @@ DialogueManagerPtr DialogueManager::readFromFile(const std::string &filePath)
 
             for (const auto &entry : *findEntries)
             {
-                if (!entry.is_object() || !entry.contains("name") || !entry.contains("id") || !entry.contains("activeParticipant"))
+                if (!entry.is_object() || !entry.contains("entry") || !entry.contains("id") || !entry.contains("activeParticipant"))
                 {
                     assert(false);
                     return nullptr;
                 }
 
-                auto part = dlgPtr->participant(entry["activeParticipant"].get<size_t>());
+                auto part = dlgPtr->participant(ID{entry["activeParticipant"]});
                 if (!part)
                 {
                     assert(false);
                     return nullptr;
                 }
 
-                dlgPtr->addDialogueEntry(part, entry["name"], entry["id"]);
+                dlgPtr->addDialogueEntry(part, entry["entry"], ID{entry["id"]});
             }
 
             //Choices
@@ -199,21 +202,21 @@ DialogueManagerPtr DialogueManager::readFromFile(const std::string &filePath)
 
             for (const auto &choice : *findChoice)
             {
-                if (!choice.is_object() || !choice.contains("name") || !choice.contains("id") || !choice.contains("src") || !choice.contains("dst"))
+                if (!choice.is_object() || !choice.contains("choice") || !choice.contains("id") || !choice.contains("src") || !choice.contains("dst"))
                 {
                     assert(false);
                     return nullptr;
                 }
 
-                auto src = dlgPtr->dialogueEntry(choice["src"].get<size_t>());
-                auto dst = dlgPtr->dialogueEntry(choice["dst"].get<size_t>());
+                auto src = dlgPtr->dialogueEntry(ID{choice["src"]});
+                auto dst = dlgPtr->dialogueEntry(ID{choice["dst"]});
                 if (!src || !dst)
                 {
                     assert(false);
                     return nullptr;
                 }
 
-                dlgPtr->addChoice(src, choice["choice"], dst, choice["id"]);
+                dlgPtr->addChoice(src, choice["choice"], dst, ID{choice["id"]});
             }
         }
 
@@ -261,6 +264,24 @@ ParticipantPtr Dialogue::participant(const std::string &name) const
     }
 }
 
+ParticipantPtr Dialogue::participant(ID id) const
+{
+    const auto pred = [id](const ParticipantPtr &other) {
+        return id == other->id;
+    };
+
+    auto findParticipant = std::find_if(participants.cbegin(), participants.cend(), pred);
+
+    if (findParticipant == participants.end())
+    {
+        return {};
+    }
+    else
+    {
+        return *findParticipant;
+    }
+}
+
 void Dialogue::removeParticipant(const std::string &name)
 {
     const auto pred = [&name](const ParticipantPtr &other) {
@@ -283,6 +304,15 @@ size_t Dialogue::numDialogueEntries() const
 DialogueEntryPtr Dialogue::dialogueEntry(size_t index) const
 {
     return entries.at(index);
+}
+
+DialogueEntryPtr Dialogue::dialogueEntry(ID id) const
+{
+    auto find = std::find_if(entries.begin(), entries.end(), [id](const DialogueEntryPtr &entry) {
+        return entry->id == id;
+    });
+
+    return find == entries.end() ? nullptr : *find;
 }
 
 void Dialogue::removeDialogueEntry(size_t index)
@@ -322,6 +352,23 @@ ChoicePtr Dialogue::choice(const std::string &name) const
     }
 }
 
+ChoicePtr Dialogue::choice(ID id) const
+{
+    const auto pred = [id](const ChoicePtr &other) {
+        return id == other->id;
+    };
+
+    auto findChoice = std::find_if(choices.begin(), choices.end(), pred);
+    if (findChoice == choices.end())
+    {
+        return {};
+    }
+    else
+    {
+        return *findChoice;
+    }
+}
+
 void Dialogue::removeChoice(const std::string &name)
 {
     const auto pred = [&name](const ChoicePtr &other) {
@@ -331,21 +378,21 @@ void Dialogue::removeChoice(const std::string &name)
     choices.erase(std::remove_if(choices.begin(), choices.end(), pred));
 }
 
-ParticipantPtr Dialogue::addParticipant(std::string name, size_t id)
+ParticipantPtr Dialogue::addParticipant(std::string name, ID id)
 {
     if (id >= _nextParticipantId)
         _nextParticipantId = id + 1;
     return participants.emplace_back(new Participant(id, name));
 }
 
-DialogueEntryPtr Dialogue::addDialogueEntry(ParticipantPtr activeParticipant, std::string entry, size_t id)
+DialogueEntryPtr Dialogue::addDialogueEntry(ParticipantPtr activeParticipant, std::string entry, ID id)
 {
     if (id >= _nextEntryId)
         _nextEntryId = id + 1;
     return entries.emplace_back(new DialogueEntry(id, entry, activeParticipant));
 }
 
-ChoicePtr Dialogue::addChoice(DialogueEntryPtr src, std::string choiceStr, DialogueEntryPtr dst, size_t id)
+ChoicePtr Dialogue::addChoice(DialogueEntryPtr src, std::string choiceStr, DialogueEntryPtr dst, ID id)
 {
     if (id >= _nextChoiceId)
         _nextChoiceId = id + 1;
@@ -371,3 +418,4 @@ ChoicePtr Dialogue::addChoice(DialogueEntryPtr src, std::string choiceStr, Dialo
 //Choice
 
 /////////////////////////////////////////////////////////////////////////////
+} // namespace floofy
