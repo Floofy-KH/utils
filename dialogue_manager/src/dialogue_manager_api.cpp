@@ -167,12 +167,69 @@ extern "C"
         cppDlg->removeChoice(std::string(name, size));
     }
 
-    void getDialogueName(HDialogue *dialogue, char *name, dlgmgr_size bufferSize)
+    void dialogueName(HDialogue *dialogue, char *name, dlgmgr_size bufferSize)
     {
         if (!name || bufferSize < 1)
             return;
         auto cppDlg = cast(dialogue);
         auto length = cppDlg->name.copy(name, bufferSize);
         name[length] = '\0';
+    }
+
+    void participantName(HParticipant *participant, char *name, dlgmgr_size bufferSize)
+    {
+        if (!name || bufferSize < 1)
+            return;
+        auto cppPart = cast(participant);
+        auto length = cppPart->name.copy(name, bufferSize);
+        name[length] = '\0';
+    }
+
+    void dialogueEntryContent(HDialogueEntry *entry, char *content, dlgmgr_result bufferSize)
+    {
+        if (!content || bufferSize < 1)
+            return;
+        auto cppEntry = cast(entry);
+        auto length = cppEntry->entry.copy(content, bufferSize);
+        content[length] = '\0';
+    }
+
+    dlgmgr_size dialogueEntryNumChoices(HDialogueEntry *entry)
+    {
+        auto cppEntry = cast(entry);
+        return cppEntry->choices.size();
+    }
+
+    HChoice *dialogueEntryChoiceFromIndex(HDialogueEntry *entry, dlgmgr_size index)
+    {
+        auto cppEntry = cast(entry);
+        return cast(cppEntry->choices[index]);
+    }
+
+    HParticipant *dialogueEntryActiveParticipant(HDialogueEntry *entry)
+    {
+        auto cppEntry = cast(entry);
+        return cast(cppEntry->activeParticipant);
+    }
+
+    void choiceContent(HChoice *choice, char *content, dlgmgr_size bufferSize)
+    {
+        if (!content || bufferSize < 1)
+            return;
+        auto cppChoice = cast(choice);
+        auto length = cppChoice->choice.copy(content, bufferSize);
+        content[length] = '\0';
+    }
+
+    HDialogueEntry *choiceSrcEntry(HChoice *choice)
+    {
+        auto cppChoice = cast(choice);
+        return cast(cppChoice->src);
+    }
+
+    HDialogueEntry *choiceDstEntry(HChoice *choice)
+    {
+        auto cppChoice = cast(choice);
+        return cast(cppChoice->dst);
     }
 }
