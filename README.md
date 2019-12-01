@@ -10,4 +10,11 @@ Requires CMake to build, and Conan for dependencies. Current dependencies are
 ## dialogue_manager
 WIP
 
-Will contain data manager, and file readers and writers for dialogue. Effectively a graph where each vertex is a participant's dialogue, and each edge a possible choice for the player. 
+Will contain data manager, and file readers and writers for dialogue. Effectively a graph where each vertex is a participant's dialogue, and each edge a possible choice for the player.
+
+## dialogue_editor
+WIP
+
+Front-end for the dialogue_manager written with .NET. C# bindings to the dialogue_manager API is currently in this project. 
+
+A standalone VS solution, not part of CMake. 
