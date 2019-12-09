@@ -46,16 +46,7 @@ namespace DialogueManagerTests
         {
             var mgr = new DialogueManager();
 
-            var dlg0 = mgr.Dialogue(0);
-            Assert.IsNull(dlg0);
-
-            var dlg1 = mgr.Dialogue(1);
-            Assert.IsNull(dlg1);
-
             mgr.AddDialogue("A Name");
-
-            var dlg2 = mgr.Dialogue(2);
-            Assert.IsNull(dlg2);
 
             var dlgName = mgr.Dialogue("Not A Name");
             Assert.IsNull(dlgName);

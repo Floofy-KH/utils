@@ -8,31 +8,31 @@ namespace floofy
     {
         #region PInvoke
 
-        [DllImport("DialogueManager.dll")]
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr newDialogueManager();
 
-        [DllImport("DialogueManager.dll")]
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern int freeDialogueManager(IntPtr mgr);
 
-        [DllImport("DialogueManager.dll")]
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern int writeDialogues(IntPtr mgr, string filePath, int filePathSize);
 
-        [DllImport("DialogueManager.dll")]
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr readDialogues(string filePath, int filePathSize);
 
-        [DllImport("DialogueManager.dll")]
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr addDialogue(IntPtr mgr, string name, int nameSize);
 
-        [DllImport("DialogueManager.dll")]
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern void removeDialogue(IntPtr mgr, string name, int nameSize);
 
-        [DllImport("DialogueManager.dll")]
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern int numDialogues(IntPtr mgr);
 
-        [DllImport("DialogueManager.dll")]
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr dialogueFromName(IntPtr mgr, string name, int size);
 
-        [DllImport("DialogueManager.dll")]
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr dialogueFromIndex(IntPtr mgr, int index);
 
         #endregion PInvoke
@@ -62,17 +62,41 @@ namespace floofy
 
         public Dialogue AddDialogue(string name)
         {
-            return new Dialogue(addDialogue(_ptr, name, name.Length));
+            var dlg = new Dialogue(addDialogue(_ptr, name, name.Length));
+            if (dlg._ptr == IntPtr.Zero)
+            {
+                return null;
+            }
+            else
+            {
+                return dlg;
+            }
         }
 
         public Dialogue Dialogue(string name)
         {
-            return new Dialogue(dialogueFromName(_ptr, name, name.Length));
+            var dlg = new Dialogue(dialogueFromName(_ptr, name, name.Length));
+            if (dlg._ptr == IntPtr.Zero)
+            {
+                return null;
+            }
+            else
+            {
+                return dlg;
+            }
         }
 
         public Dialogue Dialogue(int index)
         {
-            return new Dialogue(dialogueFromIndex(_ptr, index));
+            var dlg = new Dialogue(dialogueFromIndex(_ptr, index));
+            if (dlg._ptr == IntPtr.Zero)
+            {
+                return null;
+            }
+            else
+            {
+                return dlg;
+            }
         }
 
         public void RemoveDialogue(string name)
@@ -92,53 +116,53 @@ namespace floofy
     {
         #region PInvoke
 
-        [DllImport("DialogueManager.dll")]
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr addParticipant(IntPtr dialogue, string name, int nameSize);
 
-        [DllImport("DialogueManager.dll")]
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern int numParticipants(IntPtr dialogue);
 
-        [DllImport("DialogueManager.dll")]
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr participantFromIndex(IntPtr dialogue, int index);
 
-        [DllImport("DialogueManager.dll")]
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr participantFromName(IntPtr dialogue, string name, int size);
 
-        [DllImport("DialogueManager.dll")]
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern void removeParticipant(IntPtr dialogue, string name, int size);
 
-        [DllImport("DialogueManager.dll")]
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr addDialogueEntry(IntPtr dialogue, IntPtr part, string name, int size);
 
-        [DllImport("DialogueManager.dll")]
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern int numDialogueEntries(IntPtr dialogue);
 
-        [DllImport("DialogueManager.dll")]
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr dialogueEntryFromIndex(IntPtr dialogue, int index);
 
-        [DllImport("DialogueManager.dll")]
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern void removeDialogueEntry(IntPtr dialogue, int index);
 
-        [DllImport("DialogueManager.dll")]
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr addChoice(IntPtr dialogue,
                                               IntPtr dialogueEntry,
                                               string name,
                                               int size,
                                               IntPtr destDialogueEntry);
 
-        [DllImport("DialogueManager.dll")]
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern int numChoices(IntPtr dialogue);
 
-        [DllImport("DialogueManager.dll")]
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr choiceFromIndex(IntPtr dialogue, int index);
 
-        [DllImport("DialogueManager.dll")]
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr choiceFromName(IntPtr dialogue, string name, int size);
 
-        [DllImport("DialogueManager.dll")]
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern void removeChoice(IntPtr dialogue, string name, int size);
 
-        [DllImport("DialogueManager.dll")]
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern void dialogueName(IntPtr dialogue, StringBuilder name, int bufferSize);
 
         #endregion PInvoke
@@ -184,17 +208,41 @@ namespace floofy
 
         public Participant AddParticipant(string name)
         {
-            return new Participant(addParticipant(_ptr, name, name.Length));
+            var part = new Participant(addParticipant(_ptr, name, name.Length));
+            if (part._ptr == IntPtr.Zero)
+            {
+                return null;
+            }
+            else
+            {
+                return part;
+            }
         }
 
         public Participant Participant(int index)
         {
-            return new Participant(participantFromIndex(_ptr, index));
+            var part = new Participant(participantFromIndex(_ptr, index));
+            if (part._ptr == IntPtr.Zero)
+            {
+                return null;
+            }
+            else
+            {
+                return part;
+            }
         }
 
         public Participant Participant(string name)
         {
-            return new Participant(participantFromName(_ptr, name, name.Length));
+            var part = new Participant(participantFromName(_ptr, name, name.Length));
+            if (part._ptr == IntPtr.Zero)
+            {
+                return null;
+            }
+            else
+            {
+                return part;
+            }
         }
 
         public void RemoveParticipant(string name)
@@ -204,12 +252,28 @@ namespace floofy
 
         public DialogueEntry AddEntry(Participant participant, string name)
         {
-            return new DialogueEntry(addDialogueEntry(_ptr, participant._ptr, name, name.Length));
+            var entry = new DialogueEntry(addDialogueEntry(_ptr, participant._ptr, name, name.Length));
+            if (entry._ptr == IntPtr.Zero)
+            {
+                return null;
+            }
+            else
+            {
+                return entry;
+            }
         }
 
         public DialogueEntry Entry(int index)
         {
-            return new DialogueEntry(dialogueEntryFromIndex(_ptr, index));
+            var entry = new DialogueEntry(dialogueEntryFromIndex(_ptr, index));
+            if (entry._ptr == IntPtr.Zero)
+            {
+                return null;
+            }
+            else
+            {
+                return entry;
+            }
         }
 
         public void RemoveEntry(int index)
@@ -219,22 +283,58 @@ namespace floofy
 
         public Choice AddChoice(DialogueEntry src, string name, DialogueEntry dst)
         {
-            return new Choice(addChoice(_ptr, src._ptr, name, name.Length, dst._ptr));
+            var choice = new Choice(addChoice(_ptr, src._ptr, name, name.Length, dst._ptr));
+            if (choice._ptr == IntPtr.Zero)
+            {
+                return null;
+            }
+            else
+            {
+                return choice;
+            }
         }
 
         public Choice Choice(int index)
         {
-            return new Choice(choiceFromIndex(_ptr, index));
+            var choice = new Choice(choiceFromIndex(_ptr, index));
+            if (choice._ptr == IntPtr.Zero)
+            {
+                return null;
+            }
+            else
+            {
+                return choice;
+            }
         }
 
         public Choice Choice(string name)
         {
-            return new Choice(choiceFromName(_ptr, name, name.Length));
+            var choice = new Choice(choiceFromName(_ptr, name, name.Length));
+            if (choice._ptr == IntPtr.Zero)
+            {
+                return null;
+            }
+            else
+            {
+                return choice;
+            }
         }
 
         public void RemoveChoice(string name)
         {
             removeChoice(_ptr, name, name.Length);
+        }
+
+        public override bool Equals(object obj)
+        {
+            var dlg = obj as Dialogue;
+
+            if (dlg == null)
+            {
+                return false;
+            }
+
+            return dlg._ptr == _ptr;
         }
 
         public IntPtr _ptr;
@@ -244,7 +344,7 @@ namespace floofy
     {
         #region PInvoke
 
-        [DllImport("DialogueManager.dll")]
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern void participantName(IntPtr participant, StringBuilder name, int bufferSize);
 
         #endregion PInvoke
@@ -264,6 +364,18 @@ namespace floofy
             }
         }
 
+        public override bool Equals(object obj)
+        {
+            var part = obj as Participant;
+
+            if (part == null)
+            {
+                return false;
+            }
+
+            return part._ptr == _ptr;
+        }
+
         public IntPtr _ptr;
     }
 
@@ -271,16 +383,16 @@ namespace floofy
     {
         #region PInvoke
 
-        [DllImport("DialogueManager.dll")]
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern void dialogueEntryContent(IntPtr entry, StringBuilder content, int bufferSize);
 
-        [DllImport("DialogueManager.dll")]
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern int dialogueEntryNumChoices(IntPtr entry);
 
-        [DllImport("DialogueManager.dll")]
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr dialogueEntryChoiceFromIndex(IntPtr entry, int index);
 
-        [DllImport("DialogueManager.dll")]
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr dialogueEntryActiveParticipant(IntPtr entry);
 
         #endregion PInvoke
@@ -312,13 +424,32 @@ namespace floofy
         {
             get
             {
-                return new Participant(_ptr);
+                if (_ptr == IntPtr.Zero)
+                {
+                    return null;
+                }
+                else
+                {
+                    return new Participant(_ptr);
+                }
             }
         }
 
         public Choice Choice(int index)
         {
             return new Choice(dialogueEntryChoiceFromIndex(_ptr, index));
+        }
+
+        public override bool Equals(object obj)
+        {
+            var entry = obj as DialogueEntry;
+
+            if (entry == null)
+            {
+                return false;
+            }
+
+            return entry._ptr == _ptr;
         }
 
         public IntPtr _ptr;
@@ -328,13 +459,13 @@ namespace floofy
     {
         #region PInvoke
 
-        [DllImport("DialogueManager.dll")]
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern void choiceContent(IntPtr choice, StringBuilder content, int bufferSize);
 
-        [DllImport("DialogueManager.dll")]
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr choiceSrcEntry(IntPtr choice);
 
-        [DllImport("DialogueManager.dll")]
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr choiceDstEntry(IntPtr choice);
 
         #endregion PInvoke
@@ -358,7 +489,15 @@ namespace floofy
         {
             get
             {
-                return new DialogueEntry(choiceSrcEntry(_ptr));
+                var entry = new DialogueEntry(choiceSrcEntry(_ptr));
+                if (entry._ptr == IntPtr.Zero)
+                {
+                    return null;
+                }
+                else
+                {
+                    return entry;
+                }
             }
         }
 
@@ -366,8 +505,28 @@ namespace floofy
         {
             get
             {
-                return new DialogueEntry(choiceDstEntry(_ptr));
+                var entry = new DialogueEntry(choiceDstEntry(_ptr));
+                if (entry._ptr == IntPtr.Zero)
+                {
+                    return null;
+                }
+                else
+                {
+                    return entry;
+                }
             }
+        }
+
+        public override bool Equals(object obj)
+        {
+            var choice = obj as Choice;
+
+            if (choice == null)
+            {
+                return false;
+            }
+
+            return choice._ptr == _ptr;
         }
 
         public IntPtr _ptr;
