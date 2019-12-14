@@ -24,6 +24,19 @@ CAST_OPERATIONS(HDialogue, Dialogue);
 CAST_OPERATIONS(HParticipant, Participant);
 CAST_OPERATIONS(HDialogueEntry, DialogueEntry);
 CAST_OPERATIONS(HChoice, Choice);
+
+void returnString(const std::string &dst, char *buf, dlgmgr_size bufSize)
+{
+    if (!buf || bufSize < 1)
+        return;
+    auto length = dst.copy(buf, bufSize);
+    buf[length] = '\0';
+}
+
+void setString(std::string &str, char *buf, dlgmgr_size bufSize)
+{
+    str.assign(buf, bufSize);
+}
 } // namespace
 
 extern "C"
@@ -169,29 +182,38 @@ extern "C"
 
     void dialogueName(HDialogue *dialogue, char *name, dlgmgr_size bufferSize)
     {
-        if (!name || bufferSize < 1)
-            return;
         auto cppDlg = cast(dialogue);
-        auto length = cppDlg->name.copy(name, bufferSize);
-        name[length] = '\0';
+        returnString(cppDlg->name, name, bufferSize);
+    }
+
+    void setDialogueName(HDialogue *dialogue, char *name, dlgmgr_size bufferSize)
+    {
+        auto cppDlg = cast(dialogue);
+        setString(cppDlg->name, name, bufferSize);
     }
 
     void participantName(HParticipant *participant, char *name, dlgmgr_size bufferSize)
     {
-        if (!name || bufferSize < 1)
-            return;
         auto cppPart = cast(participant);
-        auto length = cppPart->name.copy(name, bufferSize);
-        name[length] = '\0';
+        returnString(cppPart->name, name, bufferSize);
+    }
+
+    void setParticipantName(HParticipant *participant, char *name, dlgmgr_size bufferSize)
+    {
+        auto cppPart = cast(participant);
+        setString(cppPart->name, name, bufferSize);
     }
 
     void dialogueEntryContent(HDialogueEntry *entry, char *content, dlgmgr_result bufferSize)
     {
-        if (!content || bufferSize < 1)
-            return;
         auto cppEntry = cast(entry);
-        auto length = cppEntry->entry.copy(content, bufferSize);
-        content[length] = '\0';
+        returnString(cppEntry->entry, content, bufferSize);
+    }
+
+    void setDialogueEntryContent(HDialogueEntry *entry, char *content, dlgmgr_result bufferSize)
+    {
+        auto cppEntry = cast(entry);
+        setString(cppEntry->entry, content, bufferSize);
     }
 
     dlgmgr_size dialogueEntryNumChoices(HDialogueEntry *entry)
@@ -214,11 +236,14 @@ extern "C"
 
     void choiceContent(HChoice *choice, char *content, dlgmgr_size bufferSize)
     {
-        if (!content || bufferSize < 1)
-            return;
         auto cppChoice = cast(choice);
-        auto length = cppChoice->choice.copy(content, bufferSize);
-        content[length] = '\0';
+        returnString(cppChoice->choice, content, bufferSize);
+    }
+
+    void setChoiceContent(HChoice *choice, char *content, dlgmgr_size bufferSize)
+    {
+        auto cppChoice = cast(choice);
+        setString(cppChoice->choice, content, bufferSize);
     }
 
     HDialogueEntry *choiceSrcEntry(HChoice *choice)

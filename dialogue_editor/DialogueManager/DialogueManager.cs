@@ -132,7 +132,7 @@ namespace floofy
         private static extern void removeParticipant(IntPtr dialogue, string name, int size);
 
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr addDialogueEntry(IntPtr dialogue, IntPtr part, string name, int size);
+        private static extern IntPtr addDialogueEntry(IntPtr dialogue, IntPtr part, string content, int size);
 
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern int numDialogueEntries(IntPtr dialogue);
@@ -164,6 +164,9 @@ namespace floofy
 
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern void dialogueName(IntPtr dialogue, StringBuilder name, int bufferSize);
+
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void setDialogueName(IntPtr dialogue, StringBuilder name, int bufferSize);
 
         #endregion PInvoke
 
@@ -203,6 +206,12 @@ namespace floofy
                 StringBuilder sb = new StringBuilder(1024);
                 dialogueName(_ptr, sb, 1024);
                 return sb.ToString();
+            }
+
+            set
+            {
+                StringBuilder sb = new StringBuilder(value);
+                setDialogueName(_ptr, sb, value.Length);
             }
         }
 
@@ -250,9 +259,9 @@ namespace floofy
             removeParticipant(_ptr, name, name.Length);
         }
 
-        public DialogueEntry AddEntry(Participant participant, string name)
+        public DialogueEntry AddEntry(Participant participant, string content)
         {
-            var entry = new DialogueEntry(addDialogueEntry(_ptr, participant._ptr, name, name.Length));
+            var entry = new DialogueEntry(addDialogueEntry(_ptr, participant._ptr, content, content.Length));
             if (entry._ptr == IntPtr.Zero)
             {
                 return null;
@@ -347,6 +356,9 @@ namespace floofy
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern void participantName(IntPtr participant, StringBuilder name, int bufferSize);
 
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void setParticipantName(IntPtr participant, StringBuilder name, int bufferSize);
+
         #endregion PInvoke
 
         public Participant(IntPtr ptr)
@@ -361,6 +373,12 @@ namespace floofy
                 StringBuilder sb = new StringBuilder(1024);
                 participantName(_ptr, sb, 1024);
                 return sb.ToString();
+            }
+
+            set
+            {
+                StringBuilder sb = new StringBuilder(value);
+                setParticipantName(_ptr, sb, value.Length);
             }
         }
 
@@ -385,6 +403,9 @@ namespace floofy
 
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern void dialogueEntryContent(IntPtr entry, StringBuilder content, int bufferSize);
+
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void setDialogueEntryContent(IntPtr entry, StringBuilder content, int bufferSize);
 
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern int dialogueEntryNumChoices(IntPtr entry);
@@ -418,6 +439,12 @@ namespace floofy
                 dialogueEntryContent(_ptr, sb, 1024);
                 return sb.ToString();
             }
+
+            set
+            {
+                StringBuilder sb = new StringBuilder(value);
+                setDialogueEntryContent(_ptr, sb, value.Length);
+            }
         }
 
         public Participant ActiveParticipant
@@ -430,7 +457,7 @@ namespace floofy
                 }
                 else
                 {
-                    return new Participant(_ptr);
+                    return new Participant(dialogueEntryActiveParticipant(_ptr));
                 }
             }
         }
@@ -463,6 +490,9 @@ namespace floofy
         private static extern void choiceContent(IntPtr choice, StringBuilder content, int bufferSize);
 
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void setChoiceContent(IntPtr choice, StringBuilder content, int bufferSize);
+
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr choiceSrcEntry(IntPtr choice);
 
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -482,6 +512,12 @@ namespace floofy
                 StringBuilder sb = new StringBuilder(1024);
                 choiceContent(_ptr, sb, 1024);
                 return sb.ToString();
+            }
+
+            set
+            {
+                StringBuilder sb = new StringBuilder(value);
+                setChoiceContent(_ptr, sb, value.Length);
             }
         }
 

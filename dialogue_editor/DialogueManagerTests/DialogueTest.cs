@@ -22,6 +22,20 @@ namespace DialogueManagerTests
         }
 
         [TestMethod]
+        public void NameReturnsCorrectValue()
+        {
+            Assert.AreEqual(_dlg.Name, _dlgName);
+        }
+
+        [TestMethod]
+        public void CanSetName()
+        {
+            string newName = "A new name";
+            _dlg.Name = newName;
+            Assert.AreEqual(_dlg.Name, newName);
+        }
+
+        [TestMethod]
         public void NumParticipantsReturnsZeroByDefault()
         {
             Assert.AreEqual(_dlg.NumParticipants, 0);

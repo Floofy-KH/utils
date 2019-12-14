@@ -5,6 +5,21 @@ target_link_libraries(DialogueManager PRIVATE CONAN_PKG::jsonformoderncpp)
 
 set_target_properties(DialogueManager PROPERTIES CXX_STANDARD 17)
 
+set(DialogueManagerCSBuildPath  "${CMAKE_SOURCE_DIR}/dialogue_editor/DialogueManager/bin/$<CONFIG>/netstandard1.4")
+set(DialogueManagerCSTestsBuildPath  "${CMAKE_SOURCE_DIR}/dialogue_editor/DialogueManagerTests/bin/$<CONFIG>")
+
+message("Copying \"$<TARGET_FILE:DialogueManager>\" to ${DialogueManagerCSBuildPath}/$<TARGET_FILE_NAME:DialogueManager>")
+
+add_custom_command(
+    TARGET DialogueManager
+    POST_BUILD
+    COMMAND "echo" "Copying $<TARGET_FILE:DialogueManager> to ${DialogueManagerCSBuildPath}/$<TARGET_FILE_NAME:DialogueManager>"
+    COMMAND "cmake" "-E" "copy_if_different" "$<TARGET_FILE:DialogueManager>" "${DialogueManagerCSBuildPath}/$<TARGET_FILE_NAME:DialogueManager>"
+    COMMAND "cmake" "-E" "copy_if_different" "$<TARGET_PDB_FILE:DialogueManager>" "${DialogueManagerCSBuildPath}/$<TARGET_PDB_FILE_NAME:DialogueManager>"
+    COMMAND "cmake" "-E" "copy_if_different" "$<TARGET_FILE:DialogueManager>" "${DialogueManagerCSTestsBuildPath}/$<TARGET_FILE_NAME:DialogueManager>"
+    COMMAND "cmake" "-E" "copy_if_different" "$<TARGET_PDB_FILE:DialogueManager>" "${DialogueManagerCSTestsBuildPath}/$<TARGET_PDB_FILE_NAME:DialogueManager>" 
+)
+
 INSTALL(TARGETS DialogueManager DESTINATION lib)
 INSTALL(FILES dialogue_manager_api.h DESTINATION dialogue_manager)
 
