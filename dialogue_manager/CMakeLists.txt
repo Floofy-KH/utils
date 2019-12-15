@@ -7,8 +7,7 @@ set_target_properties(DialogueManager PROPERTIES CXX_STANDARD 17)
 
 set(DialogueManagerCSBuildPath  "${CMAKE_SOURCE_DIR}/dialogue_editor/DialogueManager/bin/$<CONFIG>/netstandard1.4")
 set(DialogueManagerCSTestsBuildPath  "${CMAKE_SOURCE_DIR}/dialogue_editor/DialogueManagerTests/bin/$<CONFIG>")
-
-message("Copying \"$<TARGET_FILE:DialogueManager>\" to ${DialogueManagerCSBuildPath}/$<TARGET_FILE_NAME:DialogueManager>")
+set(DialogueEditorBuildPath  "${CMAKE_SOURCE_DIR}/dialogue_editor/DialogueEditor/bin/$<CONFIG>")
 
 add_custom_command(
     TARGET DialogueManager
@@ -18,6 +17,8 @@ add_custom_command(
     COMMAND "cmake" "-E" "copy_if_different" "$<TARGET_PDB_FILE:DialogueManager>" "${DialogueManagerCSBuildPath}/$<TARGET_PDB_FILE_NAME:DialogueManager>"
     COMMAND "cmake" "-E" "copy_if_different" "$<TARGET_FILE:DialogueManager>" "${DialogueManagerCSTestsBuildPath}/$<TARGET_FILE_NAME:DialogueManager>"
     COMMAND "cmake" "-E" "copy_if_different" "$<TARGET_PDB_FILE:DialogueManager>" "${DialogueManagerCSTestsBuildPath}/$<TARGET_PDB_FILE_NAME:DialogueManager>" 
+    COMMAND "cmake" "-E" "copy_if_different" "$<TARGET_FILE:DialogueManager>" "${DialogueEditorBuildPath}/$<TARGET_FILE_NAME:DialogueManager>"
+    COMMAND "cmake" "-E" "copy_if_different" "$<TARGET_PDB_FILE:DialogueManager>" "${DialogueEditorBuildPath}/$<TARGET_PDB_FILE_NAME:DialogueManager>" 
 )
 
 INSTALL(TARGETS DialogueManager DESTINATION lib)

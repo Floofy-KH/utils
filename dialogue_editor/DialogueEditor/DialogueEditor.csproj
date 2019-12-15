@@ -94,5 +94,11 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DialogueManager\DialogueManagerCS.csproj">
+      <Project>{D3566438-2431-452D-8649-02B5FDC467C9}</Project>
+      <Name>DialogueManagerCS</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

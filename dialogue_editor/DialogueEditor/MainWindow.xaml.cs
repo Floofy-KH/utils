@@ -1,4 +1,7 @@
-﻿using System.Windows;
+﻿using floofy;
+using Microsoft.Win32;
+using System;
+using System.Windows;
 
 namespace DialogueEditor
 {
@@ -7,13 +10,110 @@ namespace DialogueEditor
     /// </summary>
     public partial class MainWindow : Window
     {
+        private DialogueManager _mgr = null;
+        private string _currentFile = null;
+
+        private bool Dirty { get; set; }
+
         public MainWindow()
         {
             InitializeComponent();
+
+            _mgr = new DialogueManager();
+            Dirty = false;
+        }
+
+        private bool Save()
+        {
+            if (_currentFile == null)
+            {
+                return SaveAs();
+            }
+            else
+            {
+                if (!_mgr.Write(_currentFile))
+                {
+                    MessageBox.Show("An error occurred while saving the file.", "Error Saving");
+                    return false;
+                }
+                Dirty = false;
+                return true;
+            }
+        }
+
+        private bool SaveAs()
+        {
+            var saveFileDlg = new SaveFileDialog()
+            {
+                Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+            };
+
+            if (saveFileDlg.ShowDialog() == true)
+            {
+                _currentFile = saveFileDlg.FileName;
+                return Save();
+            }
+
+            return false;
         }
 
         private void AddNewDialogue_Click(object sender, RoutedEventArgs e)
         {
+            Dirty = true;
+        }
+
+        private void Open_Click(object sender, RoutedEventArgs e)
+        {
+            var openFileDlg = new OpenFileDialog
+            {
+                Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+            };
+
+            if (openFileDlg.ShowDialog() == true)
+            {
+                _mgr = new DialogueManager(openFileDlg.FileName);
+                _currentFile = openFileDlg.FileName;
+            }
+        }
+
+        private void Save_Click(object sender, RoutedEventArgs e)
+        {
+            Save();
+        }
+
+        private void SaveAs_Click(object sender, RoutedEventArgs e)
+        {
+            SaveAs();
+        }
+
+        private void Close_Click(object sender, RoutedEventArgs e)
+        {
+            if (Dirty)
+            {
+                var res = MessageBox.Show("All unsaved changes will be lost. Do you want your changes to be saved?", "Unsaved Changes", MessageBoxButton.YesNoCancel);
+                switch (res)
+                {
+                    case MessageBoxResult.Yes:
+                        if (Save())
+                        {
+                            Close();
+                        }
+                        break;
+
+                    case MessageBoxResult.No:
+                        Close();
+                        break;
+
+                    case MessageBoxResult.Cancel:
+                        break;
+                }
+            }
+            else
+            {
+                Close();
+            }
         }
     }
 }
