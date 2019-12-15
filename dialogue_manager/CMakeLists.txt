@@ -12,7 +12,6 @@ set(DialogueEditorBuildPath  "${CMAKE_SOURCE_DIR}/dialogue_editor/DialogueEditor
 add_custom_command(
     TARGET DialogueManager
     POST_BUILD
-    COMMAND "echo" "Copying $<TARGET_FILE:DialogueManager> to ${DialogueManagerCSBuildPath}/$<TARGET_FILE_NAME:DialogueManager>"
     COMMAND "cmake" "-E" "copy_if_different" "$<TARGET_FILE:DialogueManager>" "${DialogueManagerCSBuildPath}/$<TARGET_FILE_NAME:DialogueManager>"
     COMMAND "cmake" "-E" "copy_if_different" "$<TARGET_PDB_FILE:DialogueManager>" "${DialogueManagerCSBuildPath}/$<TARGET_PDB_FILE_NAME:DialogueManager>"
     COMMAND "cmake" "-E" "copy_if_different" "$<TARGET_FILE:DialogueManager>" "${DialogueManagerCSTestsBuildPath}/$<TARGET_FILE_NAME:DialogueManager>"
