@@ -15,14 +15,10 @@
 				<MenuItem Header="_Close" Click="Close_Click" />
 			</MenuItem>
 		</Menu>
-		<ListView Height="419" VerticalAlignment="Top" HorizontalAlignment="Left" Width="100">
-			<ListView.View>
-				<GridView>
-					<GridViewColumn />
-				</GridView>
-			</ListView.View>
-			<Button Content="Add..." Width="75" Click="AddNewDialogue_Click" />
-		</ListView>
 		<Canvas VerticalAlignment="Top" />
+		<Grid Width="147" HorizontalAlignment="Left">
+			<ListView ItemsSource="{Binding DlgEntries}" HorizontalAlignment="Left" Margin="0,0,0,45" Width="147" />
+			<Button Content="Add..." Click="AddNewDialogue_Click" Margin="0,356,0,0" />
+		</Grid>
 	</DockPanel>
 </Window>

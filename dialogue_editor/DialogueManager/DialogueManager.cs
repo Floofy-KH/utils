@@ -42,9 +42,17 @@ namespace floofy
             _ptr = newDialogueManager();
         }
 
-        public DialogueManager(string filepath)
+        public static DialogueManager Load(string filepath)
         {
-            _ptr = readDialogues(filepath, filepath.Length);
+            var val = readDialogues(filepath, filepath.Length);
+            if (val == null)
+            {
+                return null;
+            }
+            else
+            {
+                return new DialogueManager { _ptr = val };
+            }
         }
 
         ~DialogueManager()
@@ -101,7 +109,11 @@ namespace floofy
 
         public void RemoveDialogue(string name)
         {
-            removeDialogue(_ptr, name, name.Length);
+            Dialogue dlg = this.Dialogue(name);
+            if (dlg != null)
+            {
+                removeDialogue(_ptr, name, name.Length);
+            }
         }
 
         public bool Write(string filepath)
@@ -346,6 +358,11 @@ namespace floofy
             return dlg._ptr == _ptr;
         }
 
+        public override int GetHashCode()
+        {
+            return _ptr.GetHashCode();
+        }
+
         public IntPtr _ptr;
     }
 
@@ -392,6 +409,11 @@ namespace floofy
             }
 
             return part._ptr == _ptr;
+        }
+
+        public override int GetHashCode()
+        {
+            return _ptr.GetHashCode();
         }
 
         public IntPtr _ptr;
@@ -479,6 +501,11 @@ namespace floofy
             return entry._ptr == _ptr;
         }
 
+        public override int GetHashCode()
+        {
+            return _ptr.GetHashCode();
+        }
+
         public IntPtr _ptr;
     }
 
@@ -563,6 +590,11 @@ namespace floofy
             }
 
             return choice._ptr == _ptr;
+        }
+
+        public override int GetHashCode()
+        {
+            return _ptr.GetHashCode();
         }
 
         public IntPtr _ptr;

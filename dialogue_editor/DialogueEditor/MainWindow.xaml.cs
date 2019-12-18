@@ -1,10 +1,17 @@
 ﻿using floofy;
 using Microsoft.Win32;
 using System;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Windows;
 
 namespace DialogueEditor
 {
+    public class DialogueEntry
+    {
+        public string DialogueName { get; set; }
+    }
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -13,6 +20,8 @@ namespace DialogueEditor
         private DialogueManager _mgr = null;
         private string _currentFile = null;
 
+        public ObservableCollection<DialogueEntry> DlgEntries { get; set; }
+
         private bool Dirty { get; set; }
 
         public MainWindow()
@@ -20,7 +29,24 @@ namespace DialogueEditor
             InitializeComponent();
 
             _mgr = new DialogueManager();
+            DlgEntries = new ObservableCollection<DialogueEntry>();
             Dirty = false;
+            DataContext = this;
+        }
+
+        private void PopulateDialogueList()
+        {
+            DlgEntries.Clear();
+            if (_mgr == null)
+            {
+                Debug.Assert(false);
+                return;
+            }
+
+            for (int i = 0; i < _mgr.NumDialogues; ++i)
+            {
+                DlgEntries.Add(new DialogueEntry { DialogueName = _mgr.Dialogue(i).Name });
+            }
         }
 
         private bool Save()
@@ -61,6 +87,8 @@ namespace DialogueEditor
         private void AddNewDialogue_Click(object sender, RoutedEventArgs e)
         {
             Dirty = true;
+
+            DlgEntries.Add(new DialogueEntry { DialogueName = "Hello World" });
         }
 
         private void Open_Click(object sender, RoutedEventArgs e)
@@ -73,9 +101,20 @@ namespace DialogueEditor
 
             if (openFileDlg.ShowDialog() == true)
             {
-                _mgr = new DialogueManager(openFileDlg.FileName);
-                _currentFile = openFileDlg.FileName;
+                _mgr = DialogueManager.Load(openFileDlg.FileName);
+                if (_mgr == null)
+                {
+                    _currentFile = openFileDlg.FileName;
+                }
+                else
+                {
+                    _currentFile = null;
+                    MessageBox.Show(string.Format("Failed to load {0}", openFileDlg.FileName), "Loading Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    _mgr = new DialogueManager();
+                }
             }
+
+            PopulateDialogueList();
         }
 
         private void Save_Click(object sender, RoutedEventArgs e)
