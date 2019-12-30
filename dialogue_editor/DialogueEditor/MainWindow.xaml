@@ -6,6 +6,18 @@
         xmlns:local="clr-namespace:DialogueEditor"
         mc:Ignorable="d"
         Title="DialogueEditor" Height="450" Width="800">
+	<Window.Resources>
+		<DataTemplate x:Key="DialogueNameTemplate">
+			<TextBlock Text="{Binding Path=DialogueName}">
+				<TextBlock.ContextMenu>
+					<ContextMenu StaysOpen="True">
+						<MenuItem Header="Rename" Click="Rename_Dialogue_Click" />
+						<MenuItem Header="Delete" Click="Delete_Dialogue_Click" />
+					</ContextMenu>
+				</TextBlock.ContextMenu>
+			</TextBlock>
+		</DataTemplate>
+	</Window.Resources>
 	<DockPanel>
 		<Menu DockPanel.Dock="Top">
 			<MenuItem Header="_File">
@@ -17,8 +29,17 @@
 		</Menu>
 		<Canvas VerticalAlignment="Top" />
 		<Grid Width="147" HorizontalAlignment="Left">
-			<ListView ItemsSource="{Binding DlgEntries}" HorizontalAlignment="Left" Margin="0,0,0,45" Width="147" />
+			<ListView ItemsSource="{Binding DlgModel.DlgItems}"
+					  ItemTemplate="{StaticResource DialogueNameTemplate}"
+					  MouseDoubleClick="DialogueList_MouseDoubleClick"
+					  HorizontalAlignment="Left" Margin="0,0,0,45" Width="147" />
 			<Button Content="Add..." Click="AddNewDialogue_Click" Margin="0,356,0,0" />
 		</Grid>
 	</DockPanel>
+	<Window.InputBindings>
+		<KeyBinding Command="{Binding UndoCommand}" Key="Z" Modifiers="Ctrl" />
+		<KeyBinding Command="{Binding RedoCommand}" Key="Y" Modifiers="Ctrl" />
+		<KeyBinding Command="{Binding SaveCommand}" Key="S" Modifiers="Ctrl" />
+		<KeyBinding Command="{Binding SaveAsCommand}" Key="S" Modifiers="Ctrl+Shift" />
+	</Window.InputBindings>
 </Window>
