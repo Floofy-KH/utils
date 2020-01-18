@@ -14,6 +14,8 @@ namespace DialogueEditor
         public MainWindow()
         {
             InitializeComponent();
+
+            networkControl.IsEnabled = false;
         }
 
         public MainWindowViewModel ViewModel
@@ -145,6 +147,7 @@ namespace DialogueEditor
             if (item != null)
             {
                 ViewModel.OpenDialogue(item.DialogueName);
+                networkControl.IsEnabled = true;
             }
         }
 
@@ -153,6 +156,21 @@ namespace DialogueEditor
             var item = ((FrameworkElement)e.OriginalSource).DataContext as DialogueItem;
             if (item != null)
             {
+                // Instantiate the dialog box
+                var dlg = new TextInputDialog
+                {
+                    // Configure the dialog box
+                    Owner = this,
+                    Text = item.DialogueName
+                };
+
+                // Open the dialog box modally
+                dlg.ShowDialog();
+
+                if (dlg.DialogResult == true)
+                {
+                    item.DialogueName = dlg.Text;
+                }
             }
         }
 

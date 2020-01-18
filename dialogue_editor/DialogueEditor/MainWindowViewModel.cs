@@ -367,7 +367,7 @@ namespace DialogueEditor
         {
             Dirty = true;
 
-            DlgModel.Add("Hello World");
+            DlgModel.Add("New Dialogue");
         }
 
         public void OpenFile(string filepath)

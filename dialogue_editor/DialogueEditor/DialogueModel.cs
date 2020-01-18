@@ -1,12 +1,35 @@
 ﻿using floofy;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 
 namespace DialogueEditor
 {
-    public class DialogueItem
+    public class DialogueItem : INotifyPropertyChanged
     {
-        public string DialogueName { get; set; }
+        private string _name;
+
+        public string DialogueName
+        {
+            get { return _name; }
+            set
+            {
+                _name = value;
+                OnPropertyChanged("DialogueName");
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        // Create the OnPropertyChanged method to raise the event
+        protected void OnPropertyChanged(string name)
+        {
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (handler != null)
+            {
+                handler(this, new PropertyChangedEventArgs(name));
+            }
+        }
     }
 
     public class DeleteDialogueCmd : IUndoableCommand
