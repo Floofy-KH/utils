@@ -1,7 +1,95 @@
-﻿using System.Windows;
+﻿using floofy;
+using Microsoft.Win32;
+using System;
+using System.Windows;
+using System.Windows.Input;
 
 namespace DialogueEditor
 {
+    #region Commands
+
+    public class UndoCommand : ICommand
+    {
+        public event EventHandler CanExecuteChanged;
+
+        private CommandExecutor _cmdExec;
+
+        public UndoCommand(CommandExecutor cmdExec)
+        {
+            _cmdExec = cmdExec;
+        }
+
+        public bool CanExecute(object parameter)
+        {
+            return _cmdExec != null && _cmdExec.UndoCount > 0;
+        }
+
+        public void Execute(object parameter)
+        {
+            _cmdExec.UndoLatest();
+        }
+    }
+
+    public class RedoCommand : ICommand
+    {
+        public event EventHandler CanExecuteChanged;
+
+        private CommandExecutor _cmdExec;
+
+        public RedoCommand(CommandExecutor cmdExec)
+        {
+            _cmdExec = cmdExec;
+        }
+
+        public bool CanExecute(object parameter)
+        {
+            return _cmdExec != null && _cmdExec.RedoCount > 0;
+        }
+
+        public void Execute(object parameter)
+        {
+            _cmdExec.RedoLatest();
+        }
+    }
+
+    public class SaveCommand : ICommand
+    {
+        public event EventHandler CanExecuteChanged;
+
+        public SaveCommand()
+        {
+        }
+
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
+
+        public void Execute(object parameter)
+        {
+        }
+    }
+
+    public class SaveAsCommand : ICommand
+    {
+        public event EventHandler CanExecuteChanged;
+
+        public SaveAsCommand()
+        {
+        }
+
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
+
+        public void Execute(object parameter)
+        {
+        }
+    }
+
+    #endregion Commands
+
     /// <summary>
     /// The view-model for the main window.
     /// </summary>
@@ -15,10 +103,36 @@ namespace DialogueEditor
         /// </summary>
         public NetworkViewModel network = null;
 
+        public DialogueModel DlgModel { get; set; }
+        public ICommand UndoCommand { get { return _undoCommand; } }
+        public ICommand RedoCommand { get { return _redoCommand; } }
+        public ICommand SaveCommand { get { return _saveCommand; } }
+        public ICommand SaveAsCommand { get { return _saveAsCommand; } }
+        public bool Dirty { get; set; }
+
+        private CommandExecutor _cmdExec;
+        private ICommand _undoCommand;
+        private ICommand _redoCommand;
+        private ICommand _saveCommand;
+        private ICommand _saveAsCommand;
+        private string _currentFile = null;
+
+        //private Point currentPoint = new Point();
+
         #endregion Internal Data Members
 
         public MainWindowViewModel()
         {
+            _cmdExec = new CommandExecutor();
+
+            DlgModel = new DialogueModel(_cmdExec);
+
+            _undoCommand = new UndoCommand(_cmdExec);
+            _redoCommand = new RedoCommand(_cmdExec);
+            _saveCommand = new SaveCommand();
+            _saveAsCommand = new SaveAsCommand();
+            Dirty = false;
+
             // Add some test data to the view-model.
             PopulateWithTestData();
         }
@@ -218,6 +332,98 @@ namespace DialogueEditor
             // Add the connection to the view-model.
             //
             this.Network.Connections.Add(connection);
+        }
+
+        //private void Canvas_MouseDown_1(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        //{
+        //    if (e.ButtonState == MouseButtonState.Pressed)
+        //    {
+        //        currentPoint = e.GetPosition(graphCanvas);
+        //    }
+        //}
+
+        //private void Canvas_MouseMove_1(object sender, System.Windows.Input.MouseEventArgs e)
+        //{
+        //    if (e.LeftButton == MouseButtonState.Pressed)
+        //    {
+        //        Line line = new Line
+        //        {
+        //            Stroke = SystemColors.WindowFrameBrush,
+        //            X1 = currentPoint.X,
+        //            Y1 = currentPoint.Y,
+        //            X2 = e.GetPosition(graphCanvas).X,
+        //            Y2 = e.GetPosition(graphCanvas).Y
+        //        };
+
+        //        currentPoint = e.GetPosition(graphCanvas);
+
+        //        graphCanvas.Children.Add(line);
+        //    }
+        //}
+
+        public bool Save()
+        {
+            if (_currentFile == null)
+            {
+                return SaveAs();
+            }
+            else
+            {
+                if (!DlgModel.Save(_currentFile))
+                {
+                    MessageBox.Show("An error occurred while saving the file.", "Error Saving");
+                    return false;
+                }
+                Dirty = false;
+                return true;
+            }
+        }
+
+        public bool SaveAs()
+        {
+            var saveFileDlg = new SaveFileDialog()
+            {
+                Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+            };
+
+            if (saveFileDlg.ShowDialog() == true)
+            {
+                _currentFile = saveFileDlg.FileName;
+                return Save();
+            }
+
+            return false;
+        }
+
+        public void AddNewDialogue()
+        {
+            Dirty = true;
+
+            DlgModel.Add("Hello World");
+        }
+
+        public void OpenFile(string filepath)
+        {
+            var mgr = DialogueManager.Load(filepath);
+            if (mgr == null)
+            {
+                MessageBox.Show(string.Format("Failed to load {0}", filepath), "Loading Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            else
+            {
+                _currentFile = filepath;
+                DlgModel = new DialogueModel(mgr, _cmdExec);
+            }
+        }
+
+        public void OpenDialogue(string dialogueName)
+        {
+        }
+
+        public void RemoveItem(string itemName)
+        {
+            DlgModel.Remove(itemName);
         }
 
         #endregion Private Methods
