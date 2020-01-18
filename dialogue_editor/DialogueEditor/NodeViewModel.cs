@@ -1,9 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Windows.Input;
 using Utils;
 
 namespace DialogueEditor
 {
+    public class AddChoiceCommand : ICommand
+    {
+        public event EventHandler CanExecuteChanged;
+
+        private ImpObservableCollection<ConnectorViewModel> outgoingConnectors;
+
+        public AddChoiceCommand(ImpObservableCollection<ConnectorViewModel> outgoingConnectors)
+        {
+            this.outgoingConnectors = outgoingConnectors;
+        }
+
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
+
+        public void Execute(object parameter)
+        {
+            outgoingConnectors.Add(new ConnectorViewModel());
+        }
+    }
+
     /// <summary>
     /// Defines a node in the view-model.
     /// Nodes are connected to other nodes through attached connectors (aka connection points).
@@ -35,7 +58,11 @@ namespace DialogueEditor
         /// <summary>
         /// List of input connectors (connections points) attached to the node.
         /// </summary>
-        private ImpObservableCollection<ConnectorViewModel> connectors = null;
+        private ConnectorViewModel incomingConnector = new ConnectorViewModel();
+
+        private ImpObservableCollection<ConnectorViewModel> outgoingConnectors = null;
+
+        private AddChoiceCommand _addChoiceCommand = null;
 
         #endregion Internal Data Members
 
@@ -117,18 +144,29 @@ namespace DialogueEditor
         /// <summary>
         /// List of connectors (connection anchor points) attached to the node.
         /// </summary>
-        public ImpObservableCollection<ConnectorViewModel> Connectors
+        public ImpObservableCollection<ConnectorViewModel> OutgoingConnectors
         {
             get
             {
-                if (connectors == null)
+                if (outgoingConnectors == null)
                 {
-                    connectors = new ImpObservableCollection<ConnectorViewModel>();
-                    connectors.ItemsAdded += new EventHandler<CollectionItemsChangedEventArgs>(connectors_ItemsAdded);
-                    connectors.ItemsRemoved += new EventHandler<CollectionItemsChangedEventArgs>(connectors_ItemsRemoved);
+                    outgoingConnectors = new ImpObservableCollection<ConnectorViewModel>();
+                    outgoingConnectors.ItemsAdded += new EventHandler<CollectionItemsChangedEventArgs>(connectors_ItemsAdded);
+                    outgoingConnectors.ItemsRemoved += new EventHandler<CollectionItemsChangedEventArgs>(connectors_ItemsRemoved);
                 }
 
-                return connectors;
+                return outgoingConnectors;
+            }
+        }
+
+        /// <summary>
+        /// List of connectors (connection anchor points) attached to the node.
+        /// </summary>
+        public ConnectorViewModel IncomingConnector
+        {
+            get
+            {
+                return incomingConnector;
             }
         }
 
@@ -141,12 +179,17 @@ namespace DialogueEditor
             {
                 List<ConnectionViewModel> attachedConnections = new List<ConnectionViewModel>();
 
-                foreach (var connector in this.Connectors)
+                foreach (var connector in this.OutgoingConnectors)
                 {
                     if (connector.AttachedConnection != null)
                     {
                         attachedConnections.Add(connector.AttachedConnection);
                     }
+                }
+
+                if (incomingConnector != null)
+                {
+                    attachedConnections.Add(incomingConnector.AttachedConnection);
                 }
 
                 return attachedConnections;
@@ -172,6 +215,19 @@ namespace DialogueEditor
                 isSelected = value;
 
                 OnPropertyChanged("IsSelected");
+            }
+        }
+
+        public ICommand AddChoice
+        {
+            get
+            {
+                if (_addChoiceCommand == null)
+                {
+                    _addChoiceCommand = new AddChoiceCommand(OutgoingConnectors);
+                }
+
+                return _addChoiceCommand;
             }
         }
 

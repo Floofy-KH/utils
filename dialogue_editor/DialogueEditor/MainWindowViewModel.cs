@@ -285,13 +285,7 @@ namespace DialogueEditor
                 Y = nodeLocation.Y
             };
 
-            //
-            // Create the default set of four connectors.
-            //
-            node.Connectors.Add(new ConnectorViewModel());
-            node.Connectors.Add(new ConnectorViewModel());
-            node.Connectors.Add(new ConnectorViewModel());
-            node.Connectors.Add(new ConnectorViewModel());
+            node.OutgoingConnectors.Add(new ConnectorViewModel());
 
             //
             // Add the new node to the view-model.
@@ -324,8 +318,8 @@ namespace DialogueEditor
             //
             var connection = new ConnectionViewModel
             {
-                SourceConnector = node1.Connectors[1],
-                DestConnector = node2.Connectors[3]
+                SourceConnector = node1.OutgoingConnectors[0],
+                DestConnector = node2.IncomingConnector
             };
 
             //
