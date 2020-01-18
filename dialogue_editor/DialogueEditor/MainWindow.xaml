@@ -100,7 +100,6 @@
 		<KeyBinding Command="{Binding RedoCommand}" Key="Y" Modifiers="Ctrl" />
 		<KeyBinding Command="{Binding SaveCommand}" Key="S" Modifiers="Ctrl" />
 		<KeyBinding Command="{Binding SaveAsCommand}" Key="S" Modifiers="Ctrl+Shift" />
-		<KeyBinding Key="Delete" Command="{StaticResource Commands.DeleteSelectedNodes}" />
 	</Window.InputBindings>
 
 	<Window.CommandBindings>
@@ -111,15 +110,6 @@
             Command="{StaticResource Commands.CreateNode}"
             Executed="CreateNode_Executed" />
 	</Window.CommandBindings>
-
-	<Window.ContextMenu>
-		<ContextMenu>
-			<MenuItem
-                Header="Create Node"
-                Command="{StaticResource Commands.CreateNode}"
-                ToolTip="Creates a new node" />
-		</ContextMenu>
-	</Window.ContextMenu>
 
 	<Window.DataContext>
 		<local:MainWindowViewModel />
@@ -149,6 +139,19 @@
             ConnectionDragStarted="networkControl_ConnectionDragStarted"
             ConnectionDragging="networkControl_ConnectionDragging"
             ConnectionDragCompleted="networkControl_ConnectionDragCompleted">
+
+				<NetworkUI:NetworkView.InputBindings>
+					<KeyBinding Key="Delete" Command="{StaticResource Commands.DeleteSelectedNodes}" />
+				</NetworkUI:NetworkView.InputBindings>
+
+				<NetworkUI:NetworkView.ContextMenu>
+					<ContextMenu>
+						<MenuItem
+							Header="Create Node"
+							Command="{StaticResource Commands.CreateNode}"
+							ToolTip="Creates a new node" />
+					</ContextMenu>
+				</NetworkUI:NetworkView.ContextMenu>
 			</NetworkUI:NetworkView>
 		</ScrollViewer>
 	</DockPanel>

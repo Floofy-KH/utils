@@ -13,13 +13,15 @@ namespace DialogueEditor
     {
         private string _dialogueName;
         private ObservableCollection<DialogueItem> _dlgItems;
+        private DialogueManager _mgr;
         private int _index = -1;
         private DialogueItem _removedItem = null;
 
-        public DeleteDialogueCmd(string name, ObservableCollection<DialogueItem> dialogueItems)
+        public DeleteDialogueCmd(string name, ObservableCollection<DialogueItem> dialogueItems, DialogueManager mgr)
         {
             _dialogueName = name;
             _dlgItems = dialogueItems;
+            _mgr = mgr;
         }
 
         public void Execute()
@@ -28,6 +30,7 @@ namespace DialogueEditor
             {
                 if (_dlgItems[i].DialogueName == _dialogueName)
                 {
+                    _mgr.RemoveDialogue(_dialogueName);
                     _removedItem = _dlgItems[i];
                     _dlgItems.RemoveAt(i);
                     _index = i;
@@ -49,6 +52,7 @@ namespace DialogueEditor
                 return;
             }
 
+            _mgr.AddDialogue(_removedItem.DialogueName); //TODO do this propely...
             _dlgItems.Insert(_index, _removedItem);
         }
     }
@@ -57,12 +61,14 @@ namespace DialogueEditor
     {
         private string _dialogueName;
         private ObservableCollection<DialogueItem> _dlgItems;
+        private DialogueManager _mgr;
         private DialogueItem _addedItem = null;
 
-        public AddDialogueCmd(string name, ObservableCollection<DialogueItem> dialogueItems)
+        public AddDialogueCmd(string name, ObservableCollection<DialogueItem> dialogueItems, DialogueManager mgr)
         {
             _dialogueName = name;
             _dlgItems = dialogueItems;
+            _mgr = mgr;
         }
 
         public void Execute()
@@ -72,6 +78,7 @@ namespace DialogueEditor
                 _addedItem = new DialogueItem { DialogueName = _dialogueName };
             }
             _dlgItems.Add(_addedItem);
+            _mgr.AddDialogue(_dialogueName);
         }
 
         public void Redo()
@@ -87,6 +94,7 @@ namespace DialogueEditor
                 return;
             }
 
+            _mgr.RemoveDialogue(_addedItem.DialogueName);
             _dlgItems.Remove(_addedItem);
         }
     }
@@ -112,12 +120,12 @@ namespace DialogueEditor
 
         public void Add(string dlgName)
         {
-            _cmdExec.ExecuteCommand(new AddDialogueCmd(dlgName, DlgItems));
+            _cmdExec.ExecuteCommand(new AddDialogueCmd(dlgName, DlgItems, _mgr));
         }
 
         public void Remove(string dlgName)
         {
-            _cmdExec.ExecuteCommand(new DeleteDialogueCmd(dlgName, DlgItems));
+            _cmdExec.ExecuteCommand(new DeleteDialogueCmd(dlgName, DlgItems, _mgr));
         }
 
         public bool Save(string file)

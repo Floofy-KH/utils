@@ -334,33 +334,6 @@ namespace DialogueEditor
             this.Network.Connections.Add(connection);
         }
 
-        //private void Canvas_MouseDown_1(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        //{
-        //    if (e.ButtonState == MouseButtonState.Pressed)
-        //    {
-        //        currentPoint = e.GetPosition(graphCanvas);
-        //    }
-        //}
-
-        //private void Canvas_MouseMove_1(object sender, System.Windows.Input.MouseEventArgs e)
-        //{
-        //    if (e.LeftButton == MouseButtonState.Pressed)
-        //    {
-        //        Line line = new Line
-        //        {
-        //            Stroke = SystemColors.WindowFrameBrush,
-        //            X1 = currentPoint.X,
-        //            Y1 = currentPoint.Y,
-        //            X2 = e.GetPosition(graphCanvas).X,
-        //            Y2 = e.GetPosition(graphCanvas).Y
-        //        };
-
-        //        currentPoint = e.GetPosition(graphCanvas);
-
-        //        graphCanvas.Children.Add(line);
-        //    }
-        //}
-
         public bool Save()
         {
             if (_currentFile == null)
