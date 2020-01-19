@@ -1,4 +1,7 @@
-﻿using System;
+﻿using floofy;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using Utils;
 
 namespace DialogueEditor
@@ -21,6 +24,59 @@ namespace DialogueEditor
         private ImpObservableCollection<ConnectionViewModel> connections = null;
 
         #endregion Internal Data Members
+
+        private Dialogue _dialogue = null;
+
+        public NetworkViewModel(Dialogue dialogue)
+        {
+            _dialogue = dialogue;
+
+            if (_dialogue == null)
+            {
+                Debug.Assert(false);
+                return;
+            }
+
+            var entryToModel = new Dictionary<DialogueEntry, NodeViewModel>();
+
+            for (int i = 0; i < _dialogue.NumEntries; ++i)
+            {
+                DialogueEntry entry = _dialogue.Entry(i);
+                if (entry != null)
+                {
+                    var model = new NodeViewModel(entry, _dialogue);
+                    Nodes.Add(model);
+
+                    entryToModel.Add(entry, model);
+                }
+            }
+
+            for (int i = 0; i < _dialogue.NumChoices; ++i)
+            {
+                Choice choice = _dialogue.Choice(i);
+                if (choice != null)
+                {
+                    var connection = new ConnectionViewModel();
+                    Connections.Add(connection);
+
+                    if (choice.SourceEntry != null && choice.DestinationEntry != null)
+                    {
+                        NodeViewModel srcNode = entryToModel[choice.SourceEntry];
+                        foreach (ConnectorViewModel connector in srcNode.OutgoingConnectors)
+                        {
+                            if (connector.Choice == choice)
+                            {
+                                connection.SourceConnector = connector;
+                                break;
+                            }
+                        }
+
+                        NodeViewModel dstNode = entryToModel[choice.DestinationEntry];
+                        connection.DestConnector = dstNode.IncomingConnector;
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// The collection of nodes in the network.

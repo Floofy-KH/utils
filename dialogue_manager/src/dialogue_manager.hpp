@@ -94,6 +94,7 @@ public:
     void removeDialogueEntry(size_t index);
 
     ChoicePtr addChoice(DialogueEntryPtr src, std::string choiceStr, DialogueEntryPtr dst);
+    ChoicePtr addChoice(DialogueEntryPtr src, std::string choiceStr);
     size_t numChoices() const;
     ChoicePtr choice(size_t index) const;
     ChoicePtr choice(const std::string &name) const;
@@ -112,6 +113,7 @@ private:
     ParticipantPtr addParticipant(std::string name, ID id);
     DialogueEntryPtr addDialogueEntry(ParticipantPtr activeParticipant, std::string entry, ID id);
     ChoicePtr addChoice(DialogueEntryPtr dialogueEntry, std::string choiceStr, DialogueEntryPtr dst, ID id);
+    ChoicePtr addChoice(DialogueEntryPtr dialogueEntry, std::string choiceStr, ID id);
 };
 /////////////////////////////////////////////////////////////////////////////
 
@@ -154,6 +156,10 @@ class Choice
 public:
     Choice(ID id, DialogueEntryPtr src, std::string choice, DialogueEntryPtr dst)
         : id(id), src(std::move(src)), choice(std::move(choice)), dst(std::move(dst))
+    {
+    }
+    Choice(ID id, DialogueEntryPtr src, std::string choice)
+        : id(id), src(std::move(src)), choice(std::move(choice)), dst(nullptr)
     {
     }
 

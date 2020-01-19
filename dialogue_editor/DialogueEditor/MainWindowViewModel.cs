@@ -97,13 +97,16 @@ namespace DialogueEditor
     {
         #region Internal Data Members
 
-        /// <summary>
-        /// This is the network that is displayed in the window.
-        /// It is the main part of the view-model.
-        /// </summary>
-        public NetworkViewModel network = null;
+        public DialogueModel DlgModel
+        {
+            get { return _dlgModel; }
+            set
+            {
+                _dlgModel = value;
+                OnPropertyChanged("DlgModel");
+            }
+        }
 
-        public DialogueModel DlgModel { get; set; }
         public ICommand UndoCommand { get { return _undoCommand; } }
         public ICommand RedoCommand { get { return _redoCommand; } }
         public ICommand SaveCommand { get { return _saveCommand; } }
@@ -116,6 +119,7 @@ namespace DialogueEditor
         private ICommand _saveCommand;
         private ICommand _saveAsCommand;
         private string _currentFile = null;
+        private DialogueModel _dlgModel = null;
 
         //private Point currentPoint = new Point();
 
@@ -132,27 +136,6 @@ namespace DialogueEditor
             _saveCommand = new SaveCommand();
             _saveAsCommand = new SaveAsCommand();
             Dirty = false;
-
-            // Add some test data to the view-model.
-            PopulateWithTestData();
-        }
-
-        /// <summary>
-        /// This is the network that is displayed in the window.
-        /// It is the main part of the view-model.
-        /// </summary>
-        public NetworkViewModel Network
-        {
-            get
-            {
-                return network;
-            }
-            set
-            {
-                network = value;
-
-                OnPropertyChanged("Network");
-            }
         }
 
         /// <summary>
@@ -166,7 +149,7 @@ namespace DialogueEditor
                 // There is an existing connection attached to the connector that has been dragged out.
                 // Remove the existing connection from the view-model.
                 //
-                this.Network.Connections.Remove(draggedOutConnector.AttachedConnection);
+                DlgModel.Network.Connections.Remove(draggedOutConnector.AttachedConnection);
             }
 
             //
@@ -188,7 +171,7 @@ namespace DialogueEditor
             //
             // Add the new connection to the view-model.
             //
-            this.Network.Connections.Add(connection);
+            DlgModel.Network.Connections.Add(connection);
 
             return connection;
         }
@@ -215,7 +198,7 @@ namespace DialogueEditor
                 // The connection was unsuccessful.
                 // Maybe the user dragged it out and dropped it in empty space.
                 //
-                this.Network.Connections.Remove(newConnection);
+                DlgModel.Network.Connections.Remove(newConnection);
                 return;
             }
 
@@ -230,7 +213,7 @@ namespace DialogueEditor
                 // There is already a connection attached to the connector that was dragged over.
                 // Remove the existing connection from the view-model.
                 //
-                this.Network.Connections.Remove(existingConnection);
+                DlgModel.Network.Connections.Remove(existingConnection);
             }
 
             //
@@ -246,7 +229,7 @@ namespace DialogueEditor
         public void DeleteSelectedNodes()
         {
             // Take a copy of the nodes list so we can delete nodes while iterating.
-            var nodesCopy = this.Network.Nodes.ToArray();
+            var nodesCopy = DlgModel.Network.Nodes.ToArray();
 
             foreach (var node in nodesCopy)
             {
@@ -266,12 +249,12 @@ namespace DialogueEditor
             //
             // Remove all connections attached to the node.
             //
-            this.Network.Connections.RemoveRange(node.AttachedConnections);
+            DlgModel.Network.Connections.RemoveRange(node.AttachedConnections);
 
             //
             // Remove the node from the network.
             //
-            this.Network.Nodes.Remove(node);
+            DlgModel.Network.Nodes.Remove(node);
         }
 
         /// <summary>
@@ -279,54 +262,10 @@ namespace DialogueEditor
         /// </summary>
         public NodeViewModel CreateNode(string name, Point nodeLocation)
         {
-            var node = new NodeViewModel(name)
-            {
-                X = nodeLocation.X,
-                Y = nodeLocation.Y
-            };
-
-            node.OutgoingConnectors.Add(new ConnectorViewModel());
-
-            //
-            // Add the new node to the view-model.
-            //
-            this.Network.Nodes.Add(node);
-
-            return node;
+            return DlgModel.CreateNode(name, nodeLocation);
         }
 
         #region Private Methods
-
-        /// <summary>
-        /// A function to conveniently populate the view-model with test data.
-        /// </summary>
-        private void PopulateWithTestData()
-        {
-            //
-            // Create a network, the root of the view-model.
-            //
-            this.Network = new NetworkViewModel();
-
-            //
-            // Create some nodes and add them to the view-model.
-            //
-            var node1 = CreateNode("Node1", new Point(10, 10));
-            var node2 = CreateNode("Node2", new Point(200, 10));
-
-            //
-            // Create a connection between the nodes.
-            //
-            var connection = new ConnectionViewModel
-            {
-                SourceConnector = node1.OutgoingConnectors[0],
-                DestConnector = node2.IncomingConnector
-            };
-
-            //
-            // Add the connection to the view-model.
-            //
-            this.Network.Connections.Add(connection);
-        }
 
         public bool Save()
         {
@@ -386,6 +325,7 @@ namespace DialogueEditor
 
         public void OpenDialogue(string dialogueName)
         {
+            DlgModel.OpenDialogue(dialogueName);
         }
 
         public void RemoveItem(string itemName)

@@ -95,7 +95,7 @@ bool DialogueManager::writeToFile(const std::string &filePath) const
                         choicesJs.push_back({{"id", dlg->choices[i]->id._id},
                                              {"choice", dlg->choices[i]->choice},
                                              {"src", dlg->choices[i]->src->id._id},
-                                             {"dst", dlg->choices[i]->dst->id._id}});
+                                             {"dst", dlg->choices[i]->dst ? dlg->choices[i]->dst->id._id : -1}});
                     }
                     dialogueJs["choices"] = choicesJs;
                 }
@@ -210,13 +210,20 @@ DialogueManagerPtr DialogueManager::readFromFile(const std::string &filePath)
 
                 auto src = dlgPtr->dialogueEntry(ID{choice["src"]});
                 auto dst = dlgPtr->dialogueEntry(ID{choice["dst"]});
-                if (!src || !dst)
+                if (!src)
                 {
                     assert(false);
                     return nullptr;
                 }
 
-                dlgPtr->addChoice(src, choice["choice"], dst, ID{choice["id"]});
+                if (dst)
+                {
+                    dlgPtr->addChoice(src, choice["choice"], dst, ID{choice["id"]});
+                }
+                else
+                {
+                    dlgPtr->addChoice(src, choice["choice"], ID{choice["id"]});
+                }
             }
         }
 
@@ -325,6 +332,11 @@ ChoicePtr Dialogue::addChoice(DialogueEntryPtr src, std::string choiceStr, Dialo
     return addChoice(src, choiceStr, dst, _nextChoiceId);
 }
 
+ChoicePtr Dialogue::addChoice(DialogueEntryPtr src, std::string choiceStr)
+{
+    return addChoice(src, choiceStr, _nextChoiceId);
+}
+
 size_t Dialogue::numChoices() const
 {
     return choices.size();
@@ -397,6 +409,16 @@ ChoicePtr Dialogue::addChoice(DialogueEntryPtr src, std::string choiceStr, Dialo
     if (id >= _nextChoiceId)
         _nextChoiceId = id + 1;
     auto choice = choices.emplace_back(new Choice(id, src, choiceStr, dst));
+    src->choices.push_back(choice);
+
+    return choice;
+}
+
+ChoicePtr Dialogue::addChoice(DialogueEntryPtr src, std::string choiceStr, ID id)
+{
+    if (id >= _nextChoiceId)
+        _nextChoiceId = id + 1;
+    auto choice = choices.emplace_back(new Choice(id, src, choiceStr));
     src->choices.push_back(choice);
 
     return choice;

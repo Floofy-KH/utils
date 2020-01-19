@@ -221,12 +221,14 @@ TEST(MultipleDialogues, fileIO)
     auto dlg2Entry2H = addDialogueEntry(dlg2, dlg2Part2, dlg2Entry2.c_str(), dlg2Entry2.length());
     auto dlg2Entry3H = addDialogueEntry(dlg2, dlg2Part3, dlg2Entry3.c_str(), dlg2Entry3.length());
 
-    auto dlg1Choice1H = addChoice(dlg1, dlg1Entry1H, dlg1Choice1.c_str(), dlg1Choice1.length(), dlg1Entry2H);
-    auto dlg1Choice2H = addChoice(dlg1, dlg1Entry2H, dlg1Choice2.c_str(), dlg1Choice2.length(), dlg1Entry3H);
-    auto dlg1Choice3H = addChoice(dlg1, dlg1Entry3H, dlg1Choice3.c_str(), dlg1Choice3.length(), dlg1Entry1H);
-    auto dlg2Choice1H = addChoice(dlg2, dlg2Entry1H, dlg2Choice1.c_str(), dlg2Choice1.length(), dlg2Entry2H);
-    auto dlg2Choice2H = addChoice(dlg2, dlg2Entry2H, dlg2Choice2.c_str(), dlg2Choice2.length(), dlg2Entry3H);
-    auto dlg2Choice3H = addChoice(dlg2, dlg2Entry3H, dlg2Choice3.c_str(), dlg2Choice3.length(), dlg2Entry1H);
+    auto dlg1Choice1H = addChoiceWithDest(dlg1, dlg1Entry1H, dlg1Choice1.c_str(), dlg1Choice1.length(), dlg1Entry2H);
+    auto dlg1Choice2H = addChoiceWithDest(dlg1, dlg1Entry2H, dlg1Choice2.c_str(), dlg1Choice2.length(), dlg1Entry3H);
+    auto dlg1Choice3H = addChoiceWithDest(dlg1, dlg1Entry3H, dlg1Choice3.c_str(), dlg1Choice3.length(), dlg1Entry1H);
+    auto dlg2Choice1H = addChoiceWithDest(dlg2, dlg2Entry1H, dlg2Choice1.c_str(), dlg2Choice1.length(), dlg2Entry2H);
+    auto dlg2Choice2H = addChoice(dlg2, dlg2Entry2H, dlg2Choice2.c_str(), dlg2Choice2.length());
+    setChoiceDstEntry(dlg2Choice2H, dlg2Entry3H);
+    auto dlg2Choice3H = addChoice(dlg2, dlg2Entry3H, dlg2Choice3.c_str(), dlg2Choice3.length());
+    setChoiceDstEntry(dlg2Choice3H, dlg2Entry1H);
 
     std::string dest = "test.json";
     ASSERT_TRUE(writeDialogues(dlgMgr, dest.c_str(), dest.length()));

@@ -150,8 +150,8 @@
 		<ScrollViewer HorizontalScrollBarVisibility="Auto" Focusable="False">
 			<NetworkUI:NetworkView
             x:Name="networkControl"
-            NodesSource="{Binding Network.Nodes}"
-            ConnectionsSource="{Binding Network.Connections}"
+            NodesSource="{Binding DlgModel.Network.Nodes}"
+            ConnectionsSource="{Binding DlgModel.Network.Connections}"
             ConnectionDragStarted="networkControl_ConnectionDragStarted"
             ConnectionDragging="networkControl_ConnectionDragging"
             ConnectionDragCompleted="networkControl_ConnectionDragCompleted">

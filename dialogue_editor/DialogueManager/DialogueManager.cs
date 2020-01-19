@@ -156,11 +156,17 @@ namespace floofy
         private static extern void removeDialogueEntry(IntPtr dialogue, int index);
 
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr addChoice(IntPtr dialogue,
+        private static extern IntPtr addChoiceWithDest(IntPtr dialogue,
                                               IntPtr dialogueEntry,
                                               string name,
                                               int size,
                                               IntPtr destDialogueEntry);
+
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern IntPtr addChoice(IntPtr dialogue,
+                                              IntPtr dialogueEntry,
+                                              string name,
+                                              int size);
 
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern int numChoices(IntPtr dialogue);
@@ -304,7 +310,20 @@ namespace floofy
 
         public Choice AddChoice(DialogueEntry src, string name, DialogueEntry dst)
         {
-            var choice = new Choice(addChoice(_ptr, src._ptr, name, name.Length, dst._ptr));
+            var choice = new Choice(addChoiceWithDest(_ptr, src._ptr, name, name.Length, dst._ptr));
+            if (choice._ptr == IntPtr.Zero)
+            {
+                return null;
+            }
+            else
+            {
+                return choice;
+            }
+        }
+
+        public Choice AddChoice(DialogueEntry src, string name)
+        {
+            var choice = new Choice(addChoice(_ptr, src._ptr, name, name.Length));
             if (choice._ptr == IntPtr.Zero)
             {
                 return null;
@@ -525,6 +544,9 @@ namespace floofy
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr choiceDstEntry(IntPtr choice);
 
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void setChoiceDstEntry(IntPtr choice, IntPtr dst);
+
         #endregion PInvoke
 
         public Choice(IntPtr ptr)
@@ -577,6 +599,11 @@ namespace floofy
                 {
                     return entry;
                 }
+            }
+
+            set
+            {
+                setChoiceDstEntry(_ptr, value._ptr);
             }
         }
 

@@ -38,11 +38,17 @@ extern "C"
     EXPORT HDialogueEntry *dialogueEntryFromIndex(HDialogue *dialogue, dlgmgr_size index);
     EXPORT void removeDialogueEntry(HDialogue *dialogue, dlgmgr_size index);
 
+    EXPORT HChoice *addChoiceWithDest(HDialogue *dialogue,
+                                      HDialogueEntry *dialogueEntry,
+                                      const char *name,
+                                      dlgmgr_size size,
+                                      HDialogueEntry *destDialogueEntry);
+
     EXPORT HChoice *addChoice(HDialogue *dialogue,
                               HDialogueEntry *dialogueEntry,
                               const char *name,
-                              dlgmgr_size size,
-                              HDialogueEntry *destDialogueEntry);
+                              dlgmgr_size size);
+
     EXPORT dlgmgr_size numChoices(HDialogue *dialogue);
     EXPORT HChoice *choiceFromIndex(HDialogue *dialogue, dlgmgr_size index);
     EXPORT HChoice *choiceFromName(HDialogue *dialogue, const char *name, dlgmgr_size size);
@@ -64,6 +70,7 @@ extern "C"
     EXPORT void setChoiceContent(HChoice *choice, char *content, dlgmgr_size bufferSize);
     EXPORT HDialogueEntry *choiceSrcEntry(HChoice *choice);
     EXPORT HDialogueEntry *choiceDstEntry(HChoice *choice);
+    EXPORT void setChoiceDstEntry(HChoice *choice, HDialogueEntry *entry);
 
 #if __cplusplus
 }

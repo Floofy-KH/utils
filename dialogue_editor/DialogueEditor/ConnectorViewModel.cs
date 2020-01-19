@@ -1,4 +1,5 @@
-﻿using System;
+﻿using floofy;
+using System;
 using System.Windows;
 
 namespace DialogueEditor
@@ -16,7 +17,19 @@ namespace DialogueEditor
         /// </summary>
         private Point hotspot;
 
+        private Choice _choice;
+
+        public Choice Choice
+        {
+            get { return _choice; }
+        }
+
         #endregion Internal Data Members
+
+        public ConnectorViewModel(Choice choice)
+        {
+            _choice = choice;
+        }
 
         /// <summary>
         /// The connection that is attached to this connector, or null if no connection is attached.

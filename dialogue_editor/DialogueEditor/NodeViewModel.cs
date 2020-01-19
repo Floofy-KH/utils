@@ -1,4 +1,5 @@
-﻿using System;
+﻿using floofy;
+using System;
 using System.Collections.Generic;
 using System.Windows.Input;
 using Utils;
@@ -9,11 +10,17 @@ namespace DialogueEditor
     {
         public event EventHandler CanExecuteChanged;
 
-        private ImpObservableCollection<ConnectorViewModel> outgoingConnectors;
+        private ImpObservableCollection<ConnectorViewModel> _outgoingConnectors;
+        private Dialogue _dialogue = null;
+        private DialogueEntry _dialogueEntry = null;
+        private string _content;
 
-        public AddChoiceCommand(ImpObservableCollection<ConnectorViewModel> outgoingConnectors)
+        public AddChoiceCommand(ImpObservableCollection<ConnectorViewModel> outgoingConnectors, DialogueEntry entry, Dialogue dialogue, string content)
         {
-            this.outgoingConnectors = outgoingConnectors;
+            _outgoingConnectors = outgoingConnectors;
+            _dialogue = dialogue;
+            _dialogueEntry = entry;
+            _content = content;
         }
 
         public bool CanExecute(object parameter)
@@ -23,46 +30,24 @@ namespace DialogueEditor
 
         public void Execute(object parameter)
         {
-            outgoingConnectors.Add(new ConnectorViewModel());
+            _outgoingConnectors.Add(new ConnectorViewModel(_dialogue.AddChoice(_dialogueEntry, _content))); //TODO create new choice in DialogueManager
         }
     }
 
-    /// <summary>
-    /// Defines a node in the view-model.
-    /// Nodes are connected to other nodes through attached connectors (aka connection points).
-    /// </summary>
     public sealed class NodeViewModel : HandlesPropertyChanged
     {
         #region Internal Data Members
 
-        /// <summary>
-        /// The name of the node.
-        /// </summary>
-        private string name = string.Empty;
-
-        /// <summary>
-        /// The X coordinate for the position of the node.
-        /// </summary>
+        private string _name = string.Empty;
         private double x = 0;
-
-        /// <summary>
-        /// The Y coordinate for the position of the node.
-        /// </summary>
         private double y = 0;
-
-        /// <summary>
-        /// Set to 'true' when the node is selected.
-        /// </summary>
         private bool isSelected = false;
 
-        /// <summary>
-        /// List of input connectors (connections points) attached to the node.
-        /// </summary>
-        private ConnectorViewModel incomingConnector = new ConnectorViewModel();
-
+        private ConnectorViewModel incomingConnector = new ConnectorViewModel(null); //TODO How is this represented in DialogueManager
         private ImpObservableCollection<ConnectorViewModel> outgoingConnectors = null;
-
         private AddChoiceCommand _addChoiceCommand = null;
+        private Dialogue _dialogue = null;
+        private DialogueEntry _dialogueEntry = null;
 
         #endregion Internal Data Members
 
@@ -70,36 +55,41 @@ namespace DialogueEditor
         {
         }
 
-        public NodeViewModel(string name)
+        public NodeViewModel(DialogueEntry entry, Dialogue dialogue)
         {
-            this.name = name;
+            _name = entry.Content;
+            _dialogue = dialogue;
+            _dialogueEntry = entry;
+
+            for (int i = 0; i < entry.NumChoices; ++i)
+            {
+                Choice choice = entry.Choice(i);
+                if (choice != null)
+                {
+                    OutgoingConnectors.Add(new ConnectorViewModel(choice));
+                }
+            }
         }
 
-        /// <summary>
-        /// The name of the node.
-        /// </summary>
         public string Name
         {
             get
             {
-                return name;
+                return _name;
             }
             set
             {
-                if (name == value)
+                if (_name == value)
                 {
                     return;
                 }
 
-                name = value;
+                _name = value;
 
                 OnPropertyChanged("Name");
             }
         }
 
-        /// <summary>
-        /// The X coordinate for the position of the node.
-        /// </summary>
         public double X
         {
             get
@@ -119,9 +109,6 @@ namespace DialogueEditor
             }
         }
 
-        /// <summary>
-        /// The Y coordinate for the position of the node.
-        /// </summary>
         public double Y
         {
             get
@@ -141,9 +128,6 @@ namespace DialogueEditor
             }
         }
 
-        /// <summary>
-        /// List of connectors (connection anchor points) attached to the node.
-        /// </summary>
         public ImpObservableCollection<ConnectorViewModel> OutgoingConnectors
         {
             get
@@ -159,9 +143,6 @@ namespace DialogueEditor
             }
         }
 
-        /// <summary>
-        /// List of connectors (connection anchor points) attached to the node.
-        /// </summary>
         public ConnectorViewModel IncomingConnector
         {
             get
@@ -170,9 +151,6 @@ namespace DialogueEditor
             }
         }
 
-        /// <summary>
-        /// A helper property that retrieves a list (a new list each time) of all connections attached to the node.
-        /// </summary>
         public ICollection<ConnectionViewModel> AttachedConnections
         {
             get
@@ -196,9 +174,6 @@ namespace DialogueEditor
             }
         }
 
-        /// <summary>
-        /// Set to 'true' when the node is selected.
-        /// </summary>
         public bool IsSelected
         {
             get
@@ -224,7 +199,7 @@ namespace DialogueEditor
             {
                 if (_addChoiceCommand == null)
                 {
-                    _addChoiceCommand = new AddChoiceCommand(OutgoingConnectors);
+                    _addChoiceCommand = new AddChoiceCommand(OutgoingConnectors, _dialogueEntry, _dialogue, "New choice");
                 }
 
                 return _addChoiceCommand;

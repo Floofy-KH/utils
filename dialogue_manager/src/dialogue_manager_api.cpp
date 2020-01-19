@@ -146,14 +146,23 @@ extern "C"
         cppDlg->removeDialogueEntry(index);
     }
 
-    HChoice *addChoice(HDialogue *dialogue,
-                       HDialogueEntry *dialogueEntry,
-                       const char *name,
-                       dlgmgr_size size,
-                       HDialogueEntry *destDialogueEntry)
+    HChoice *addChoiceWithDest(HDialogue *dialogue,
+                               HDialogueEntry *dialogueEntry,
+                               const char *name,
+                               dlgmgr_size size,
+                               HDialogueEntry *destDialogueEntry)
     {
         auto cppDlg = cast(dialogue);
         return cast(cppDlg->addChoice(cast(dialogueEntry), std::string(name, size), cast(destDialogueEntry)));
+    }
+
+    HChoice *addChoice(HDialogue *dialogue,
+                       HDialogueEntry *dialogueEntry,
+                       const char *name,
+                       dlgmgr_size size)
+    {
+        auto cppDlg = cast(dialogue);
+        return cast(cppDlg->addChoice(cast(dialogueEntry), std::string(name, size)));
     }
 
     dlgmgr_size numChoices(HDialogue *dialogue)
@@ -256,5 +265,11 @@ extern "C"
     {
         auto cppChoice = cast(choice);
         return cast(cppChoice->dst);
+    }
+
+    void setChoiceDstEntry(HChoice *choice, HDialogueEntry *entry)
+    {
+        auto cppChoice = cast(choice);
+        cppChoice->dst = cast(entry);
     }
 }

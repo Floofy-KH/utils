@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Windows;
 
 namespace DialogueEditor
 {
@@ -101,7 +102,10 @@ namespace DialogueEditor
                 _addedItem = new DialogueItem { DialogueName = _dialogueName };
             }
             _dlgItems.Add(_addedItem);
-            _mgr.AddDialogue(_dialogueName);
+            var dlg = _mgr.AddDialogue(_dialogueName);
+            //TODO remove this when we have propert participant support in UI
+            dlg.AddParticipant("Part1");
+            dlg.AddParticipant("Part2");
         }
 
         public void Redo()
@@ -122,12 +126,28 @@ namespace DialogueEditor
         }
     }
 
-    public class DialogueModel
+    public class DialogueModel : HandlesPropertyChanged
     {
         public ObservableCollection<DialogueItem> DlgItems { get; set; }
 
+        public NetworkViewModel Network
+        {
+            get
+            {
+                return _network;
+            }
+            set
+            {
+                _network = value;
+
+                OnPropertyChanged("Network");
+            }
+        }
+
+        private NetworkViewModel _network = null;
         private DialogueManager _mgr = null;
         private CommandExecutor _cmdExec = null;
+        private Dialogue _currentDlg = null;
 
         public DialogueModel(CommandExecutor cmdExec) : this(new DialogueManager(), cmdExec)
         {
@@ -154,6 +174,32 @@ namespace DialogueEditor
         public bool Save(string file)
         {
             return _mgr.Write(file);
+        }
+
+        public void OpenDialogue(string dlgName)
+        {
+            _currentDlg = _mgr.Dialogue(dlgName);
+            if (_currentDlg != null)
+            {
+                Network = new NetworkViewModel(_currentDlg);
+            }
+            else
+            {
+                Network = null;
+            }
+        }
+
+        public NodeViewModel CreateNode(string name, Point nodeLocation)
+        {
+            var node = new NodeViewModel(_currentDlg.AddEntry(_currentDlg.Participant(0), name), _currentDlg)
+            {
+                X = nodeLocation.X,
+                Y = nodeLocation.Y
+            };
+
+            Network.Nodes.Add(node);
+
+            return node;
         }
 
         private void PopulateDialogueList()
