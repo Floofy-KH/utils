@@ -103,7 +103,7 @@ namespace DialogueEditor
             }
             _dlgItems.Add(_addedItem);
             var dlg = _mgr.AddDialogue(_dialogueName);
-            //TODO remove this when we have propert participant support in UI
+            //TODO remove this when we have proper participant support in UI
             dlg.AddParticipant("Part1");
             dlg.AddParticipant("Part2");
         }
@@ -181,7 +181,7 @@ namespace DialogueEditor
             _currentDlg = _mgr.Dialogue(dlgName);
             if (_currentDlg != null)
             {
-                Network = new NetworkViewModel(_currentDlg);
+                Network = new NetworkViewModel(_cmdExec, _currentDlg);
             }
             else
             {
@@ -191,7 +191,7 @@ namespace DialogueEditor
 
         public NodeViewModel CreateNode(string name, Point nodeLocation)
         {
-            var node = new NodeViewModel(_currentDlg.AddEntry(_currentDlg.Participant(0), name), _currentDlg)
+            var node = new NodeViewModel(_cmdExec, _currentDlg.AddEntry(_currentDlg.Participant(0), name), _currentDlg)
             {
                 X = nodeLocation.X,
                 Y = nodeLocation.Y

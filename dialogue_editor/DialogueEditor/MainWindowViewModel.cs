@@ -155,7 +155,7 @@ namespace DialogueEditor
             //
             // Create a new connection to add to the view-model.
             //
-            var connection = new ConnectionViewModel
+            var connection = new ConnectionViewModel(_cmdExec, draggedOutConnector.Choice)
             {
                 //
                 // Link the source connector to the connector that was dragged out.

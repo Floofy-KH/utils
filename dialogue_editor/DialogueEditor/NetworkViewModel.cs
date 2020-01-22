@@ -27,7 +27,7 @@ namespace DialogueEditor
 
         private Dialogue _dialogue = null;
 
-        public NetworkViewModel(Dialogue dialogue)
+        public NetworkViewModel(CommandExecutor cmdExe, Dialogue dialogue)
         {
             _dialogue = dialogue;
 
@@ -44,7 +44,7 @@ namespace DialogueEditor
                 DialogueEntry entry = _dialogue.Entry(i);
                 if (entry != null)
                 {
-                    var model = new NodeViewModel(entry, _dialogue);
+                    var model = new NodeViewModel(cmdExe, entry, _dialogue);
                     Nodes.Add(model);
 
                     entryToModel.Add(entry, model);
@@ -56,7 +56,7 @@ namespace DialogueEditor
                 Choice choice = _dialogue.Choice(i);
                 if (choice != null)
                 {
-                    var connection = new ConnectionViewModel();
+                    var connection = new ConnectionViewModel(cmdExe, choice);
                     Connections.Add(connection);
 
                     if (choice.SourceEntry != null && choice.DestinationEntry != null)

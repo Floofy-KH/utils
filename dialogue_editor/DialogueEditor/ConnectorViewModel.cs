@@ -26,9 +26,11 @@ namespace DialogueEditor
 
         #endregion Internal Data Members
 
-        public ConnectorViewModel(Choice choice)
+        public ConnectorViewModel(Choice choice, NodeViewModel parent)
         {
             _choice = choice;
+
+            ParentNode = parent;
         }
 
         /// <summary>

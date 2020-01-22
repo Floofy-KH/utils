@@ -1,4 +1,5 @@
-﻿using System;
+﻿using floofy;
+using System;
 using System.Diagnostics;
 using System.Windows;
 
@@ -11,24 +12,80 @@ namespace DialogueEditor
     {
         #region Internal Data Members
 
-        /// <summary>
-        /// The source connector the connection is attached to.
-        /// </summary>
-        private ConnectorViewModel sourceConnector = null;
+        private class SetChoiceDestUndoableCommand : IUndoableCommand
+        {
+            private ConnectorViewModel _destConnector = null;
+            private ConnectionViewModel _connection = null;
+            private ConnectionViewModel _prevConnection = null;
+            private Choice _choice = null;
 
-        /// <summary>
-        /// The destination connector the connection is attached to.
-        /// </summary>
+            public SetChoiceDestUndoableCommand(ConnectorViewModel destConnector, ConnectionViewModel connection, Choice choice)
+            {
+                _destConnector = destConnector;
+                _connection = connection;
+                _choice = choice;
+            }
+
+            public void Execute()
+            {
+                if (_destConnector == _connection.DestConnector)
+                {
+                    return;
+                }
+
+                if (_connection.DestConnector != null)
+                {
+                    Trace.Assert(_destConnector.AttachedConnection == _connection);
+
+                    _prevConnection = _connection.DestConnector.AttachedConnection;
+                    _connection.DestConnector.AttachedConnection = null;
+                    _connection.DestConnector.HotspotUpdated += new EventHandler<EventArgs>(_connection.destConnector_HotspotUpdated);
+                }
+
+                _connection.destConnector = _destConnector;
+
+                if (_connection.destConnector != null)
+                {
+                    Trace.Assert(_connection.destConnector.AttachedConnection == null);
+
+                    _connection.destConnector.AttachedConnection = _connection;
+                    _connection.destConnector.HotspotUpdated += new EventHandler<EventArgs>(_connection.destConnector_HotspotUpdated);
+                    _connection.DestConnectorHotspot = _connection.destConnector.Hotspot;
+
+                    _choice.DestinationEntry = _destConnector.ParentNode.DialogueEntry;
+                }
+
+                _connection.OnPropertyChanged("DestConnector");
+            }
+
+            public void Undo()
+            {
+                //TODO do it
+            }
+
+            public void Redo()
+            {
+                //Execute();
+            }
+        }
+
+        private ConnectorViewModel sourceConnector = null;
         private ConnectorViewModel destConnector = null;
 
-        /// <summary>
-        /// The source and dest hotspots used for generating connection points.
-        /// </summary>
         private Point sourceConnectorHotspot;
-
         private Point destConnectorHotspot;
 
+        private CommandExecutor _cmdExe = null;
+
+        private Choice _choice = null;
+
         #endregion Internal Data Members
+
+        public ConnectionViewModel(CommandExecutor cmdExe, Choice choice)
+        {
+            _cmdExe = cmdExe;
+            _choice = choice;
+        }
 
         /// <summary>
         /// The source connector the connection is attached to.
@@ -80,31 +137,7 @@ namespace DialogueEditor
             }
             set
             {
-                if (destConnector == value)
-                {
-                    return;
-                }
-
-                if (destConnector != null)
-                {
-                    Trace.Assert(destConnector.AttachedConnection == this);
-
-                    destConnector.AttachedConnection = null;
-                    destConnector.HotspotUpdated += new EventHandler<EventArgs>(destConnector_HotspotUpdated);
-                }
-
-                destConnector = value;
-
-                if (destConnector != null)
-                {
-                    Trace.Assert(destConnector.AttachedConnection == null);
-
-                    destConnector.AttachedConnection = this;
-                    destConnector.HotspotUpdated += new EventHandler<EventArgs>(destConnector_HotspotUpdated);
-                    this.DestConnectorHotspot = destConnector.Hotspot;
-                }
-
-                OnPropertyChanged("DestConnector");
+                _cmdExe.ExecuteCommand(new SetChoiceDestUndoableCommand(value, this, _choice));
             }
         }
 
