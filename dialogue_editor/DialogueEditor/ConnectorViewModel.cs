@@ -19,12 +19,20 @@ namespace DialogueEditor
 
         private Choice _choice;
 
+        #endregion Internal Data Members
+
         public Choice Choice
         {
             get { return _choice; }
         }
 
-        #endregion Internal Data Members
+        public bool IsChoice
+        {
+            get
+            {
+                return _choice != null;
+            }
+        }
 
         public ConnectorViewModel(Choice choice, NodeViewModel parent)
         {

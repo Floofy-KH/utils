@@ -192,7 +192,9 @@ namespace DialogueEditor
         /// </summary>
         public void ConnectionDragCompleted(ConnectionViewModel newConnection, ConnectorViewModel connectorDraggedOut, ConnectorViewModel connectorDraggedOver)
         {
-            if (connectorDraggedOver == null)
+            if (connectorDraggedOver == null ||
+                connectorDraggedOut.IsChoice == connectorDraggedOver.IsChoice ||
+                connectorDraggedOut.ParentNode == connectorDraggedOver.ParentNode)
             {
                 //
                 // The connection was unsuccessful.
