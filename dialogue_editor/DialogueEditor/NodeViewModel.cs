@@ -6,54 +6,19 @@ using Utils;
 
 namespace DialogueEditor
 {
-    public class AddChoiceUndoableCommand : IUndoableCommand
-    {
-        private ImpObservableCollection<ConnectorViewModel> _outgoingConnectors;
-        private ConnectorViewModel _connector = null;
-        private Dialogue _dialogue = null;
-        private DialogueEntry _dialogueEntry = null;
-        private NodeViewModel _node;
-        private string _content;
-
-        public AddChoiceUndoableCommand(NodeViewModel node, ImpObservableCollection<ConnectorViewModel> outgoingConnectors, DialogueEntry entry, Dialogue dialogue, string content)
-        {
-            _outgoingConnectors = outgoingConnectors;
-            _dialogue = dialogue;
-            _dialogueEntry = entry;
-            _content = content;
-            _node = node;
-        }
-
-        public void Execute()
-        {
-            _connector = new ConnectorViewModel(_dialogue.AddChoice(_dialogueEntry, _content), _node);
-            _outgoingConnectors.Add(_connector); //TODO create new choice in DialogueManager
-        }
-
-        public void Undo()
-        {
-            _dialogue.RemoveChoice(_content);
-            _outgoingConnectors.Remove(_connector);
-            _connector = null;
-        }
-
-        public void Redo()
-        {
-            Execute();
-        }
-    }
+    #region Commands
 
     public class AddChoiceCommand : ICommand
     {
         public event EventHandler CanExecuteChanged;
 
         private CommandExecutor _cmdExec = null;
-        private AddChoiceUndoableCommand _cmd = null;
+        private NodeViewModel.AddChoiceUndoableCommand _cmd = null;
 
         public AddChoiceCommand(CommandExecutor cmdExec, NodeViewModel node, ImpObservableCollection<ConnectorViewModel> outgoingConnectors, DialogueEntry entry, Dialogue dialogue, string content)
         {
             _cmdExec = cmdExec;
-            _cmd = new AddChoiceUndoableCommand(node, outgoingConnectors, entry, dialogue, content);
+            _cmd = new NodeViewModel.AddChoiceUndoableCommand(node, outgoingConnectors, entry, dialogue, content);
         }
 
         public bool CanExecute(object parameter)
@@ -67,11 +32,84 @@ namespace DialogueEditor
         }
     }
 
+    #endregion Commands
+
     public sealed class NodeViewModel : HandlesPropertyChanged
     {
+        #region Undoable Commands
+
+        public class AddChoiceUndoableCommand : IUndoableCommand
+        {
+            private ImpObservableCollection<ConnectorViewModel> _outgoingConnectors;
+            private ConnectorViewModel _connector = null;
+            private Dialogue _dialogue = null;
+            private DialogueEntry _dialogueEntry = null;
+            private NodeViewModel _node;
+            private string _content;
+
+            public AddChoiceUndoableCommand(NodeViewModel node, ImpObservableCollection<ConnectorViewModel> outgoingConnectors, DialogueEntry entry, Dialogue dialogue, string content)
+            {
+                _outgoingConnectors = outgoingConnectors;
+                _dialogue = dialogue;
+                _dialogueEntry = entry;
+                _content = content;
+                _node = node;
+            }
+
+            public void Execute()
+            {
+                _connector = new ConnectorViewModel(_dialogue.AddChoice(_dialogueEntry, _content), _node);
+                _outgoingConnectors.Add(_connector); //TODO create new choice in DialogueManager
+            }
+
+            public void Undo()
+            {
+                _dialogue.RemoveChoice(_content);
+                _outgoingConnectors.Remove(_connector);
+                _connector = null;
+            }
+
+            public void Redo()
+            {
+                Execute();
+            }
+        }
+
+        public class SetNodeContentUndoableCommand : IUndoableCommand
+        {
+            private string _oldContent, _newContent;
+            private NodeViewModel _node;
+
+            public SetNodeContentUndoableCommand(string newContent, NodeViewModel node)
+            {
+                _newContent = newContent;
+                _node = node;
+                _oldContent = _node.Content;
+            }
+
+            public void Execute()
+            {
+                _node._content = _newContent;
+                _node._dialogueEntry.Content = _newContent;
+            }
+
+            public void Redo()
+            {
+                Execute();
+            }
+
+            public void Undo()
+            {
+                _node._content = _oldContent;
+                _node._dialogueEntry.Content = _oldContent;
+            }
+        }
+
+        #endregion Undoable Commands
+
         #region Internal Data Members
 
-        private string _name = string.Empty;
+        private string _content = string.Empty;
         private double x = 0;
         private double y = 0;
         private bool isSelected = false;
@@ -94,7 +132,7 @@ namespace DialogueEditor
 
         public NodeViewModel(CommandExecutor cmdExec, DialogueEntry entry, Dialogue dialogue)
         {
-            _name = entry.Content;
+            _content = entry.Content;
             _dialogue = dialogue;
             _dialogueEntry = entry;
             _cmdExec = cmdExec;
@@ -119,20 +157,20 @@ namespace DialogueEditor
             }
         }
 
-        public string Name
+        public string Content
         {
             get
             {
-                return _name;
+                return _content;
             }
             set
             {
-                if (_name == value)
+                if (_content == value)
                 {
                     return;
                 }
 
-                _name = value;
+                _cmdExec.ExecuteCommand(new SetNodeContentUndoableCommand(value, this));
 
                 OnPropertyChanged("Name");
             }
