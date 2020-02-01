@@ -25,7 +25,23 @@
 		</DataTemplate>
 
 		<DataTemplate x:Key="OutgoingConnectorsTemplate">
-			<NetworkUI:ConnectorItem />
+			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="Auto" />
+				</Grid.ColumnDefinitions>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto" />
+				</Grid.RowDefinitions>
+
+				<TextBox Grid.Column="0" Grid.Row="1"
+								 Text="{Binding Content}"
+								 HorizontalAlignment="Center" VerticalAlignment="Center"
+								 TextWrapping="Wrap"
+								 MaxLines="8" MaxLength="256"
+								 AcceptsReturn="True" />
+				<NetworkUI:ConnectorItem Grid.Column="1" Grid.Row="1" />
+			</Grid>
 		</DataTemplate>
 
 		<DataTemplate DataType="{x:Type local:NodeViewModel}">
@@ -33,6 +49,7 @@
 
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="*" MinWidth="120" />
+					<ColumnDefinition Width="Auto" />
 					<ColumnDefinition Width="Auto" />
 				</Grid.ColumnDefinitions>
 				<Grid.RowDefinitions>
@@ -62,19 +79,19 @@
 							 MaxLines="8" MaxLength="256"
 							 AcceptsReturn="True" />
 
-					<Button Grid.Column="2" Grid.Row="1" Height="40" Width="40" Command="{Binding Path=AddChoice}">
-						<TextBlock Text="Add choice" TextWrapping="Wrap" />
-					</Button>
-
 					<NetworkUI:ConnectorItem
                         Grid.Row="1"
                         Grid.Column="0"
                         DataContext="{Binding IncomingConnector}" />
 				</Grid>
 
+				<Button Grid.Column="1" Grid.Row="0" Height="40" Width="40" Command="{Binding Path=AddChoice}">
+					<TextBlock Text="Add choice" TextWrapping="Wrap" />
+				</Button>
+
 				<ListView
 						Grid.Row="0"
-						Grid.Column="1"
+						Grid.Column="2"
 						ItemsSource="{Binding OutgoingConnectors}"
 						ItemTemplate="{StaticResource OutgoingConnectorsTemplate}" />
 			</Grid>

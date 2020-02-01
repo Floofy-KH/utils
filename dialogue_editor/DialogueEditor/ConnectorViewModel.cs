@@ -19,7 +19,37 @@ namespace DialogueEditor
 
         private Choice _choice;
 
+        private CommandExecutor _cmdExec = null;
+
         #endregion Internal Data Members
+
+        public class SetConnectorContentUndoableCommand : IUndoableCommand
+        {
+            private string _oldContent, _newContent;
+            private ConnectorViewModel _connector;
+
+            public SetConnectorContentUndoableCommand(string newContent, ConnectorViewModel connector)
+            {
+                _newContent = newContent;
+                _connector = connector;
+                _oldContent = _connector.Content;
+            }
+
+            public void Execute()
+            {
+                _connector._choice.Content = _newContent;
+            }
+
+            public void Redo()
+            {
+                Execute();
+            }
+
+            public void Undo()
+            {
+                _connector._choice.Content = _oldContent;
+            }
+        }
 
         public Choice Choice
         {
@@ -34,8 +64,10 @@ namespace DialogueEditor
             }
         }
 
-        public ConnectorViewModel(Choice choice, NodeViewModel parent)
+        public ConnectorViewModel(CommandExecutor cmdExec, Choice choice, NodeViewModel parent)
         {
+            _cmdExec = cmdExec;
+
             _choice = choice;
 
             ParentNode = parent;
@@ -79,6 +111,25 @@ namespace DialogueEditor
                 hotspot = value;
 
                 OnHotspotUpdated();
+            }
+        }
+
+        public string Content
+        {
+            get
+            {
+                return _choice.Content;
+            }
+            set
+            {
+                if (_choice.Content == value)
+                {
+                    return;
+                }
+
+                _cmdExec.ExecuteCommand(new SetConnectorContentUndoableCommand(value, this));
+
+                OnPropertyChanged("Name");
             }
         }
 

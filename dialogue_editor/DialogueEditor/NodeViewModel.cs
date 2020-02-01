@@ -18,7 +18,7 @@ namespace DialogueEditor
         public AddChoiceCommand(CommandExecutor cmdExec, NodeViewModel node, ImpObservableCollection<ConnectorViewModel> outgoingConnectors, DialogueEntry entry, Dialogue dialogue, string content)
         {
             _cmdExec = cmdExec;
-            _cmd = new NodeViewModel.AddChoiceUndoableCommand(node, outgoingConnectors, entry, dialogue, content);
+            _cmd = new NodeViewModel.AddChoiceUndoableCommand(_cmdExec, node, outgoingConnectors, entry, dialogue, content);
         }
 
         public bool CanExecute(object parameter)
@@ -45,20 +45,22 @@ namespace DialogueEditor
             private Dialogue _dialogue = null;
             private DialogueEntry _dialogueEntry = null;
             private NodeViewModel _node;
+            private CommandExecutor _cmdExec = null;
             private string _content;
 
-            public AddChoiceUndoableCommand(NodeViewModel node, ImpObservableCollection<ConnectorViewModel> outgoingConnectors, DialogueEntry entry, Dialogue dialogue, string content)
+            public AddChoiceUndoableCommand(CommandExecutor cmdExec, NodeViewModel node, ImpObservableCollection<ConnectorViewModel> outgoingConnectors, DialogueEntry entry, Dialogue dialogue, string content)
             {
                 _outgoingConnectors = outgoingConnectors;
                 _dialogue = dialogue;
                 _dialogueEntry = entry;
                 _content = content;
                 _node = node;
+                _cmdExec = cmdExec;
             }
 
             public void Execute()
             {
-                _connector = new ConnectorViewModel(_dialogue.AddChoice(_dialogueEntry, _content), _node);
+                _connector = new ConnectorViewModel(_cmdExec, _dialogue.AddChoice(_dialogueEntry, _content), _node);
                 _outgoingConnectors.Add(_connector); //TODO create new choice in DialogueManager
             }
 
@@ -89,7 +91,6 @@ namespace DialogueEditor
 
             public void Execute()
             {
-                _node._content = _newContent;
                 _node._dialogueEntry.Content = _newContent;
             }
 
@@ -100,7 +101,6 @@ namespace DialogueEditor
 
             public void Undo()
             {
-                _node._content = _oldContent;
                 _node._dialogueEntry.Content = _oldContent;
             }
         }
@@ -109,7 +109,6 @@ namespace DialogueEditor
 
         #region Internal Data Members
 
-        private string _content = string.Empty;
         private double x = 0;
         private double y = 0;
         private bool isSelected = false;
@@ -127,24 +126,23 @@ namespace DialogueEditor
         {
             _cmdExec = cmdExec;
 
-            incomingConnector = new ConnectorViewModel(null, this);
+            incomingConnector = new ConnectorViewModel(_cmdExec, null, this);
         }
 
         public NodeViewModel(CommandExecutor cmdExec, DialogueEntry entry, Dialogue dialogue)
         {
-            _content = entry.Content;
             _dialogue = dialogue;
             _dialogueEntry = entry;
             _cmdExec = cmdExec;
 
-            incomingConnector = new ConnectorViewModel(null, this);
+            incomingConnector = new ConnectorViewModel(_cmdExec, null, this);
 
             for (int i = 0; i < entry.NumChoices; ++i)
             {
                 Choice choice = entry.Choice(i);
                 if (choice != null)
                 {
-                    OutgoingConnectors.Add(new ConnectorViewModel(choice, this));
+                    OutgoingConnectors.Add(new ConnectorViewModel(_cmdExec, choice, this));
                 }
             }
         }
@@ -161,11 +159,11 @@ namespace DialogueEditor
         {
             get
             {
-                return _content;
+                return _dialogueEntry.Content;
             }
             set
             {
-                if (_content == value)
+                if (_dialogueEntry.Content == value)
                 {
                     return;
                 }
