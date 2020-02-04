@@ -89,6 +89,14 @@ namespace DialogueEditor
             ViewModel.AddNewDialogue();
         }
 
+        private void AddNewParticipant_Click(object sender, RoutedEventArgs e)
+        {
+            if (ViewModel.DlgModel.Network != null)
+            {
+                ViewModel.DlgModel.Network.AddNewParticipant();
+            }
+        }
+
         private void Open_Click(object sender, RoutedEventArgs e)
         {
             var openFileDlg = new OpenFileDialog
@@ -180,6 +188,38 @@ namespace DialogueEditor
             if (item != null)
             {
                 ViewModel.RemoveItem(item.DialogueName);
+            }
+        }
+
+        private void Rename_Participant_Click(object sender, RoutedEventArgs e)
+        {
+            var item = ((FrameworkElement)e.OriginalSource).DataContext as ParticipantViewModel;
+            if (item != null)
+            {
+                // Instantiate the dialog box
+                var dlg = new TextInputDialog
+                {
+                    // Configure the dialog box
+                    Owner = this,
+                    Text = item.Name
+                };
+
+                // Open the dialog box modally
+                dlg.ShowDialog();
+
+                if (dlg.DialogResult == true)
+                {
+                    item.Name = dlg.Text;
+                }
+            }
+        }
+
+        private void Delete_Participant_Click(object sender, RoutedEventArgs e)
+        {
+            var item = ((FrameworkElement)e.OriginalSource).DataContext as ParticipantViewModel;
+            if (item != null)
+            {
+                ViewModel.DlgModel.Network.Participants.Remove(item);
             }
         }
     }

@@ -97,6 +97,18 @@ namespace DialogueEditor
     {
         #region Internal Data Members
 
+        private CommandExecutor _cmdExec;
+        private ICommand _undoCommand;
+        private ICommand _redoCommand;
+        private ICommand _saveCommand;
+        private ICommand _saveAsCommand;
+        private string _currentFile = null;
+        private DialogueModel _dlgModel = null;
+
+        //private Point currentPoint = new Point();
+
+        #endregion Internal Data Members
+
         public DialogueModel DlgModel
         {
             get { return _dlgModel; }
@@ -112,18 +124,6 @@ namespace DialogueEditor
         public ICommand SaveCommand { get { return _saveCommand; } }
         public ICommand SaveAsCommand { get { return _saveAsCommand; } }
         public bool Dirty { get; set; }
-
-        private CommandExecutor _cmdExec;
-        private ICommand _undoCommand;
-        private ICommand _redoCommand;
-        private ICommand _saveCommand;
-        private ICommand _saveAsCommand;
-        private string _currentFile = null;
-        private DialogueModel _dlgModel = null;
-
-        //private Point currentPoint = new Point();
-
-        #endregion Internal Data Members
 
         public MainWindowViewModel()
         {

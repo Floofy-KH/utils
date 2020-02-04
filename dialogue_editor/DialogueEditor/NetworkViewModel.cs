@@ -11,25 +11,63 @@ namespace DialogueEditor
     /// </summary>
     public sealed class NetworkViewModel
     {
+        #region Undoable Commands
+
+        public class AddParticipantUndoableCommand : IUndoableCommand
+        {
+            private Dialogue _dialogue = null;
+            private Participant _participant = null;
+            private ParticipantViewModel _partViewModel = null;
+            private NetworkViewModel _viewModel = null;
+            private CommandExecutor _cmdExec = null;
+
+            public AddParticipantUndoableCommand(CommandExecutor cmdExec, Dialogue dialogue, NetworkViewModel viewModel)
+            {
+                _dialogue = dialogue;
+                _viewModel = viewModel;
+                _cmdExec = cmdExec;
+            }
+
+            public void Execute()
+            {
+                _participant = _dialogue.AddParticipant("New participant");
+                _partViewModel = new ParticipantViewModel(_cmdExec, _participant, _dialogue);
+                _viewModel.participants.Add(_partViewModel);
+            }
+
+            public void Undo()
+            {
+                if (_participant != null)
+                {
+                    _dialogue.RemoveParticipant(_participant.Name);
+                    _viewModel.participants.Remove(_partViewModel);
+                    _participant = null;
+                }
+            }
+
+            public void Redo()
+            {
+                Execute();
+            }
+        }
+
+        #endregion Undoable Commands
+
         #region Internal Data Members
 
-        /// <summary>
-        /// The collection of nodes in the network.
-        /// </summary>
         private ImpObservableCollection<NodeViewModel> nodes = null;
-
-        /// <summary>
-        /// The collection of connections in the network.
-        /// </summary>
         private ImpObservableCollection<ConnectionViewModel> connections = null;
-
-        #endregion Internal Data Members
+        private ImpObservableCollection<ParticipantViewModel> participants = null;
 
         private Dialogue _dialogue = null;
+        private CommandExecutor _cmdExec = null;
+
+        #endregion Internal Data Members
 
         public NetworkViewModel(CommandExecutor cmdExe, Dialogue dialogue)
         {
             _dialogue = dialogue;
+            _cmdExec = cmdExe;
 
             if (_dialogue == null)
             {
@@ -76,11 +114,18 @@ namespace DialogueEditor
                     }
                 }
             }
+
+            for (int i = 0; i < _dialogue.NumParticipants; ++i)
+            {
+                Participant participant = _dialogue.Participant(i);
+                if (participant != null)
+                {
+                    var model = new ParticipantViewModel(cmdExe, participant, _dialogue);
+                    Participants.Add(model);
+                }
+            }
         }
 
-        /// <summary>
-        /// The collection of nodes in the network.
-        /// </summary>
         public ImpObservableCollection<NodeViewModel> Nodes
         {
             get
@@ -94,9 +139,6 @@ namespace DialogueEditor
             }
         }
 
-        /// <summary>
-        /// The collection of connections in the network.
-        /// </summary>
         public ImpObservableCollection<ConnectionViewModel> Connections
         {
             get
@@ -111,11 +153,27 @@ namespace DialogueEditor
             }
         }
 
+        public ImpObservableCollection<ParticipantViewModel> Participants
+        {
+            get
+            {
+                if (participants == null)
+                {
+                    participants = new ImpObservableCollection<ParticipantViewModel>();
+                    participants.ItemsRemoved += new EventHandler<CollectionItemsChangedEventArgs>(participants_ItemsRemoved);
+                }
+
+                return participants;
+            }
+        }
+
+        public void AddNewParticipant()
+        {
+            _cmdExec.ExecuteCommand(new AddParticipantUndoableCommand(_cmdExec, _dialogue, this));
+        }
+
         #region Private Methods
 
-        /// <summary>
-        /// Event raised then Connections have been removed.
-        /// </summary>
         private void connections_ItemsRemoved(object sender, CollectionItemsChangedEventArgs e)
         {
             foreach (ConnectionViewModel connection in e.Items)
@@ -123,6 +181,10 @@ namespace DialogueEditor
                 connection.SourceConnector = null;
                 connection.DestConnector = null;
             }
+        }
+
+        private void participants_ItemsRemoved(object sender, CollectionItemsChangedEventArgs e)
+        {
         }
 
         #endregion Private Methods

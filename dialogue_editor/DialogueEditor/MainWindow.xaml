@@ -24,6 +24,17 @@
 			</TextBlock>
 		</DataTemplate>
 
+		<DataTemplate x:Key="ParticipantNameTemplate">
+			<TextBlock Text="{Binding Path=Name}">
+				<TextBlock.ContextMenu>
+					<ContextMenu StaysOpen="True">
+						<MenuItem Header="Rename" Click="Rename_Participant_Click" />
+						<MenuItem Header="Delete" Click="Delete_Participant_Click" />
+					</ContextMenu>
+				</TextBlock.ContextMenu>
+			</TextBlock>
+		</DataTemplate>
+
 		<DataTemplate x:Key="OutgoingConnectorsTemplate">
 			<Grid>
 				<Grid.ColumnDefinitions>
@@ -163,11 +174,28 @@
 			</MenuItem>
 		</Menu>
 		<Grid Width="147" HorizontalAlignment="Left">
-			<ListView ItemsSource="{Binding DlgModel.DlgItems}"
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*" />
+			</Grid.ColumnDefinitions>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="*" />
+				<RowDefinition Height="20" />
+				<RowDefinition Height="*" />
+				<RowDefinition Height="20" />
+			</Grid.RowDefinitions>
+
+			<ListView Grid.Row="0"
+					  ItemsSource="{Binding DlgModel.DlgItems}"
 					  ItemTemplate="{StaticResource DialogueNameTemplate}"
 					  MouseDoubleClick="DialogueList_MouseDoubleClick"
-					  HorizontalAlignment="Left" Margin="0,0,0,45" Width="147" />
-			<Button Content="Add..." Click="AddNewDialogue_Click" Margin="0,356,0,0" />
+					  HorizontalAlignment="Left" Width="147" />
+			<Button Grid.Row="1" Content="Add new dialogue" Click="AddNewDialogue_Click" />
+
+			<ListView Grid.Row="2"
+					  ItemsSource="{Binding DlgModel.Network.Participants}"
+					  ItemTemplate="{StaticResource ParticipantNameTemplate}"
+					  HorizontalAlignment="Left" Width="147" />
+			<Button  Grid.Row="3"  Content="Add new participant" Click="AddNewParticipant_Click" />
 		</Grid>
 		<ScrollViewer HorizontalScrollBarVisibility="Auto" Focusable="False">
 			<NetworkUI:NetworkView
