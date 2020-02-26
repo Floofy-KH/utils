@@ -14,7 +14,7 @@
 		<RoutedUICommand x:Key="Commands.CreateNode" />
 
 		<DataTemplate x:Key="DialogueNameTemplate">
-			<TextBlock Text="{Binding Path=DialogueName}">
+			<TextBlock Text="{Binding Path=Name}">
 				<TextBlock.ContextMenu>
 					<ContextMenu StaysOpen="True">
 						<MenuItem Header="Rename" Click="Rename_Dialogue_Click" />

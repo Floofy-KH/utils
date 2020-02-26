@@ -22,15 +22,37 @@ protected:
     std::string dlgName = "A new dialogue";
 };
 
-TEST_F(DialogueManagerTest, AddDialogueAddsNewDialogue)
+TEST_F(DialogueManagerTest, AddNewDialogueReturnsValidPtrOnSuccess)
 {
-    auto dlg = addDialogue(dlgMgr, dlgName.c_str(), dlgName.length());
+    auto dlg = addNewDialogue(dlgMgr, dlgName.c_str(), dlgName.length());
     EXPECT_NE(dlg, nullptr);
+}
+
+TEST_F(DialogueManagerTest, AddNewDialogueReturnsNullPtrOnDuplicateEntry)
+{
+    auto dlg = addNewDialogue(dlgMgr, dlgName.c_str(), dlgName.length());
+    auto dlg2 = addNewDialogue(dlgMgr, dlgName.c_str(), dlgName.length());
+    EXPECT_EQ(dlg2, nullptr);
+}
+
+TEST_F(DialogueManagerTest, AddExistingDialogueReturnsTrueOnSuccess)
+{
+    auto dlg = addNewDialogue(dlgMgr, dlgName.c_str(), dlgName.length());
+    removeDialogue(dlgMgr, dlgName.c_str(), dlgName.length());
+    auto res = addExistingDialogue(dlgMgr, dlg);
+    EXPECT_TRUE(res);
+}
+
+TEST_F(DialogueManagerTest, AddExistingDialogueReturnsFalseOnDuplicateEntry)
+{
+    auto dlg = addNewDialogue(dlgMgr, dlgName.c_str(), dlgName.length());
+    auto res = addExistingDialogue(dlgMgr, dlg);
+    EXPECT_FALSE(res);
 }
 
 TEST_F(DialogueManagerTest, AddedDialogueEqualsRetrievedDialogue)
 {
-    auto newDlg = addDialogue(dlgMgr, dlgName.c_str(), dlgName.length());
+    auto newDlg = addNewDialogue(dlgMgr, dlgName.c_str(), dlgName.length());
     auto retDlg = dialogueFromName(dlgMgr, dlgName.c_str(), dlgName.length());
 
     EXPECT_EQ(newDlg, retDlg);
@@ -38,7 +60,7 @@ TEST_F(DialogueManagerTest, AddedDialogueEqualsRetrievedDialogue)
 
 TEST_F(DialogueManagerTest, RemovedDialogueNoLongerRetrieved)
 {
-    auto newDlg = addDialogue(dlgMgr, dlgName.c_str(), dlgName.length());
+    auto newDlg = addNewDialogue(dlgMgr, dlgName.c_str(), dlgName.length());
     removeDialogue(dlgMgr, dlgName.c_str(), dlgName.length());
     auto retDlg = dialogueFromName(dlgMgr, dlgName.c_str(), dlgName.length());
 
@@ -56,7 +78,7 @@ protected:
     void SetUp() override
     {
         dlgMgr = newDialogueManager();
-        dlg = addDialogue(dlgMgr, dlgName.c_str(), dlgName.length());
+        dlg = addNewDialogue(dlgMgr, dlgName.c_str(), dlgName.length());
     }
 
     void TearDown() override
@@ -204,8 +226,8 @@ TEST(MultipleDialogues, fileIO)
     std::string dlg2Participant2 = "Dialogue 2 Participant 2";
     std::string dlg2Participant3 = "Dialogue 2 Participant 3";
 
-    auto dlg1 = addDialogue(dlgMgr, dlg1Name.c_str(), dlg1Name.length());
-    auto dlg2 = addDialogue(dlgMgr, dlg2Name.c_str(), dlg2Name.length());
+    auto dlg1 = addNewDialogue(dlgMgr, dlg1Name.c_str(), dlg1Name.length());
+    auto dlg2 = addNewDialogue(dlgMgr, dlg2Name.c_str(), dlg2Name.length());
 
     auto dlg1Part1 = addParticipant(dlg1, dlg1Participant1.c_str(), dlg1Participant1.length());
     auto dlg1Part2 = addParticipant(dlg1, dlg1Participant2.c_str(), dlg1Participant2.length());

@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 namespace floofy
 {
@@ -56,16 +57,17 @@ public:
     ~DialogueManager() = default;
 
     DialoguePtr addDialogue(std::string name);
+    bool addDialogue(DialoguePtr dlg);
     DialoguePtr dialogue(const std::string &name) const;
     DialoguePtr dialogue(size_t index) const;
-    void removeDialogue(const std::string &name);
+    DialoguePtr removeDialogue(const std::string &name);
     size_t numDialogues() const;
 
     bool writeToFile(const std::string &filePath) const;
 
     static DialogueManagerPtr readFromFile(const std::string &filePath);
 
-    std::vector<DialoguePtr> dialogues;
+    std::unordered_map<std::string, DialoguePtr> dialogues;
 };
 /////////////////////////////////////////////////////////////////////////////
 

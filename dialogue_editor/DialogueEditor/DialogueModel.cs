@@ -1,134 +1,167 @@
 ﻿using floofy;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
 
 namespace DialogueEditor
 {
-    public class DialogueItem : INotifyPropertyChanged
+    public class DialogueViewModel : HandlesPropertyChanged
     {
-        private string _name;
+        #region Undoable Commands
 
-        public string DialogueName
+        internal class SetNameUndoableCommand : IUndoableCommand
         {
-            get { return _name; }
+            private Dialogue _dialogue = null;
+            private string _name, _oldName;
+
+            public SetNameUndoableCommand(Dialogue dialogue, string name)
+            {
+                _dialogue = dialogue;
+                _name = name;
+                _oldName = dialogue.Name;
+            }
+
+            public void Execute()
+            {
+                _dialogue.Name = _name;
+            }
+
+            public void Undo()
+            {
+                _dialogue.Name = _oldName;
+            }
+
+            public void Redo()
+            {
+                Execute();
+            }
+        }
+
+        #endregion Undoable Commands
+
+        public Dialogue _dialogue;
+        private CommandExecutor _cmdExec = null;
+
+        public DialogueViewModel(CommandExecutor cmdExec, Dialogue dialogue)
+        {
+            _dialogue = dialogue;
+            _cmdExec = cmdExec;
+        }
+
+        public string Name
+        {
+            get { return _dialogue.Name; }
+
             set
             {
-                _name = value;
-                OnPropertyChanged("DialogueName");
-            }
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        // Create the OnPropertyChanged method to raise the event
-        protected void OnPropertyChanged(string name)
-        {
-            PropertyChangedEventHandler handler = PropertyChanged;
-            if (handler != null)
-            {
-                handler(this, new PropertyChangedEventArgs(name));
-            }
-        }
-    }
-
-    public class DeleteDialogueCmd : IUndoableCommand
-    {
-        private string _dialogueName;
-        private ObservableCollection<DialogueItem> _dlgItems;
-        private DialogueManager _mgr;
-        private int _index = -1;
-        private DialogueItem _removedItem = null;
-
-        public DeleteDialogueCmd(string name, ObservableCollection<DialogueItem> dialogueItems, DialogueManager mgr)
-        {
-            _dialogueName = name;
-            _dlgItems = dialogueItems;
-            _mgr = mgr;
-        }
-
-        public void Execute()
-        {
-            for (int i = 0; i < _dlgItems.Count; ++i)
-            {
-                if (_dlgItems[i].DialogueName == _dialogueName)
+                if (_dialogue.Name != value)
                 {
-                    _mgr.RemoveDialogue(_dialogueName);
-                    _removedItem = _dlgItems[i];
-                    _dlgItems.RemoveAt(i);
-                    _index = i;
-                    return;
+                    _cmdExec.ExecuteCommand(new SetNameUndoableCommand(_dialogue, value));
+                    OnPropertyChanged("Name");
                 }
             }
-        }
-
-        public void Redo()
-        {
-            Execute();
-        }
-
-        public void Undo()
-        {
-            if (_index < 0 || _removedItem == null)
-            {
-                Debug.Assert(false);
-                return;
-            }
-
-            _mgr.AddDialogue(_removedItem.DialogueName); //TODO do this propely...
-            _dlgItems.Insert(_index, _removedItem);
-        }
-    }
-
-    public class AddDialogueCmd : IUndoableCommand
-    {
-        private string _dialogueName;
-        private ObservableCollection<DialogueItem> _dlgItems;
-        private DialogueManager _mgr;
-        private DialogueItem _addedItem = null;
-
-        public AddDialogueCmd(string name, ObservableCollection<DialogueItem> dialogueItems, DialogueManager mgr)
-        {
-            _dialogueName = name;
-            _dlgItems = dialogueItems;
-            _mgr = mgr;
-        }
-
-        public void Execute()
-        {
-            if (_addedItem == null)
-            {
-                _addedItem = new DialogueItem { DialogueName = _dialogueName };
-            }
-            _dlgItems.Add(_addedItem);
-            var dlg = _mgr.AddDialogue(_dialogueName);
-            //TODO remove this when we have proper participant support in UI
-            dlg.AddParticipant("Part1");
-            dlg.AddParticipant("Part2");
-        }
-
-        public void Redo()
-        {
-            Execute();
-        }
-
-        public void Undo()
-        {
-            if (_addedItem == null)
-            {
-                Debug.Assert(false);
-                return;
-            }
-
-            _mgr.RemoveDialogue(_addedItem.DialogueName);
-            _dlgItems.Remove(_addedItem);
         }
     }
 
     public class DialogueModel : HandlesPropertyChanged
     {
-        public ObservableCollection<DialogueItem> DlgItems { get; set; }
+        #region Undoable Commands
+
+        internal class DeleteDialogueCmd : IUndoableCommand
+        {
+            private string _dialogueName;
+            private DialogueModel _model;
+            private DialogueManager _mgr;
+            private int _index = -1;
+            private DialogueViewModel _removedItem = null;
+
+            public DeleteDialogueCmd(string name, DialogueModel model, DialogueManager mgr)
+            {
+                _dialogueName = name;
+                _model = model;
+                _mgr = mgr;
+            }
+
+            public void Execute()
+            {
+                for (int i = 0; i < _model.DlgItems.Count; ++i)
+                {
+                    if (_model.DlgItems[i].Name == _dialogueName)
+                    {
+                        _mgr.RemoveDialogue(_dialogueName);
+                        _removedItem = _model.DlgItems[i];
+                        _model.DlgItems.RemoveAt(i);
+                        _index = i;
+                        return;
+                    }
+                }
+            }
+
+            public void Redo()
+            {
+                Execute();
+            }
+
+            public void Undo()
+            {
+                if (_index < 0 || _removedItem == null)
+                {
+                    Debug.Assert(false);
+                    return;
+                }
+
+                _mgr.AddDialogue(_removedItem._dialogue);
+                _model.DlgItems.Insert(_index, _removedItem);
+            }
+        }
+
+        internal class AddDialogueCmd : IUndoableCommand
+        {
+            private string _dialogueName;
+            private ObservableCollection<DialogueViewModel> _dlgItems;
+            private DialogueManager _mgr;
+            private DialogueViewModel _addedItem = null;
+            private CommandExecutor _cmdExec = null;
+
+            public AddDialogueCmd(CommandExecutor cmdExec, string name, ObservableCollection<DialogueViewModel> dialogueItems, DialogueManager mgr)
+            {
+                _cmdExec = cmdExec;
+                _dialogueName = name;
+                _dlgItems = dialogueItems;
+                _mgr = mgr;
+            }
+
+            public void Execute()
+            {
+                var dlg = _mgr.AddDialogue(_dialogueName);
+                if (_addedItem == null)
+                {
+                    _addedItem = new DialogueViewModel(_cmdExec, dlg);
+                }
+                _dlgItems.Add(_addedItem);
+            }
+
+            public void Redo()
+            {
+                Execute();
+            }
+
+            public void Undo()
+            {
+                if (_addedItem == null)
+                {
+                    Debug.Assert(false);
+                    return;
+                }
+
+                _mgr.RemoveDialogue(_addedItem.Name);
+                _dlgItems.Remove(_addedItem);
+            }
+        }
+
+        #endregion Undoable Commands
+
+        public ObservableCollection<DialogueViewModel> DlgItems { get; set; }
 
         public NetworkViewModel Network
         {
@@ -157,18 +190,18 @@ namespace DialogueEditor
         {
             _mgr = mgr;
             _cmdExec = cmdExec;
-            DlgItems = new ObservableCollection<DialogueItem>();
+            DlgItems = new ObservableCollection<DialogueViewModel>();
             PopulateDialogueList();
         }
 
         public void Add(string dlgName)
         {
-            _cmdExec.ExecuteCommand(new AddDialogueCmd(dlgName, DlgItems, _mgr));
+            _cmdExec.ExecuteCommand(new AddDialogueCmd(_cmdExec, dlgName, DlgItems, _mgr));
         }
 
         public void Remove(string dlgName)
         {
-            _cmdExec.ExecuteCommand(new DeleteDialogueCmd(dlgName, DlgItems, _mgr));
+            _cmdExec.ExecuteCommand(new DeleteDialogueCmd(dlgName, this, _mgr));
         }
 
         public bool Save(string file)
@@ -213,7 +246,7 @@ namespace DialogueEditor
 
             for (int i = 0; i < _mgr.NumDialogues; ++i)
             {
-                DlgItems.Add(new DialogueItem { DialogueName = _mgr.Dialogue(i).Name });
+                DlgItems.Add(new DialogueViewModel(_cmdExec, _mgr.Dialogue(i)));
             }
         }
     }

@@ -21,7 +21,10 @@ namespace floofy
         private static extern IntPtr readDialogues(string filePath, int filePathSize);
 
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr addDialogue(IntPtr mgr, string name, int nameSize);
+        private static extern IntPtr addNewDialogue(IntPtr mgr, string name, int nameSize);
+
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern bool addExistingDialogue(IntPtr mgr, IntPtr dlg);
 
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern void removeDialogue(IntPtr mgr, string name, int nameSize);
@@ -70,7 +73,7 @@ namespace floofy
 
         public Dialogue AddDialogue(string name)
         {
-            var dlg = new Dialogue(addDialogue(_ptr, name, name.Length));
+            var dlg = new Dialogue(addNewDialogue(_ptr, name, name.Length));
             if (dlg._ptr == IntPtr.Zero)
             {
                 return null;
@@ -79,6 +82,16 @@ namespace floofy
             {
                 return dlg;
             }
+        }
+
+        public bool AddDialogue(Dialogue dlg)
+        {
+            if (dlg == null || dlg._ptr == null)
+            {
+                return false;
+            }
+
+            return addExistingDialogue(_ptr, dlg._ptr);
         }
 
         public Dialogue Dialogue(string name)
@@ -186,11 +199,19 @@ namespace floofy
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern void setDialogueName(IntPtr dialogue, StringBuilder name, int bufferSize);
 
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void freeDialogue(IntPtr dialogue);
+
         #endregion PInvoke
 
         public Dialogue(IntPtr ptr)
         {
             _ptr = ptr;
+        }
+
+        ~Dialogue()
+        {
+            freeDialogue(_ptr);
         }
 
         public int NumParticipants

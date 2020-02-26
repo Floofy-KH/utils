@@ -62,16 +62,27 @@ extern "C"
         return cast(DialogueManager::readFromFile(std::string(filePath, filePathSize)));
     }
 
-    HDialogue *addDialogue(HDialogueManager *mgr, const char *name, dlgmgr_size nameSize)
+    HDialogue *addNewDialogue(HDialogueManager *mgr, const char *name, dlgmgr_size nameSize)
     {
         auto cppMgr = cast(mgr);
         return cast(cppMgr->addDialogue(std::string(name, nameSize)));
+    }
+
+    bool addExistingDialogue(HDialogueManager *mgr, HDialogue *dlg)
+    {
+        auto cppMgr = cast(mgr);
+        return cppMgr->addDialogue(cast(dlg));
     }
 
     void removeDialogue(HDialogueManager *mgr, const char *name, dlgmgr_size nameSize)
     {
         auto cppMgr = cast(mgr);
         cppMgr->removeDialogue(std::string(name, nameSize));
+    }
+
+    void freeDialogue(HDialogue *dlg)
+    {
+        delete cast(dlg);
     }
 
     dlgmgr_size numDialogues(HDialogueManager *mgr)

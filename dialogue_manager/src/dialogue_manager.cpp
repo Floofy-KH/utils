@@ -11,36 +11,65 @@ namespace floofy
 /////////////////////////////////////////////////////////////////////////////
 //DialogueManager
 
-DialoguePtr DialogueManager::addDialogue(std::string name)
+DialoguePtr DialogueManager::addDialogue(std::string name) 
 {
-    return dialogues.emplace_back(new Dialogue(name));
+  auto findDialogue = dialogues.find(name);
+  if (findDialogue == dialogues.end()) 
+  {
+    auto res = dialogues.insert({name, new Dialogue(name)});
+    if (res.second) 
+    {
+      return res.first->second;
+    }
+  }
+  return nullptr;
 }
 
-DialoguePtr DialogueManager::dialogue(const std::string &name) const
+bool DialogueManager::addDialogue(DialoguePtr dlg) 
 {
-    for (auto &dialogue : dialogues)
-    {
-        if (dialogue->name == name)
-        {
-            return dialogue;
-        }
-    }
+  if(!dlg)
+  {
+    return false;
+  }
 
-    return {};
+  auto findDialogue = dialogues.find(dlg->name);
+  if (findDialogue != dialogues.end()) 
+  {
+    return false;
+  }
+
+  auto res = dialogues.insert({dlg->name, dlg});
+  return res.second;
+}
+
+DialoguePtr DialogueManager::dialogue(const std::string &name) const 
+{
+  auto findDialogue = dialogues.find(name);
+  if (findDialogue == dialogues.end()) 
+  {
+    return nullptr;
+  }
+  return findDialogue->second;
 }
 
 DialoguePtr DialogueManager::dialogue(size_t index) const
 {
-    return dialogues.at(index);
+    auto iter = dialogues.begin();
+    std::advance(iter, index);
+    return iter->second;
 }
 
-void DialogueManager::removeDialogue(const std::string &name)
+DialoguePtr DialogueManager::removeDialogue(const std::string &name)
 {
-    const auto pred = [&name](const DialoguePtr &other) {
-        return name == other->name;
-    };
+    auto findDialogue = dialogues.find(name);
+    if(findDialogue == dialogues.end())
+    {
+        return nullptr;
+    }
 
-    dialogues.erase(std::remove_if(dialogues.begin(), dialogues.end(), pred));
+    auto dlgPtr = findDialogue->second;
+    dialogues.erase(findDialogue);
+    return dlgPtr;
 }
 
 size_t DialogueManager::numDialogues() const
@@ -57,8 +86,9 @@ bool DialogueManager::writeToFile(const std::string &filePath) const
         {
             //Graphs - Dialogues
             std::vector<nlohmann::json> dialoguesJs;
-            for (const auto &dlg : dialogues)
+            for (const auto &dlgPair : dialogues)
             {
+                auto dlg = dlgPair.second;
                 nlohmann::json dialogueJs;
                 dialogueJs["name"] = dlg->name;
 

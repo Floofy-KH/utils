@@ -151,17 +151,17 @@ namespace DialogueEditor
 
         private void DialogueList_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            var item = ((FrameworkElement)e.OriginalSource).DataContext as DialogueItem;
+            var item = ((FrameworkElement)e.OriginalSource).DataContext as DialogueViewModel;
             if (item != null)
             {
-                ViewModel.OpenDialogue(item.DialogueName);
+                ViewModel.OpenDialogue(item.Name);
                 networkControl.IsEnabled = true;
             }
         }
 
         private void Rename_Dialogue_Click(object sender, RoutedEventArgs e)
         {
-            var item = ((FrameworkElement)e.OriginalSource).DataContext as DialogueItem;
+            var item = ((FrameworkElement)e.OriginalSource).DataContext as DialogueViewModel;
             if (item != null)
             {
                 // Instantiate the dialog box
@@ -169,7 +169,7 @@ namespace DialogueEditor
                 {
                     // Configure the dialog box
                     Owner = this,
-                    Text = item.DialogueName
+                    Text = item.Name
                 };
 
                 // Open the dialog box modally
@@ -177,17 +177,17 @@ namespace DialogueEditor
 
                 if (dlg.DialogResult == true)
                 {
-                    item.DialogueName = dlg.Text;
+                    item.Name = dlg.Text;
                 }
             }
         }
 
         private void Delete_Dialogue_Click(object sender, RoutedEventArgs e)
         {
-            var item = ((FrameworkElement)e.OriginalSource).DataContext as DialogueItem;
+            var item = ((FrameworkElement)e.OriginalSource).DataContext as DialogueViewModel;
             if (item != null)
             {
-                ViewModel.RemoveItem(item.DialogueName);
+                ViewModel.RemoveItem(item.Name);
             }
         }
 
