@@ -27,6 +27,7 @@ extern "C"
     EXPORT dlgmgr_size numDialogues(HDialogueManager *mgr);
     EXPORT HDialogue *dialogueFromName(HDialogueManager *mgr, const char *name, dlgmgr_size size);
     EXPORT HDialogue *dialogueFromIndex(HDialogueManager *mgr, dlgmgr_size index);
+    EXPORT void freeDialogue(HDialogue *dlg);
 
     EXPORT HParticipant *addParticipant(HDialogue *dialogue, const char *name, dlgmgr_size nameSize);
     EXPORT dlgmgr_size numParticipants(HDialogue *dialogue);

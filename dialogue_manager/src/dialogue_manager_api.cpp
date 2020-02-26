@@ -82,7 +82,7 @@ extern "C"
 
     void freeDialogue(HDialogue *dlg)
     {
-        delete cast(dlg);
+      delete cast(dlg);
     }
 
     dlgmgr_size numDialogues(HDialogueManager *mgr)

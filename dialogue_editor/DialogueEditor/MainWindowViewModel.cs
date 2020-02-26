@@ -1,6 +1,7 @@
 ﻿using floofy;
 using Microsoft.Win32;
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Input;
 
@@ -308,7 +309,26 @@ namespace DialogueEditor
         {
             Dirty = true;
 
-            DlgModel.Add("New Dialogue");
+            HashSet<string> dlgNames = new HashSet<string>();
+
+            foreach (var dlg in DlgModel.DlgItems)
+            {
+                dlgNames.Add(dlg.Name);
+            }
+
+            string baseName = "Dialogue ";
+            int curIndex = 1;
+
+            while (true)
+            {
+                string name = baseName + curIndex;
+                if (!dlgNames.Contains(name))
+                {
+                    DlgModel.Add(name);
+                    break;
+                }
+                ++curIndex;
+            }
         }
 
         public void OpenFile(string filepath)

@@ -60,7 +60,7 @@ namespace floofy
 
         ~DialogueManager()
         {
-            freeDialogueManager(_ptr);
+            //freeDialogueManager(_ptr);
         }
 
         public int NumDialogues
@@ -211,7 +211,7 @@ namespace floofy
 
         ~Dialogue()
         {
-            freeDialogue(_ptr);
+            //freeDialogue(_ptr);
         }
 
         public int NumParticipants
