@@ -93,7 +93,8 @@
 							 Text="{Binding Content}"
 							 HorizontalAlignment="Center" VerticalAlignment="Center"
 							 TextWrapping="Wrap"
-							 MaxLines="8" MaxLength="256"
+							 MaxLines="8" MaxLength="64"
+							 MaxWidth="200"
 							 AcceptsReturn="True" />
 
 					<NetworkUI:ConnectorItem
@@ -203,7 +204,10 @@
 					  HorizontalAlignment="Left" Width="147" />
 			<Button  Grid.Row="3"  Content="Add new participant" Click="AddNewParticipant_Click" />
 		</Grid>
-		<ScrollViewer HorizontalScrollBarVisibility="Auto" Focusable="False">
+		<ScrollViewer CanContentScroll="True"
+					  HorizontalScrollBarVisibility="Visible"
+					  VerticalScrollBarVisibility="Visible"
+					  Focusable="False">
 			<NetworkUI:NetworkView
             x:Name="networkControl"
             NodesSource="{Binding DlgModel.Network.Nodes}"
