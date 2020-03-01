@@ -5,69 +5,76 @@
 #include <algorithm>
 #include <fstream>
 
+struct FindDlgByNameFunctor
+{
+    std::string name;
+
+    bool operator()(const floofy::DialoguePtr &dlg) const
+    {
+        return name == dlg->name;
+    }
+};
+
 namespace floofy
 {
 
 /////////////////////////////////////////////////////////////////////////////
 //DialogueManager
 
-DialoguePtr DialogueManager::addDialogue(std::string name) 
+DialoguePtr DialogueManager::addDialogue(std::string name)
 {
-  auto findDialogue = dialogues.find(name);
-  if (findDialogue == dialogues.end()) 
-  {
-    auto res = dialogues.insert({name, new Dialogue(name)});
-    if (res.second) 
+    auto findDialogue = std::find_if(dialogues.begin(), dialogues.end(), FindDlgByNameFunctor{name});
+
+    if (findDialogue == dialogues.end())
     {
-      return res.first->second;
+        return dialogues.emplace_back(new Dialogue(name));
     }
-  }
-  return nullptr;
-}
 
-bool DialogueManager::addDialogue(DialoguePtr dlg) 
-{
-  if(!dlg)
-  {
-    return false;
-  }
-
-  auto findDialogue = dialogues.find(dlg->name);
-  if (findDialogue != dialogues.end()) 
-  {
-    return false;
-  }
-
-  auto res = dialogues.insert({dlg->name, dlg});
-  return res.second;
-}
-
-DialoguePtr DialogueManager::dialogue(const std::string &name) const 
-{
-  auto findDialogue = dialogues.find(name);
-  if (findDialogue == dialogues.end()) 
-  {
     return nullptr;
-  }
-  return findDialogue->second;
+}
+
+bool DialogueManager::addDialogue(DialoguePtr dlg)
+{
+    if (!dlg)
+    {
+        return false;
+    }
+
+    auto findDialogue = std::find_if(dialogues.begin(), dialogues.end(), FindDlgByNameFunctor{dlg->name});
+    if (findDialogue != dialogues.end())
+    {
+        return false;
+    }
+
+    return dialogues.emplace_back(dlg);
+}
+
+DialoguePtr DialogueManager::dialogue(const std::string &name) const
+{
+    auto findDialogue = std::find_if(dialogues.begin(), dialogues.end(), FindDlgByNameFunctor{name});
+    if (findDialogue == dialogues.end())
+    {
+        return nullptr;
+    }
+    return *findDialogue;
 }
 
 DialoguePtr DialogueManager::dialogue(size_t index) const
 {
     auto iter = dialogues.begin();
     std::advance(iter, index);
-    return iter->second;
+    return *iter;
 }
 
 DialoguePtr DialogueManager::removeDialogue(const std::string &name)
 {
-    auto findDialogue = dialogues.find(name);
-    if(findDialogue == dialogues.end())
+    auto findDialogue = std::find_if(dialogues.begin(), dialogues.end(), FindDlgByNameFunctor{name});
+    if (findDialogue == dialogues.end())
     {
         return nullptr;
     }
 
-    auto dlgPtr = findDialogue->second;
+    auto dlgPtr = *findDialogue;
     dialogues.erase(findDialogue);
     return dlgPtr;
 }
@@ -86,9 +93,8 @@ bool DialogueManager::writeToFile(const std::string &filePath) const
         {
             //Graphs - Dialogues
             std::vector<nlohmann::json> dialoguesJs;
-            for (const auto &dlgPair : dialogues)
+            for (const auto &dlg : dialogues)
             {
-                auto dlg = dlgPair.second;
                 nlohmann::json dialogueJs;
                 dialogueJs["name"] = dlg->name;
 

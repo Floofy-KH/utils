@@ -67,7 +67,7 @@ public:
 
     static DialogueManagerPtr readFromFile(const std::string &filePath);
 
-    std::unordered_map<std::string, DialoguePtr> dialogues;
+    std::vector<DialoguePtr> dialogues;
 };
 /////////////////////////////////////////////////////////////////////////////
 
