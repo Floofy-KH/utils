@@ -224,7 +224,7 @@ namespace DialogueEditor
 
         public NodeViewModel CreateNode(string name, Point nodeLocation)
         {
-            var node = new NodeViewModel(_cmdExec, _currentDlg.AddEntry(_currentDlg.Participant(0), name), _currentDlg)
+            var node = new NodeViewModel(_cmdExec, _currentDlg.AddEntry(_currentDlg.Participant(0), name), _currentDlg, Network)
             {
                 X = nodeLocation.X,
                 Y = nodeLocation.Y

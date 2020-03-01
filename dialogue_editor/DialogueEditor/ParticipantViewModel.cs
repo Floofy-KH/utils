@@ -53,6 +53,14 @@ namespace DialogueEditor
             _cmdExec = cmdExec;
         }
 
+        public Participant Participant
+        {
+            get
+            {
+                return _participant;
+            }
+        }
+
         public string Name
         {
             get
@@ -70,6 +78,16 @@ namespace DialogueEditor
 
                 OnPropertyChanged("Name");
             }
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null || !(obj is ParticipantViewModel))
+            {
+                return false;
+            }
+
+            return ((ParticipantViewModel)obj)._participant.Equals(_participant);
         }
     }
 }

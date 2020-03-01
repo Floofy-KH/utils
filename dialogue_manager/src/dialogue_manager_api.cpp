@@ -254,6 +254,12 @@ extern "C"
         return cast(cppEntry->activeParticipant);
     }
 
+    void setDialogueEntryActiveParticipant(HDialogueEntry *entry, HParticipant *participant)
+    {
+        auto cppEntry = cast(entry);
+        cppEntry->activeParticipant = cast(participant);
+    }
+
     void choiceContent(HChoice *choice, char *content, dlgmgr_size bufferSize)
     {
         auto cppChoice = cast(choice);

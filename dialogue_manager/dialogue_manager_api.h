@@ -67,6 +67,7 @@ extern "C"
     EXPORT dlgmgr_size dialogueEntryNumChoices(HDialogueEntry *entry);
     EXPORT HChoice *dialogueEntryChoiceFromIndex(HDialogueEntry *entry, dlgmgr_size index);
     EXPORT HParticipant *dialogueEntryActiveParticipant(HDialogueEntry *entry);
+    EXPORT void setDialogueEntryActiveParticipant(HDialogueEntry *entry, HParticipant *participant);
 
     EXPORT void choiceContent(HChoice *choice, char *content, dlgmgr_size bufferSize);
     EXPORT void setChoiceContent(HChoice *choice, char *content, dlgmgr_size bufferSize);

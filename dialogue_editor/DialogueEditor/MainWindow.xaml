@@ -83,6 +83,12 @@
 						<RowDefinition Height="Auto" />
 					</Grid.RowDefinitions>
 
+					<ComboBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2"
+							  ItemsSource="{Binding Network.Participants}"
+							  DisplayMemberPath="Name"
+							  SelectedValue="{Binding ActiveParticipant}">
+					</ComboBox>
+
 					<TextBox Grid.Column="1" Grid.Row="1"
 							 Text="{Binding Content}"
 							 HorizontalAlignment="Center" VerticalAlignment="Center"

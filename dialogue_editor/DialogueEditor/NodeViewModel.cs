@@ -119,21 +119,16 @@ namespace DialogueEditor
         private Dialogue _dialogue = null;
         private DialogueEntry _dialogueEntry = null;
         private CommandExecutor _cmdExec = null;
+        private NetworkViewModel _network = null;
 
         #endregion Internal Data Members
 
-        public NodeViewModel(CommandExecutor cmdExec)
-        {
-            _cmdExec = cmdExec;
-
-            incomingConnector = new ConnectorViewModel(_cmdExec, null, this);
-        }
-
-        public NodeViewModel(CommandExecutor cmdExec, DialogueEntry entry, Dialogue dialogue)
+        public NodeViewModel(CommandExecutor cmdExec, DialogueEntry entry, Dialogue dialogue, NetworkViewModel network)
         {
             _dialogue = dialogue;
             _dialogueEntry = entry;
             _cmdExec = cmdExec;
+            _network = network;
 
             incomingConnector = new ConnectorViewModel(_cmdExec, null, this);
 
@@ -147,11 +142,34 @@ namespace DialogueEditor
             }
         }
 
+        public NetworkViewModel Network
+        {
+            get
+            {
+                return _network;
+            }
+        }
+
         public DialogueEntry DialogueEntry
         {
             get
             {
                 return _dialogueEntry;
+            }
+        }
+
+        public ParticipantViewModel ActiveParticipant
+        {
+            get
+            {
+                return new ParticipantViewModel(_cmdExec, _dialogueEntry.ActiveParticipant, _dialogue);
+            }
+
+            set
+            {
+                _dialogueEntry.ActiveParticipant = value.Participant;
+
+                OnPropertyChanged("ActiveParticipant");
             }
         }
 

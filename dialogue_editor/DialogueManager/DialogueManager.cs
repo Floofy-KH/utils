@@ -478,6 +478,9 @@ namespace floofy
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr dialogueEntryActiveParticipant(IntPtr entry);
 
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void setDialogueEntryActiveParticipant(IntPtr entry, IntPtr participant);
+
         #endregion PInvoke
 
         public DialogueEntry(IntPtr ptr)
@@ -520,6 +523,14 @@ namespace floofy
                 else
                 {
                     return new Participant(dialogueEntryActiveParticipant(_ptr));
+                }
+            }
+
+            set
+            {
+                if (_ptr != IntPtr.Zero)
+                {
+                    setDialogueEntryActiveParticipant(_ptr, value._ptr);
                 }
             }
         }

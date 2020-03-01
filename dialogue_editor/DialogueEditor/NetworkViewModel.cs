@@ -82,7 +82,7 @@ namespace DialogueEditor
                 DialogueEntry entry = _dialogue.Entry(i);
                 if (entry != null)
                 {
-                    var model = new NodeViewModel(cmdExe, entry, _dialogue);
+                    var model = new NodeViewModel(cmdExe, entry, _dialogue, this);
                     Nodes.Add(model);
 
                     entryToModel.Add(entry, model);
