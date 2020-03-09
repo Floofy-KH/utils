@@ -18,7 +18,10 @@ namespace floofy
         private static extern int writeDialogues(IntPtr mgr, string filePath, int filePathSize);
 
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr readDialogues(string filePath, int filePathSize);
+        private static extern IntPtr readDialoguesFromFile(string filePath, int filePathSize);
+
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern IntPtr readDialoguesFromContents(string contents, int contentsPathSize);
 
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr addNewDialogue(IntPtr mgr, string name, int nameSize);
@@ -45,9 +48,22 @@ namespace floofy
             _ptr = newDialogueManager();
         }
 
-        public static DialogueManager Load(string filepath)
+        public static DialogueManager LoadFile(string filepath)
         {
-            var val = readDialogues(filepath, filepath.Length);
+            var val = readDialoguesFromFile(filepath, filepath.Length);
+            if (val == null)
+            {
+                return null;
+            }
+            else
+            {
+                return new DialogueManager { _ptr = val };
+            }
+        }
+
+        public static DialogueManager LoadContents(string content)
+        {
+            var val = readDialoguesFromContents(content, content.Length);
             if (val == null)
             {
                 return null;

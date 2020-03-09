@@ -57,9 +57,14 @@ extern "C"
         return cast(mgr)->writeToFile(std::string(filePath, filePathSize));
     }
 
-    HDialogueManager *readDialogues(const char *filePath, dlgmgr_size filePathSize)
+    HDialogueManager *readDialoguesFromFile(const char *filePath, dlgmgr_size filePathSize)
     {
         return cast(DialogueManager::readFromFile(std::string(filePath, filePathSize)));
+    }
+
+    HDialogueManager *readDialoguesFromContents(const char *contents, dlgmgr_size contentsPathSize)
+    {
+        return cast(DialogueManager::readContents(std::string(contents, contentsPathSize)));
     }
 
     HDialogue *addNewDialogue(HDialogueManager *mgr, const char *name, dlgmgr_size nameSize)

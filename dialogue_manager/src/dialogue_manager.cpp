@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <fstream>
+#include <sstream>
 
 struct FindDlgByNameFunctor
 {
@@ -154,10 +155,26 @@ DialogueManagerPtr DialogueManager::readFromFile(const std::string &filePath)
     std::ifstream file(filePath);
     if (file.is_open())
     {
+        return readStream(file);
+    }
+
+    return nullptr;
+}
+
+DialogueManagerPtr DialogueManager::readContents(const std::string &contents)
+{
+    std::istringstream contentsStream(contents);
+    return readStream(contentsStream);
+}
+
+DialogueManagerPtr DialogueManager::readStream(std::istream& stream)
+{
+    if (stream.good())
+    {
         auto mgr = std::make_unique<DialogueManager>();
 
         nlohmann::json json;
-        json << file;
+        json << stream;
 
         if (!json.is_object())
         {

@@ -66,6 +66,8 @@ public:
     bool writeToFile(const std::string &filePath) const;
 
     static DialogueManagerPtr readFromFile(const std::string &filePath);
+    static DialogueManagerPtr readContents(const std::string &contents);
+    static DialogueManagerPtr readStream(std::istream& stream);
 
     std::vector<DialoguePtr> dialogues;
 };

@@ -333,7 +333,7 @@ namespace DialogueEditor
 
         public void OpenFile(string filepath)
         {
-            var mgr = DialogueManager.Load(filepath);
+            var mgr = DialogueManager.LoadFile(filepath);
             if (mgr == null)
             {
                 MessageBox.Show(string.Format("Failed to load {0}", filepath), "Loading Error", MessageBoxButton.OK, MessageBoxImage.Error);

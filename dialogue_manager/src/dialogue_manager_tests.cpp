@@ -255,7 +255,7 @@ TEST(MultipleDialogues, fileIO)
     std::string dest = "test.json";
     ASSERT_TRUE(writeDialogues(dlgMgr, dest.c_str(), dest.length()));
 
-    auto mgr = readDialogues(dest.c_str(), dest.length());
+    auto mgr = readDialoguesFromFile(dest.c_str(), dest.length());
     ASSERT_NE(mgr, nullptr);
 
     auto numDlgs = numDialogues(mgr);
