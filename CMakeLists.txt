@@ -3,8 +3,10 @@ cmake_minimum_required(VERSION 3.16.0) #Don't actually know
 project(Utils)
 
 option(Build_DialogueManager "Build DialogueManager project" ON)
+
+set(CONAN_REQUIRES ${CONAN_REQUIRES} jsonformoderncpp/3.7.2@vthiery/stable)
 if(BUILD_TESTING)
-    set(CONAN_REQUIRES ${CONAN_REQUIRES} gtest/1.8.1@bincrafters/stable jsonformoderncpp/3.7.2@vthiery/stable)
+    set(CONAN_REQUIRES ${CONAN_REQUIRES} gtest/1.8.1@bincrafters/stable)
     enable_testing()
 endif()
 
