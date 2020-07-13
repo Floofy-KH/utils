@@ -35,8 +35,6 @@ namespace DialogueEditor
 
                 if (_connection.DestConnector != null)
                 {
-                    Trace.Assert(_destConnector.AttachedConnection == _connection);
-
                     _prevConnection = _connection.DestConnector.AttachedConnection;
                     _connection.DestConnector.AttachedConnection = null;
                     _connection.DestConnector.HotspotUpdated += new EventHandler<EventArgs>(_connection.destConnector_HotspotUpdated);
