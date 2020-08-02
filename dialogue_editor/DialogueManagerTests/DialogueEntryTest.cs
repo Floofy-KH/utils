@@ -68,5 +68,12 @@ namespace DialogueManagerTests
         {
             Assert.AreEqual(_part, _entry1.ActiveParticipant);
         }
+
+        [TestMethod]
+        public void CanSetAndRetrievePosition()
+        {
+            _entry1.Pos = new Vector2 { x = 3, y = 42.0 };
+            Assert.AreEqual(_entry1.Pos, new Vector2 { x = 3, y = 42.0 });
+        }
     }
 }

@@ -4,6 +4,12 @@ using System.Text;
 
 namespace floofy
 {
+    public struct Vector2
+    {
+        public double x;
+        public double y;
+    }
+
     public class DialogueManager
     {
         #region PInvoke
@@ -497,6 +503,15 @@ namespace floofy
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern void setDialogueEntryActiveParticipant(IntPtr entry, IntPtr participant);
 
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern double dialogueEntryPositionX(IntPtr entry);
+
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern double dialogueEntryPositionY(IntPtr entry);
+
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void setDialogueEntryPosition(IntPtr entry, double x, double y);
+
         #endregion PInvoke
 
         public DialogueEntry(IntPtr ptr)
@@ -554,6 +569,18 @@ namespace floofy
         public Choice Choice(int index)
         {
             return new Choice(dialogueEntryChoiceFromIndex(_ptr, index));
+        }
+
+        public Vector2 Pos
+        {
+            get
+            {
+                return new Vector2 { x = dialogueEntryPositionX(_ptr), y = dialogueEntryPositionY(_ptr) };
+            }
+            set
+            {
+                setDialogueEntryPosition(_ptr, value.x, value.y);
+            }
         }
 
         public override bool Equals(object obj)

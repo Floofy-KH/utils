@@ -6,15 +6,20 @@
 #include <fstream>
 #include <sstream>
 
-struct FindDlgByNameFunctor
+namespace
 {
-    std::string name;
+  struct FindDlgByNameFunctor
+  {
+      std::string name;
 
-    bool operator()(const floofy::DialoguePtr &dlg) const
-    {
-        return name == dlg->name;
-    }
-};
+      bool operator()(const floofy::DialoguePtr &dlg) const
+      {
+          return name == dlg->name;
+      }
+  };
+
+  static constexpr int FILE_VERSION = 1;
+}
 
 namespace floofy
 {
@@ -92,6 +97,9 @@ bool DialogueManager::writeToFile(const std::string &filePath) const
     {
         nlohmann::json js;
         {
+            //File Metadata
+            js["version"] = FILE_VERSION;
+
             //Graphs - Dialogues
             std::vector<nlohmann::json> dialoguesJs;
             for (const auto &dlg : dialogues)
@@ -118,7 +126,11 @@ bool DialogueManager::writeToFile(const std::string &filePath) const
                     {
                         entriesJs.push_back({{"id", dlg->entries[i]->id._id},
                                              {"entry", dlg->entries[i]->entry},
-                                             {"activeParticipant", dlg->entries[i]->activeParticipant->id._id}});
+                                             {"activeParticipant", dlg->entries[i]->activeParticipant->id._id},
+                                             {"position", nlohmann::json{
+                                                 {"x", dlg->entries[i]->viewPosition.x},
+                                                 {"y", dlg->entries[i]->viewPosition.y}}
+                                             }});
                     }
                     dialogueJs["entries"] = entriesJs;
                 }
@@ -182,6 +194,13 @@ DialogueManagerPtr DialogueManager::readStream(std::istream& stream)
             return nullptr;
         }
 
+        int fileVersion = 0;
+        auto findVersion = json.find("version");
+        if(findVersion != json.end() && findVersion->is_number())
+        {
+            fileVersion = *findVersion;
+        }
+
         //Dialogues
         auto findDlgs = json.find("dialogues");
         if (findDlgs == json.end() || !findDlgs->is_array())
@@ -242,7 +261,12 @@ DialogueManagerPtr DialogueManager::readStream(std::istream& stream)
                     return nullptr;
                 }
 
-                dlgPtr->addDialogueEntry(part, entry["entry"], ID{entry["id"]});
+                auto dlgEntry = dlgPtr->addDialogueEntry(part, entry["entry"], ID{entry["id"]});
+                if(fileVersion == 1)
+                {
+                    auto pos = entry["position"];
+                    dlgEntry->viewPosition = {pos["x"], pos["y"]};
+                }
             }
 
             //Choices

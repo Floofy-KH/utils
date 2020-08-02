@@ -109,8 +109,6 @@ namespace DialogueEditor
 
         #region Internal Data Members
 
-        private double x = 0;
-        private double y = 0;
         private bool isSelected = false;
 
         private ConnectorViewModel incomingConnector = null; //TODO How is this represented in DialogueManager
@@ -196,16 +194,16 @@ namespace DialogueEditor
         {
             get
             {
-                return x;
+                return _dialogueEntry.Pos.x;
             }
             set
             {
-                if (x == value)
+                if (_dialogueEntry.Pos.x == value)
                 {
                     return;
                 }
 
-                x = value;
+                _dialogueEntry.Pos = new Vector2 { x = value, y = _dialogueEntry.Pos.y };
 
                 OnPropertyChanged("X");
             }
@@ -215,16 +213,16 @@ namespace DialogueEditor
         {
             get
             {
-                return y;
+                return _dialogueEntry.Pos.y;
             }
             set
             {
-                if (y == value)
+                if (_dialogueEntry.Pos.y == value)
                 {
                     return;
                 }
 
-                y = value;
+                _dialogueEntry.Pos = new Vector2 { x = _dialogueEntry.Pos.x, y = value };
 
                 OnPropertyChanged("Y");
             }
