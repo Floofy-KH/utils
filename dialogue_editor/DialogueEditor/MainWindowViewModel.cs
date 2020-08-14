@@ -57,8 +57,14 @@ namespace DialogueEditor
     {
         public event EventHandler CanExecuteChanged;
 
-        public SaveCommand()
+        private bool _successful = false;
+        public bool Successful { get { return _successful; } }
+
+        private MainWindowViewModel m_model;
+
+        public SaveCommand(MainWindowViewModel model)
         {
+            m_model = model;
         }
 
         public bool CanExecute(object parameter)
@@ -68,6 +74,39 @@ namespace DialogueEditor
 
         public void Execute(object parameter)
         {
+            if (m_model.CurrentFile == null)
+            {
+                var saveFileDlg = new SaveFileDialog()
+                {
+                    Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*",
+                    InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+                };
+
+                if (saveFileDlg.ShowDialog() == true)
+                {
+                    m_model.CurrentFile = saveFileDlg.FileName;
+                    Save();
+                    if (!_successful)
+                    {
+                        m_model.CurrentFile = null;
+                    }
+                }
+            }
+            else
+            {
+                Save();
+            }
+        }
+
+        private void Save()
+        {
+            if (!m_model.DlgModel.Save(m_model.CurrentFile))
+            {
+                MessageBox.Show("An error occurred while saving the file.", "Error Saving");
+                _successful = false;
+            }
+            m_model.Dirty = false;
+            _successful = true;
         }
     }
 
@@ -75,8 +114,14 @@ namespace DialogueEditor
     {
         public event EventHandler CanExecuteChanged;
 
-        public SaveAsCommand()
+        private bool _successful = false;
+        public bool Successful { get { return _successful; } }
+
+        private MainWindowViewModel m_model;
+
+        public SaveAsCommand(MainWindowViewModel model)
         {
+            m_model = model;
         }
 
         public bool CanExecute(object parameter)
@@ -86,6 +131,33 @@ namespace DialogueEditor
 
         public void Execute(object parameter)
         {
+            var saveFileDlg = new SaveFileDialog()
+            {
+                Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+            };
+
+            if (saveFileDlg.ShowDialog() == true)
+            {
+                var oldFile = m_model.CurrentFile;
+                m_model.CurrentFile = saveFileDlg.FileName;
+                Save();
+                if (!_successful)
+                {
+                    m_model.CurrentFile = oldFile;
+                }
+            }
+        }
+
+        private void Save()
+        {
+            if (!m_model.DlgModel.Save(m_model.CurrentFile))
+            {
+                MessageBox.Show("An error occurred while saving the file.", "Error Saving");
+                _successful = false;
+            }
+            m_model.Dirty = false;
+            _successful = true;
         }
     }
 
@@ -103,7 +175,6 @@ namespace DialogueEditor
         private ICommand _redoCommand;
         private ICommand _saveCommand;
         private ICommand _saveAsCommand;
-        private string _currentFile = null;
         private DialogueModel _dlgModel = null;
 
         //private Point currentPoint = new Point();
@@ -125,6 +196,7 @@ namespace DialogueEditor
         public ICommand SaveCommand { get { return _saveCommand; } }
         public ICommand SaveAsCommand { get { return _saveAsCommand; } }
         public bool Dirty { get; set; }
+        public string CurrentFile { get; set; }
 
         public MainWindowViewModel()
         {
@@ -134,8 +206,8 @@ namespace DialogueEditor
 
             _undoCommand = new UndoCommand(_cmdExec);
             _redoCommand = new RedoCommand(_cmdExec);
-            _saveCommand = new SaveCommand();
-            _saveAsCommand = new SaveAsCommand();
+            _saveCommand = new SaveCommand(this);
+            _saveAsCommand = new SaveAsCommand(this);
             Dirty = false;
         }
 
@@ -272,36 +344,21 @@ namespace DialogueEditor
 
         public bool Save()
         {
-            if (_currentFile == null)
+            if (_saveCommand.CanExecute(null))
             {
-                return SaveAs();
+                _saveCommand.Execute(null);
+                return (_saveCommand as SaveCommand).Successful;
             }
-            else
-            {
-                if (!DlgModel.Save(_currentFile))
-                {
-                    MessageBox.Show("An error occurred while saving the file.", "Error Saving");
-                    return false;
-                }
-                Dirty = false;
-                return true;
-            }
+            return false;
         }
 
         public bool SaveAs()
         {
-            var saveFileDlg = new SaveFileDialog()
+            if (_saveAsCommand.CanExecute(null))
             {
-                Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*",
-                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
-            };
-
-            if (saveFileDlg.ShowDialog() == true)
-            {
-                _currentFile = saveFileDlg.FileName;
-                return Save();
+                _saveAsCommand.Execute(null);
+                return (_saveAsCommand as SaveAsCommand).Successful;
             }
-
             return false;
         }
 
@@ -340,7 +397,7 @@ namespace DialogueEditor
             }
             else
             {
-                _currentFile = filepath;
+                CurrentFile = filepath;
                 DlgModel = new DialogueModel(mgr, _cmdExec);
             }
         }
