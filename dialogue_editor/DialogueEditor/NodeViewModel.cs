@@ -105,6 +105,68 @@ namespace DialogueEditor
             }
         }
 
+        public class SetNodePositionUndoableCommand : IUndoableCommand
+        {
+            private Vector2 _oldPosition, _newPosition;
+            private NodeViewModel _node;
+
+            public SetNodePositionUndoableCommand(Vector2 newPosition, NodeViewModel node)
+            {
+                _newPosition = newPosition;
+                _node = node;
+                _oldPosition.x = node.X;
+                _oldPosition.y = node.Y;
+            }
+
+            public void Execute()
+            {
+                _node._dialogueEntry.Pos = _newPosition;
+            }
+
+            public void Redo()
+            {
+                Execute();
+            }
+
+            public void Undo()
+            {
+                _node._dialogueEntry.Pos = _oldPosition;
+            }
+        }
+
+        public class SetNodeReactionsUndoableCommand : IUndoableCommand
+        {
+            private Reaction _oldL, _newL;
+            private Reaction _oldR, _newR;
+            private NodeViewModel _node;
+
+            public SetNodeReactionsUndoableCommand(Reaction newL, Reaction newR, NodeViewModel node)
+            {
+                _newL = newL;
+                _newR = newR;
+                _node = node;
+                _oldL = node.LeftReaction;
+                _oldR = node.RightReaction;
+            }
+
+            public void Execute()
+            {
+                _node._dialogueEntry.LeftReaction = _newL;
+                _node._dialogueEntry.RightReaction = _newR;
+            }
+
+            public void Redo()
+            {
+                Execute();
+            }
+
+            public void Undo()
+            {
+                _node._dialogueEntry.LeftReaction = _oldL;
+                _node._dialogueEntry.RightReaction = _oldR;
+            }
+        }
+
         #endregion Undoable Commands
 
         #region Internal Data Members
@@ -203,7 +265,7 @@ namespace DialogueEditor
                     return;
                 }
 
-                _dialogueEntry.Pos = new Vector2 { x = value, y = _dialogueEntry.Pos.y };
+                _cmdExec.ExecuteCommand(new SetNodePositionUndoableCommand(new Vector2 { x = value, y = _dialogueEntry.Pos.y }, this));
 
                 OnPropertyChanged("X");
             }
@@ -222,9 +284,47 @@ namespace DialogueEditor
                     return;
                 }
 
-                _dialogueEntry.Pos = new Vector2 { x = _dialogueEntry.Pos.x, y = value };
+                _cmdExec.ExecuteCommand(new SetNodePositionUndoableCommand(new Vector2 { x = _dialogueEntry.Pos.x, y = value }, this));
 
                 OnPropertyChanged("Y");
+            }
+        }
+
+        public Reaction LeftReaction
+        {
+            get
+            {
+                return _dialogueEntry.LeftReaction;
+            }
+            set
+            {
+                if (_dialogueEntry.LeftReaction == value)
+                {
+                    return;
+                }
+
+                _cmdExec.ExecuteCommand(new SetNodeReactionsUndoableCommand(value, RightReaction, this));
+
+                OnPropertyChanged("LeftReaction");
+            }
+        }
+
+        public Reaction RightReaction
+        {
+            get
+            {
+                return _dialogueEntry.RightReaction;
+            }
+            set
+            {
+                if (_dialogueEntry.RightReaction == value)
+                {
+                    return;
+                }
+
+                _cmdExec.ExecuteCommand(new SetNodeReactionsUndoableCommand(LeftReaction, value, this));
+
+                OnPropertyChanged("RightReaction");
             }
         }
 
