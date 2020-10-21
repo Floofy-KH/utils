@@ -202,6 +202,16 @@ TEST_F(DialogueTestWithParticipants, RemoveDialogueEntryDecrementsNumEntries)
   EXPECT_EQ(numDialogueEntries(dlg), 2);
 }
 
+TEST_F(DialogueTestWithParticipants, CanSetAndRetrieveReactionsOfEntries)
+{
+  auto entry = addDialogueEntry(dlg, part1, "1", 1);
+  setDialogueEntryLReaction(entry, 0);
+  setDialogueEntryRReaction(entry, 1);
+
+  EXPECT_EQ(dialogueEntryLReaction(entry), 0);
+  EXPECT_EQ(dialogueEntryRReaction(entry), 1);
+}
+
 TEST(MultipleDialogues, fileIO)
 {
   auto dlgMgr = newDialogueManager();
@@ -237,8 +247,14 @@ TEST(MultipleDialogues, fileIO)
   auto dlg2Part3 = addParticipant(dlg2, dlg2Participant3.c_str(), dlg2Participant3.length());
 
   auto dlg1Entry1H = addDialogueEntry(dlg1, dlg1Part1, dlg1Entry1.c_str(), dlg1Entry1.length());
+  setDialogueEntryLReaction(dlg1Entry1H, 0);
+  setDialogueEntryRReaction(dlg1Entry1H, 1);
   auto dlg1Entry2H = addDialogueEntry(dlg1, dlg1Part2, dlg1Entry2.c_str(), dlg1Entry2.length());
+  setDialogueEntryLReaction(dlg1Entry2H, 1);
+  setDialogueEntryRReaction(dlg1Entry2H, 2);
   auto dlg1Entry3H = addDialogueEntry(dlg1, dlg1Part3, dlg1Entry3.c_str(), dlg1Entry3.length());
+  setDialogueEntryLReaction(dlg1Entry3H, 2);
+  setDialogueEntryRReaction(dlg1Entry3H, 3);
   auto dlg2Entry1H = addDialogueEntry(dlg2, dlg2Part1, dlg2Entry1.c_str(), dlg2Entry1.length());
   auto dlg2Entry2H = addDialogueEntry(dlg2, dlg2Part2, dlg2Entry2.c_str(), dlg2Entry2.length());
   auto dlg2Entry3H = addDialogueEntry(dlg2, dlg2Part3, dlg2Entry3.c_str(), dlg2Entry3.length());
@@ -297,18 +313,24 @@ TEST(MultipleDialogues, fileIO)
     EXPECT_STREQ(strBuf, dlg1Entry1.c_str());
     EXPECT_EQ(dialogueEntryActiveParticipant(entry1), part1);
     EXPECT_EQ(dialogueEntryNumChoices(entry1), 1);
+    EXPECT_EQ(dialogueEntryLReaction(entry1), 0);
+    EXPECT_EQ(dialogueEntryRReaction(entry1), 1);
 
     auto entry2 = dialogueEntryFromIndex(dlg, 1);
     dialogueEntryContent(entry2, strBuf, bufSize);
     EXPECT_STREQ(strBuf, dlg1Entry2.c_str());
     EXPECT_EQ(dialogueEntryActiveParticipant(entry2), part2);
     EXPECT_EQ(dialogueEntryNumChoices(entry2), 1);
+    EXPECT_EQ(dialogueEntryLReaction(entry2), 1);
+    EXPECT_EQ(dialogueEntryRReaction(entry2), 2);
 
     auto entry3 = dialogueEntryFromIndex(dlg, 2);
     dialogueEntryContent(entry3, strBuf, bufSize);
     EXPECT_STREQ(strBuf, dlg1Entry3.c_str());
     EXPECT_EQ(dialogueEntryActiveParticipant(entry3), part3);
     EXPECT_EQ(dialogueEntryNumChoices(entry3), 1);
+    EXPECT_EQ(dialogueEntryLReaction(entry3), 2);
+    EXPECT_EQ(dialogueEntryRReaction(entry3), 3);
 
     //Choices
     auto nChoices = numChoices(dlg);

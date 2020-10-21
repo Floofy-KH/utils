@@ -283,6 +283,30 @@ extern "C"
     cppEntry->viewPosition = { x, y };
   }
 
+  int dialogueEntryLReaction(HDialogueEntry *entry)
+  {
+    auto cppEntry = cast(entry);
+    return static_cast<int>(cppEntry->lReaction);
+  }
+
+  void setDialogueEntryLReaction(HDialogueEntry *entry, int reaction)
+  {
+    auto cppEntry = cast(entry);
+    cppEntry->lReaction = static_cast<floofy::eReaction>(reaction);
+  }
+
+  int dialogueEntryRReaction(HDialogueEntry *entry)
+  {
+    auto cppEntry = cast(entry);
+    return static_cast<int>(cppEntry->rReaction);
+  }
+
+  void setDialogueEntryRReaction(HDialogueEntry *entry, int reaction)
+  {
+    auto cppEntry = cast(entry);
+    cppEntry->rReaction = static_cast<floofy::eReaction>(reaction);
+  }
+
   void choiceContent(HChoice *choice, char *content, dlgmgr_size bufferSize)
   {
     auto cppChoice = cast(choice);

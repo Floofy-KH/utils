@@ -72,6 +72,10 @@ extern "C"
   EXPORT double dialogueEntryPositionX(HDialogueEntry *entry);
   EXPORT double dialogueEntryPositionY(HDialogueEntry *entry);
   EXPORT void setDialogueEntryPosition(HDialogueEntry *entry, double x, double y);
+  EXPORT int dialogueEntryLReaction(HDialogueEntry *entry);
+  EXPORT void setDialogueEntryLReaction(HDialogueEntry *entry, int reaction);
+  EXPORT int dialogueEntryRReaction(HDialogueEntry *entry);
+  EXPORT void setDialogueEntryRReaction(HDialogueEntry *entry, int reaction);
 
   EXPORT void choiceContent(HChoice *choice, char *content, dlgmgr_size bufferSize);
   EXPORT void setChoiceContent(HChoice *choice, char *content, dlgmgr_size bufferSize);

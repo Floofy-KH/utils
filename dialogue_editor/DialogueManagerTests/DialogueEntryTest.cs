@@ -75,5 +75,14 @@ namespace DialogueManagerTests
             _entry1.Pos = new Vector2 { x = 3, y = 42.0 };
             Assert.AreEqual(_entry1.Pos, new Vector2 { x = 3, y = 42.0 });
         }
+
+        [TestMethod]
+        public void CanSetAndRetrieveReactions()
+        {
+            _entry1.LeftReaction = Reaction.Angry;
+            _entry1.RightReaction = Reaction.Surprised;
+            Assert.AreEqual(_entry1.LeftReaction, Reaction.Angry);
+            Assert.AreEqual(_entry1.RightReaction, Reaction.Surprised);
+        }
     }
 }

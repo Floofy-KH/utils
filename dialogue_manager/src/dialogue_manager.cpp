@@ -18,7 +18,20 @@ namespace
       }
   };
 
-  static constexpr int FILE_VERSION = 1;
+  static constexpr int FILE_VERSION = 2;
+  constexpr unsigned E_REACTION_VERSION = 1;
+  
+  floofy::eReaction ReactionFromInt(int val, unsigned reactionVersion)
+  {
+      switch(reactionVersion)
+      {
+          case 1:
+          return static_cast<floofy::eReaction>(val);
+      }
+
+      assert(false);
+      return floofy::eReaction::None;
+  }
 }
 
 namespace floofy
@@ -99,6 +112,7 @@ bool DialogueManager::writeToFile(const std::string &filePath) const
         {
             //File Metadata
             js["version"] = FILE_VERSION;
+            js["eReactionVersion"] = E_REACTION_VERSION;
 
             //Graphs - Dialogues
             std::vector<nlohmann::json> dialoguesJs;
@@ -129,8 +143,9 @@ bool DialogueManager::writeToFile(const std::string &filePath) const
                                              {"activeParticipant", dlg->entries[i]->activeParticipant->id._id},
                                              {"position", nlohmann::json{
                                                  {"x", dlg->entries[i]->viewPosition.x},
-                                                 {"y", dlg->entries[i]->viewPosition.y}}
-                                             }});
+                                                 {"y", dlg->entries[i]->viewPosition.y}}},
+                                             {"lReaction", static_cast<int>(dlg->entries[i]->lReaction)},
+                                             {"rReaction", static_cast<int>(dlg->entries[i]->rReaction)}});
                     }
                     dialogueJs["entries"] = entriesJs;
                 }
@@ -201,6 +216,16 @@ DialogueManagerPtr DialogueManager::readStream(std::istream& stream)
             fileVersion = *findVersion;
         }
 
+        int eReactionVersion = 0;
+        if(fileVersion >= 2)
+        {
+            auto findEReactionVersion = json.find("eReactionVersion");
+            if(findEReactionVersion != json.end() && findEReactionVersion->is_number())
+            {
+                eReactionVersion = *findEReactionVersion;
+            }
+        }
+
         //Dialogues
         auto findDlgs = json.find("dialogues");
         if (findDlgs == json.end() || !findDlgs->is_array())
@@ -262,10 +287,16 @@ DialogueManagerPtr DialogueManager::readStream(std::istream& stream)
                 }
 
                 auto dlgEntry = dlgPtr->addDialogueEntry(part, entry["entry"], ID{entry["id"]});
-                if(fileVersion == 1)
+                if(fileVersion >= 1)
                 {
                     auto pos = entry["position"];
                     dlgEntry->viewPosition = {pos["x"], pos["y"]};
+                }
+
+                if(fileVersion >= 2)
+                {
+                    dlgEntry->lReaction = ReactionFromInt(entry["lReaction"], eReactionVersion);
+                    dlgEntry->rReaction = ReactionFromInt(entry["rReaction"], eReactionVersion);
                 }
             }
 

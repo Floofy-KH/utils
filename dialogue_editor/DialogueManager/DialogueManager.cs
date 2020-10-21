@@ -481,6 +481,15 @@ namespace floofy
         public IntPtr _ptr;
     }
 
+    public enum Reaction
+    {
+        None,
+        Happy,
+        Sad,
+        Angry,
+        Surprised
+    }
+
     public class DialogueEntry
     {
         #region PInvoke
@@ -511,6 +520,18 @@ namespace floofy
 
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern void setDialogueEntryPosition(IntPtr entry, double x, double y);
+
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int dialogueEntryLReaction(IntPtr entry);
+
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void setDialogueEntryLReaction(IntPtr entry, int reaction);
+
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int dialogueEntryRReaction(IntPtr entry);
+
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void setDialogueEntryRReaction(IntPtr entry, int reaction);
 
         #endregion PInvoke
 
@@ -580,6 +601,30 @@ namespace floofy
             set
             {
                 setDialogueEntryPosition(_ptr, value.x, value.y);
+            }
+        }
+
+        public Reaction LeftReaction
+        {
+            get
+            {
+                return (Reaction)dialogueEntryLReaction(_ptr);
+            }
+            set
+            {
+                setDialogueEntryLReaction(_ptr, (int)value);
+            }
+        }
+
+        public Reaction RightReaction
+        {
+            get
+            {
+                return (Reaction)dialogueEntryRReaction(_ptr);
+            }
+            set
+            {
+                setDialogueEntryRReaction(_ptr, (int)value);
             }
         }
 
