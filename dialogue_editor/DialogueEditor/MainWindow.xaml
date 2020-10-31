@@ -8,6 +8,7 @@
 		xmlns:NetworkModel="clr-namespace:NetworkModel;assembly=NetworkModel"
 		xmlns:NetworkUI="clr-namespace:NetworkUI;assembly=NetworkUI"
         xmlns:DialogueManager="clr-namespace:floofy;assembly=DialogueManagerCS"
+		xmlns:paz="clr-namespace:Wpf.Controls.PanAndZoom;assembly=Wpf.Controls.PanAndZoom"
 		mc:Ignorable="d"
         Title="DialogueEditor" Height="450" Width="800">
 
@@ -75,6 +76,8 @@
 				<Grid.RowDefinitions>
 					<RowDefinition Height="Auto" MinHeight="60" />
 				</Grid.RowDefinitions>
+
+				<Rectangle Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Stroke="Black" Fill="White" RadiusX="8" RadiusY="4" />
 
 				<Rectangle Grid.Row="0" Grid.Column="0" Stroke="Black" Fill="White" RadiusX="4" RadiusY="4" />
 
@@ -228,27 +231,31 @@
 					  HorizontalScrollBarVisibility="Visible"
 					  VerticalScrollBarVisibility="Visible"
 					  Focusable="False">
-			<NetworkUI:NetworkView
-            x:Name="networkControl"
-            NodesSource="{Binding DlgModel.Network.Nodes}"
-            ConnectionsSource="{Binding DlgModel.Network.Connections}"
-            ConnectionDragStarted="networkControl_ConnectionDragStarted"
-            ConnectionDragging="networkControl_ConnectionDragging"
-            ConnectionDragCompleted="networkControl_ConnectionDragCompleted">
+			<paz:ZoomBorder Name="zoomBorder" Stretch="None" ZoomSpeed="1.2"
+                        ClipToBounds="True" Focusable="True" PanButton="Middle"
+                        VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+				<NetworkUI:NetworkView
+				x:Name="networkControl"
+				NodesSource="{Binding DlgModel.Network.Nodes}"
+				ConnectionsSource="{Binding DlgModel.Network.Connections}"
+				ConnectionDragStarted="networkControl_ConnectionDragStarted"
+				ConnectionDragging="networkControl_ConnectionDragging"
+				ConnectionDragCompleted="networkControl_ConnectionDragCompleted">
 
-				<NetworkUI:NetworkView.InputBindings>
-					<KeyBinding Key="Delete" Command="{StaticResource Commands.DeleteSelectedNodes}" />
-				</NetworkUI:NetworkView.InputBindings>
+					<NetworkUI:NetworkView.InputBindings>
+						<KeyBinding Key="Delete" Command="{StaticResource Commands.DeleteSelectedNodes}" />
+					</NetworkUI:NetworkView.InputBindings>
 
-				<NetworkUI:NetworkView.ContextMenu>
-					<ContextMenu>
-						<MenuItem
-							Header="Create Node"
-							Command="{StaticResource Commands.CreateNode}"
-							ToolTip="Creates a new node" />
-					</ContextMenu>
-				</NetworkUI:NetworkView.ContextMenu>
-			</NetworkUI:NetworkView>
+					<NetworkUI:NetworkView.ContextMenu>
+						<ContextMenu>
+							<MenuItem
+								Header="Create Node"
+								Command="{StaticResource Commands.CreateNode}"
+								ToolTip="Creates a new node" />
+						</ContextMenu>
+					</NetworkUI:NetworkView.ContextMenu>
+				</NetworkUI:NetworkView>
+			</paz:ZoomBorder>
 		</ScrollViewer>
 	</DockPanel>
 </Window>
