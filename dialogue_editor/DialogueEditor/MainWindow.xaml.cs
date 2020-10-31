@@ -111,6 +111,12 @@ namespace DialogueEditor
             }
         }
 
+        private void OpenFile_Click(object sender, RoutedEventArgs e)
+        {
+            var item = (System.Windows.Controls.MenuItem)(e.OriginalSource);
+            ViewModel.OpenFile(item.DataContext.ToString());
+        }
+
         private void Save_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.Save();

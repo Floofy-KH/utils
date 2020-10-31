@@ -2,6 +2,8 @@
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
 
@@ -197,9 +199,27 @@ namespace DialogueEditor
         public ICommand SaveAsCommand { get { return _saveAsCommand; } }
         public bool Dirty { get; set; }
         public string CurrentFile { get; set; }
+        public LinkedList<string> RecentFiles { get; set; }
+
+        private const int MAX_RECENT_FILES = 10;
+        private string _applicationRegKey;
+        private const string MRU_REG_KEY = "MRU";
 
         public MainWindowViewModel()
         {
+            FileVersionInfo fInfo = FileVersionInfo.GetVersionInfo(Assembly.GetEntryAssembly().Location);
+            _applicationRegKey = $"HKEY_CURRENT_USER\\{fInfo.CompanyName}\\{fInfo.ProductName}\\{fInfo.ProductVersion}";
+            RecentFiles = new LinkedList<string>();
+            object mruObj = Registry.GetValue(_applicationRegKey, MRU_REG_KEY, null);
+            if (mruObj != null)
+            {
+                var items = (string[])(mruObj);
+                foreach (string mruItem in items)
+                {
+                    RecentFiles.AddLast(mruItem);
+                }
+            }
+
             _cmdExec = new CommandExecutor();
 
             DlgModel = new DialogueModel(_cmdExec);
@@ -209,6 +229,18 @@ namespace DialogueEditor
             _saveCommand = new SaveCommand(this);
             _saveAsCommand = new SaveAsCommand(this);
             Dirty = false;
+        }
+
+        ~MainWindowViewModel()
+        {
+            string[] items = new string[Math.Min(RecentFiles.Count, MAX_RECENT_FILES)];
+            int i = 0;
+            foreach (string file in RecentFiles)
+            {
+                items[i++] = file;
+            }
+
+            Registry.SetValue(_applicationRegKey, MRU_REG_KEY, items);
         }
 
         /// <summary>
@@ -399,6 +431,10 @@ namespace DialogueEditor
             {
                 CurrentFile = filepath;
                 DlgModel = new DialogueModel(mgr, _cmdExec);
+                if (!RecentFiles.Contains(filepath))
+                {
+                    RecentFiles.AddFirst(filepath);
+                }
             }
         }
 
