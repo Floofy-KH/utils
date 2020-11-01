@@ -61,7 +61,7 @@ namespace DialogueEditor
             public void Execute()
             {
                 _connector = new ConnectorViewModel(_cmdExec, _dialogue.AddChoice(_dialogueEntry, _content), _node);
-                _outgoingConnectors.Add(_connector); //TODO create new choice in DialogueManager
+                _outgoingConnectors.Add(_connector);
             }
 
             public void Undo()
@@ -359,15 +359,15 @@ namespace DialogueEditor
 
                 foreach (var connector in this.OutgoingConnectors)
                 {
-                    if (connector.AttachedConnection != null)
+                    if (connector.AttachedConnections != null)
                     {
-                        attachedConnections.Add(connector.AttachedConnection);
+                        attachedConnections.AddRange(connector.AttachedConnections);
                     }
                 }
 
                 if (incomingConnector != null)
                 {
-                    attachedConnections.Add(incomingConnector.AttachedConnection);
+                    attachedConnections.AddRange(incomingConnector.AttachedConnections);
                 }
 
                 return attachedConnections;

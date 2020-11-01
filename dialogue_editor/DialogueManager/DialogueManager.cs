@@ -723,7 +723,7 @@ namespace floofy
 
             set
             {
-                setChoiceDstEntry(_ptr, value._ptr);
+                setChoiceDstEntry(_ptr, value == null ? IntPtr.Zero : value._ptr);
             }
         }
 

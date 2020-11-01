@@ -16,7 +16,7 @@ namespace DialogueEditor
         {
             private ConnectorViewModel _destConnector = null;
             private ConnectionViewModel _connection = null;
-            private ConnectionViewModel _prevConnection = null;
+            private ConnectorViewModel _prevConnector = null;
             private Choice _choice = null;
 
             public SetChoiceDestUndoableCommand(ConnectorViewModel destConnector, ConnectionViewModel connection, Choice choice)
@@ -35,18 +35,16 @@ namespace DialogueEditor
 
                 if (_connection.DestConnector != null)
                 {
-                    _prevConnection = _connection.DestConnector.AttachedConnection;
-                    _connection.DestConnector.AttachedConnection = null;
-                    _connection.DestConnector.HotspotUpdated += new EventHandler<EventArgs>(_connection.destConnector_HotspotUpdated);
+                    _prevConnector = _connection.DestConnector;
+                    _connection.DestConnector.HotspotUpdated -= new EventHandler<EventArgs>(_connection.destConnector_HotspotUpdated);
+                    _choice.DestinationEntry = null;
                 }
 
                 _connection.destConnector = _destConnector;
 
                 if (_connection.destConnector != null)
                 {
-                    Trace.Assert(_connection.destConnector.AttachedConnection == null);
-
-                    _connection.destConnector.AttachedConnection = _connection;
+                    _connection.destConnector.AttachedConnections.Add(_connection);
                     _connection.destConnector.HotspotUpdated += new EventHandler<EventArgs>(_connection.destConnector_HotspotUpdated);
                     _connection.DestConnectorHotspot = _connection.destConnector.Hotspot;
 
@@ -103,9 +101,9 @@ namespace DialogueEditor
 
                 if (sourceConnector != null)
                 {
-                    Trace.Assert(sourceConnector.AttachedConnection == this);
+                    Trace.Assert(sourceConnector.AttachedConnections.Contains(this));
 
-                    sourceConnector.AttachedConnection = null;
+                    sourceConnector.AttachedConnections.Remove(this);
                     sourceConnector.HotspotUpdated -= new EventHandler<EventArgs>(sourceConnector_HotspotUpdated);
                 }
 
@@ -113,9 +111,9 @@ namespace DialogueEditor
 
                 if (sourceConnector != null)
                 {
-                    Trace.Assert(sourceConnector.AttachedConnection == null);
+                    Trace.Assert(!sourceConnector.AttachedConnections.Contains(this));
 
-                    sourceConnector.AttachedConnection = this;
+                    sourceConnector.AttachedConnections.Add(this);
                     sourceConnector.HotspotUpdated += new EventHandler<EventArgs>(sourceConnector_HotspotUpdated);
                     this.SourceConnectorHotspot = sourceConnector.Hotspot;
                 }

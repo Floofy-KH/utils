@@ -248,13 +248,14 @@ namespace DialogueEditor
         /// </summary>
         public ConnectionViewModel ConnectionDragStarted(ConnectorViewModel draggedOutConnector, Point curDragPoint)
         {
-            if (draggedOutConnector.AttachedConnection != null)
+            if (draggedOutConnector.AttachedConnections.Count > 0)
             {
+                Debug.Assert(draggedOutConnector.AttachedConnections.Count == 1);
                 //
                 // There is an existing connection attached to the connector that has been dragged out.
                 // Remove the existing connection from the view-model.
                 //
-                DlgModel.Network.Connections.Remove(draggedOutConnector.AttachedConnection);
+                DlgModel.Network.Connections.Remove(draggedOutConnector.AttachedConnections[0]);
             }
 
             //
@@ -307,20 +308,6 @@ namespace DialogueEditor
                 //
                 DlgModel.Network.Connections.Remove(newConnection);
                 return;
-            }
-
-            //
-            // The user has dragged the connection on top of another valid connector.
-            //
-
-            var existingConnection = connectorDraggedOver.AttachedConnection;
-            if (existingConnection != null)
-            {
-                //
-                // There is already a connection attached to the connector that was dragged over.
-                // Remove the existing connection from the view-model.
-                //
-                DlgModel.Network.Connections.Remove(existingConnection);
             }
 
             //

@@ -1,5 +1,6 @@
 ﻿using floofy;
 using System;
+using System.Collections.Generic;
 using System.Windows;
 
 namespace DialogueEditor
@@ -71,12 +72,14 @@ namespace DialogueEditor
             _choice = choice;
 
             ParentNode = parent;
+
+            AttachedConnections = new List<ConnectionViewModel>();
         }
 
         /// <summary>
         /// The connection that is attached to this connector, or null if no connection is attached.
         /// </summary>
-        public ConnectionViewModel AttachedConnection
+        public List<ConnectionViewModel> AttachedConnections
         {
             get;
             internal set;
