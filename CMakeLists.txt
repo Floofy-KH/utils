@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.16.0) #Don't actually know
 project(Utils)
 
 option(Build_DialogueManager "Build DialogueManager project" ON)
+option(Build_ChoiceManager "Build ChoiceManager project" ON)
 
 set(CONAN_REQUIRES ${CONAN_REQUIRES} jsonformoderncpp/3.7.2@vthiery/stable)
 if(BUILD_TESTING)
@@ -25,6 +26,10 @@ conan_cmake_run(REQUIRES ${CONAN_REQUIRES}
              BASIC_SETUP CMAKE_TARGETS
              BUILD missing)
 
+add_subdirectory(common)
 if(Build_DialogueManager)
     add_subdirectory(dialogue_manager)
+endif()
+if(Build_ChoiceManager)
+    add_subdirectory(choice_manager)
 endif()

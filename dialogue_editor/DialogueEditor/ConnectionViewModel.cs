@@ -17,9 +17,9 @@ namespace DialogueEditor
             private ConnectorViewModel _destConnector = null;
             private ConnectionViewModel _connection = null;
             private ConnectorViewModel _prevConnector = null;
-            private Choice _choice = null;
+            private DialogueChoice _choice = null;
 
-            public SetChoiceDestUndoableCommand(ConnectorViewModel destConnector, ConnectionViewModel connection, Choice choice)
+            public SetChoiceDestUndoableCommand(ConnectorViewModel destConnector, ConnectionViewModel connection, DialogueChoice choice)
             {
                 _destConnector = destConnector;
                 _connection = connection;
@@ -73,11 +73,11 @@ namespace DialogueEditor
 
         private CommandExecutor _cmdExe = null;
 
-        private Choice _choice = null;
+        private DialogueChoice _choice = null;
 
         #endregion Internal Data Members
 
-        public ConnectionViewModel(CommandExecutor cmdExe, Choice choice)
+        public ConnectionViewModel(CommandExecutor cmdExe, DialogueChoice choice)
         {
             _cmdExe = cmdExe;
             _choice = choice;

@@ -122,7 +122,7 @@ TEST_F(DialogueTest, DialogueStartsWithZeroEntries)
 
 TEST_F(DialogueTest, DialogueStartsWithZeroChoices)
 {
-  EXPECT_EQ(numChoices(dlg), 0);
+  EXPECT_EQ(numDialogueChoices(dlg), 0);
 }
 
 TEST_F(DialogueTest, AddParticipantIncrementsNumParticipants)
@@ -259,14 +259,14 @@ TEST(MultipleDialogues, fileIO)
   auto dlg2Entry2H = addDialogueEntry(dlg2, dlg2Part2, dlg2Entry2.c_str(), dlg2Entry2.length());
   auto dlg2Entry3H = addDialogueEntry(dlg2, dlg2Part3, dlg2Entry3.c_str(), dlg2Entry3.length());
 
-  auto dlg1Choice1H = addChoiceWithDest(dlg1, dlg1Entry1H, dlg1Choice1.c_str(), dlg1Choice1.length(), dlg1Entry2H);
-  auto dlg1Choice2H = addChoiceWithDest(dlg1, dlg1Entry2H, dlg1Choice2.c_str(), dlg1Choice2.length(), dlg1Entry3H);
-  auto dlg1Choice3H = addChoiceWithDest(dlg1, dlg1Entry3H, dlg1Choice3.c_str(), dlg1Choice3.length(), dlg1Entry1H);
-  auto dlg2Choice1H = addChoiceWithDest(dlg2, dlg2Entry1H, dlg2Choice1.c_str(), dlg2Choice1.length(), dlg2Entry2H);
-  auto dlg2Choice2H = addChoice(dlg2, dlg2Entry2H, dlg2Choice2.c_str(), dlg2Choice2.length());
-  setChoiceDstEntry(dlg2Choice2H, dlg2Entry3H);
-  auto dlg2Choice3H = addChoice(dlg2, dlg2Entry3H, dlg2Choice3.c_str(), dlg2Choice3.length());
-  setChoiceDstEntry(dlg2Choice3H, dlg2Entry1H);
+  auto dlg1Choice1H = addDialogueChoiceWithDest(dlg1, dlg1Entry1H, dlg1Choice1.c_str(), dlg1Choice1.length(), dlg1Entry2H);
+  auto dlg1Choice2H = addDialogueChoiceWithDest(dlg1, dlg1Entry2H, dlg1Choice2.c_str(), dlg1Choice2.length(), dlg1Entry3H);
+  auto dlg1Choice3H = addDialogueChoiceWithDest(dlg1, dlg1Entry3H, dlg1Choice3.c_str(), dlg1Choice3.length(), dlg1Entry1H);
+  auto dlg2Choice1H = addDialogueChoiceWithDest(dlg2, dlg2Entry1H, dlg2Choice1.c_str(), dlg2Choice1.length(), dlg2Entry2H);
+  auto dlg2Choice2H = addDialogueChoice(dlg2, dlg2Entry2H, dlg2Choice2.c_str(), dlg2Choice2.length());
+  setDialogueChoiceDstEntry(dlg2Choice2H, dlg2Entry3H);
+  auto dlg2Choice3H = addDialogueChoice(dlg2, dlg2Entry3H, dlg2Choice3.c_str(), dlg2Choice3.length());
+  setDialogueChoiceDstEntry(dlg2Choice3H, dlg2Entry1H);
 
   std::string dest = "test.json";
   ASSERT_TRUE(writeDialogues(dlgMgr, dest.c_str(), dest.length()));
@@ -312,7 +312,7 @@ TEST(MultipleDialogues, fileIO)
     dialogueEntryContent(entry1, strBuf, bufSize);
     EXPECT_STREQ(strBuf, dlg1Entry1.c_str());
     EXPECT_EQ(dialogueEntryActiveParticipant(entry1), part1);
-    EXPECT_EQ(dialogueEntryNumChoices(entry1), 1);
+    EXPECT_EQ(dialogueEntryNumDialogueChoices(entry1), 1);
     EXPECT_EQ(dialogueEntryLReaction(entry1), 0);
     EXPECT_EQ(dialogueEntryRReaction(entry1), 1);
 
@@ -320,7 +320,7 @@ TEST(MultipleDialogues, fileIO)
     dialogueEntryContent(entry2, strBuf, bufSize);
     EXPECT_STREQ(strBuf, dlg1Entry2.c_str());
     EXPECT_EQ(dialogueEntryActiveParticipant(entry2), part2);
-    EXPECT_EQ(dialogueEntryNumChoices(entry2), 1);
+    EXPECT_EQ(dialogueEntryNumDialogueChoices(entry2), 1);
     EXPECT_EQ(dialogueEntryLReaction(entry2), 1);
     EXPECT_EQ(dialogueEntryRReaction(entry2), 2);
 
@@ -328,38 +328,38 @@ TEST(MultipleDialogues, fileIO)
     dialogueEntryContent(entry3, strBuf, bufSize);
     EXPECT_STREQ(strBuf, dlg1Entry3.c_str());
     EXPECT_EQ(dialogueEntryActiveParticipant(entry3), part3);
-    EXPECT_EQ(dialogueEntryNumChoices(entry3), 1);
+    EXPECT_EQ(dialogueEntryNumDialogueChoices(entry3), 1);
     EXPECT_EQ(dialogueEntryLReaction(entry3), 2);
     EXPECT_EQ(dialogueEntryRReaction(entry3), 3);
 
     //Choices
-    auto nChoices = numChoices(dlg);
+    auto nChoices = numDialogueChoices(dlg);
     EXPECT_EQ(nChoices, 3);
 
-    auto choice1 = choiceFromIndex(dlg, 0);
-    choiceContent(choice1, strBuf, bufSize);
+    auto choice1 = dialogueChoiceFromIndex(dlg, 0);
+    dialogueChoiceContent(choice1, strBuf, bufSize);
     EXPECT_STREQ(strBuf, dlg1Choice1.c_str());
 
-    auto choice2 = choiceFromIndex(dlg, 1);
-    choiceContent(choice2, strBuf, bufSize);
+    auto choice2 = dialogueChoiceFromIndex(dlg, 1);
+    dialogueChoiceContent(choice2, strBuf, bufSize);
     EXPECT_STREQ(strBuf, dlg1Choice2.c_str());
 
-    auto choice3 = choiceFromIndex(dlg, 2);
-    choiceContent(choice3, strBuf, bufSize);
+    auto choice3 = dialogueChoiceFromIndex(dlg, 2);
+    dialogueChoiceContent(choice3, strBuf, bufSize);
     EXPECT_STREQ(strBuf, dlg1Choice3.c_str());
 
     //Edges
-    EXPECT_EQ(dialogueEntryChoiceFromIndex(entry1, 0), choice1);
-    EXPECT_EQ(dialogueEntryChoiceFromIndex(entry2, 0), choice2);
-    EXPECT_EQ(dialogueEntryChoiceFromIndex(entry3, 0), choice3);
+    EXPECT_EQ(dialogueEntryDialogueChoiceFromIndex(entry1, 0), choice1);
+    EXPECT_EQ(dialogueEntryDialogueChoiceFromIndex(entry2, 0), choice2);
+    EXPECT_EQ(dialogueEntryDialogueChoiceFromIndex(entry3, 0), choice3);
 
-    EXPECT_EQ(choiceSrcEntry(choice1), entry1);
-    EXPECT_EQ(choiceSrcEntry(choice2), entry2);
-    EXPECT_EQ(choiceSrcEntry(choice3), entry3);
+    EXPECT_EQ(dialogueChoiceSrcEntry(choice1), entry1);
+    EXPECT_EQ(dialogueChoiceSrcEntry(choice2), entry2);
+    EXPECT_EQ(dialogueChoiceSrcEntry(choice3), entry3);
 
-    EXPECT_EQ(choiceDstEntry(choice1), entry2);
-    EXPECT_EQ(choiceDstEntry(choice2), entry3);
-    EXPECT_EQ(choiceDstEntry(choice3), entry1);
+    EXPECT_EQ(dialogueChoiceDstEntry(choice1), entry2);
+    EXPECT_EQ(dialogueChoiceDstEntry(choice2), entry3);
+    EXPECT_EQ(dialogueChoiceDstEntry(choice3), entry1);
   }
 
   //Dialogue 2
@@ -397,48 +397,48 @@ TEST(MultipleDialogues, fileIO)
     dialogueEntryContent(entry1, strBuf, bufSize);
     EXPECT_STREQ(strBuf, dlg2Entry1.c_str());
     EXPECT_EQ(dialogueEntryActiveParticipant(entry1), part1);
-    EXPECT_EQ(dialogueEntryNumChoices(entry1), 1);
+    EXPECT_EQ(dialogueEntryNumDialogueChoices(entry1), 1);
 
     auto entry2 = dialogueEntryFromIndex(dlg, 1);
     dialogueEntryContent(entry2, strBuf, bufSize);
     EXPECT_STREQ(strBuf, dlg2Entry2.c_str());
     EXPECT_EQ(dialogueEntryActiveParticipant(entry2), part2);
-    EXPECT_EQ(dialogueEntryNumChoices(entry2), 1);
+    EXPECT_EQ(dialogueEntryNumDialogueChoices(entry2), 1);
 
     auto entry3 = dialogueEntryFromIndex(dlg, 2);
     dialogueEntryContent(entry3, strBuf, bufSize);
     EXPECT_STREQ(strBuf, dlg2Entry3.c_str());
     EXPECT_EQ(dialogueEntryActiveParticipant(entry3), part3);
-    EXPECT_EQ(dialogueEntryNumChoices(entry3), 1);
+    EXPECT_EQ(dialogueEntryNumDialogueChoices(entry3), 1);
 
     //Choices
-    auto nChoices = numChoices(dlg);
+    auto nChoices = numDialogueChoices(dlg);
     EXPECT_EQ(nChoices, 3);
 
-    auto choice1 = choiceFromIndex(dlg, 0);
-    choiceContent(choice1, strBuf, bufSize);
+    auto choice1 = dialogueChoiceFromIndex(dlg, 0);
+    dialogueChoiceContent(choice1, strBuf, bufSize);
     EXPECT_STREQ(strBuf, dlg2Choice1.c_str());
 
-    auto choice2 = choiceFromIndex(dlg, 1);
-    choiceContent(choice2, strBuf, bufSize);
+    auto choice2 = dialogueChoiceFromIndex(dlg, 1);
+    dialogueChoiceContent(choice2, strBuf, bufSize);
     EXPECT_STREQ(strBuf, dlg2Choice2.c_str());
 
-    auto choice3 = choiceFromIndex(dlg, 2);
-    choiceContent(choice3, strBuf, bufSize);
+    auto choice3 = dialogueChoiceFromIndex(dlg, 2);
+    dialogueChoiceContent(choice3, strBuf, bufSize);
     EXPECT_STREQ(strBuf, dlg2Choice3.c_str());
 
     //Edges
-    EXPECT_EQ(dialogueEntryChoiceFromIndex(entry1, 0), choice1);
-    EXPECT_EQ(dialogueEntryChoiceFromIndex(entry2, 0), choice2);
-    EXPECT_EQ(dialogueEntryChoiceFromIndex(entry3, 0), choice3);
+    EXPECT_EQ(dialogueEntryDialogueChoiceFromIndex(entry1, 0), choice1);
+    EXPECT_EQ(dialogueEntryDialogueChoiceFromIndex(entry2, 0), choice2);
+    EXPECT_EQ(dialogueEntryDialogueChoiceFromIndex(entry3, 0), choice3);
 
-    EXPECT_EQ(choiceSrcEntry(choice1), entry1);
-    EXPECT_EQ(choiceSrcEntry(choice2), entry2);
-    EXPECT_EQ(choiceSrcEntry(choice3), entry3);
+    EXPECT_EQ(dialogueChoiceSrcEntry(choice1), entry1);
+    EXPECT_EQ(dialogueChoiceSrcEntry(choice2), entry2);
+    EXPECT_EQ(dialogueChoiceSrcEntry(choice3), entry3);
 
-    EXPECT_EQ(choiceDstEntry(choice1), entry2);
-    EXPECT_EQ(choiceDstEntry(choice2), entry3);
-    EXPECT_EQ(choiceDstEntry(choice3), entry1);
+    EXPECT_EQ(dialogueChoiceDstEntry(choice1), entry2);
+    EXPECT_EQ(dialogueChoiceDstEntry(choice2), entry3);
+    EXPECT_EQ(dialogueChoiceDstEntry(choice3), entry1);
   }
 }
 

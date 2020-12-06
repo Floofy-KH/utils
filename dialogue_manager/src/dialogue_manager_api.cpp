@@ -1,19 +1,7 @@
 #include "dialogue_manager/dialogue_manager_api.h"
 
 #include "dialogue_manager.hpp"
-
-#define SUCCESS 1;
-#define FAILURE 2;
-
-#define CAST_OPERATIONS(PtrTC, PtrTCpp)          \
-    inline PtrTC *cast(PtrTCpp *ptr)             \
-    {                                            \
-        return reinterpret_cast<PtrTC *>(ptr);   \
-    }                                            \
-    inline PtrTCpp *cast(PtrTC *ptr)             \
-    {                                            \
-        return reinterpret_cast<PtrTCpp *>(ptr); \
-    }
+#include "common/defines.hpp"
 
 using namespace floofy;
 
@@ -23,9 +11,9 @@ namespace
   CAST_OPERATIONS(HDialogue, Dialogue);
   CAST_OPERATIONS(HParticipant, Participant);
   CAST_OPERATIONS(HDialogueEntry, DialogueEntry);
-  CAST_OPERATIONS(HChoice, Choice);
+  CAST_OPERATIONS(HDialogueChoice, DialogueChoice);
 
-  void returnString(const std::string &dst, char *buf, dlgmgr_size bufSize)
+  void returnString(const std::string &dst, char *buf, _size_t bufSize)
   {
     if (!buf || bufSize < 1)
       return;
@@ -33,7 +21,7 @@ namespace
     buf[length] = '\0';
   }
 
-  void setString(std::string &str, char *buf, dlgmgr_size bufSize)
+  void setString(std::string &str, char *buf, _size_t bufSize)
   {
     str.assign(buf, bufSize);
   }
@@ -46,28 +34,28 @@ extern "C"
     return reinterpret_cast<HDialogueManager *>(new DialogueManager);
   }
 
-  dlgmgr_result freeDialogueManager(HDialogueManager *mgr)
+  _result_t freeDialogueManager(HDialogueManager *mgr)
   {
     delete cast(mgr);
     return SUCCESS;
   }
 
-  dlgmgr_result writeDialogues(HDialogueManager *mgr, const char *filePath, dlgmgr_size filePathSize)
+  _result_t writeDialogues(HDialogueManager *mgr, const char *filePath, _size_t filePathSize)
   {
     return cast(mgr)->writeToFile(std::string(filePath, filePathSize));
   }
 
-  HDialogueManager *readDialoguesFromFile(const char *filePath, dlgmgr_size filePathSize)
+  HDialogueManager *readDialoguesFromFile(const char *filePath, _size_t filePathSize)
   {
     return cast(DialogueManager::readFromFile(std::string(filePath, filePathSize)));
   }
 
-  HDialogueManager *readDialoguesFromContents(const char *contents, dlgmgr_size contentsPathSize)
+  HDialogueManager *readDialoguesFromContents(const char *contents, _size_t contentsPathSize)
   {
     return cast(DialogueManager::readContents(std::string(contents, contentsPathSize)));
   }
 
-  HDialogue *addNewDialogue(HDialogueManager *mgr, const char *name, dlgmgr_size nameSize)
+  HDialogue *addNewDialogue(HDialogueManager *mgr, const char *name, _size_t nameSize)
   {
     auto cppMgr = cast(mgr);
     return cast(cppMgr->addDialogue(std::string(name, nameSize)));
@@ -79,7 +67,7 @@ extern "C"
     return cppMgr->addDialogue(cast(dlg));
   }
 
-  void removeDialogue(HDialogueManager *mgr, const char *name, dlgmgr_size nameSize)
+  void removeDialogue(HDialogueManager *mgr, const char *name, _size_t nameSize)
   {
     auto cppMgr = cast(mgr);
     cppMgr->removeDialogue(std::string(name, nameSize));
@@ -90,164 +78,164 @@ extern "C"
     delete cast(dlg);
   }
 
-  dlgmgr_size numDialogues(HDialogueManager *mgr)
+  _size_t numDialogues(HDialogueManager *mgr)
   {
     auto cppMgr = cast(mgr);
     return cppMgr->numDialogues();
   }
 
-  HDialogue *dialogueFromName(HDialogueManager *mgr, const char *name, dlgmgr_size size)
+  HDialogue *dialogueFromName(HDialogueManager *mgr, const char *name, _size_t size)
   {
     auto cppMgr = cast(mgr);
     return cast(cppMgr->dialogue(std::string(name, size)));
   }
 
-  HDialogue *dialogueFromIndex(HDialogueManager *mgr, dlgmgr_size index)
+  HDialogue *dialogueFromIndex(HDialogueManager *mgr, _size_t index)
   {
     auto cppMgr = cast(mgr);
     return cast(cppMgr->dialogue(index));
   }
 
-  HParticipant *addParticipant(HDialogue *dialogue, const char *name, dlgmgr_size nameSize)
+  HParticipant *addParticipant(HDialogue *dialogue, const char *name, _size_t nameSize)
   {
     auto cppDlg = cast(dialogue);
     return cast(cppDlg->addParticipant(std::string(name, nameSize)));
   }
 
-  dlgmgr_size numParticipants(HDialogue *dialogue)
+  _size_t numParticipants(HDialogue *dialogue)
   {
     auto cppDlg = cast(dialogue);
     return cppDlg->numParticipants();
   }
 
-  HParticipant *participantFromIndex(HDialogue *dialogue, dlgmgr_size index)
+  HParticipant *participantFromIndex(HDialogue *dialogue, _size_t index)
   {
     auto cppDlg = cast(dialogue);
     return cast(cppDlg->participant(index));
   }
 
-  HParticipant *participantFromName(HDialogue *dialogue, const char *name, dlgmgr_size size)
+  HParticipant *participantFromName(HDialogue *dialogue, const char *name, _size_t size)
   {
     auto cppDlg = cast(dialogue);
     return cast(cppDlg->participant(std::string(name, size)));
   }
 
-  void removeParticipant(HDialogue *dialogue, const char *name, dlgmgr_size size)
+  void removeParticipant(HDialogue *dialogue, const char *name, _size_t size)
   {
     auto cppDlg = cast(dialogue);
     cppDlg->removeParticipant(std::string(name, size));
   }
 
-  HDialogueEntry *addDialogueEntry(HDialogue *dialogue, HParticipant *part, const char *name, dlgmgr_size size)
+  HDialogueEntry *addDialogueEntry(HDialogue *dialogue, HParticipant *part, const char *name, _size_t size)
   {
     auto cppDlg = cast(dialogue);
     return cast(cppDlg->addDialogueEntry(cast(part), std::string(name, size)));
   }
 
-  dlgmgr_size numDialogueEntries(HDialogue *dialogue)
+  _size_t numDialogueEntries(HDialogue *dialogue)
   {
     auto cppDlg = cast(dialogue);
     return cppDlg->numDialogueEntries();
   }
 
-  HDialogueEntry *dialogueEntryFromIndex(HDialogue *dialogue, dlgmgr_size index)
+  HDialogueEntry *dialogueEntryFromIndex(HDialogue *dialogue, _size_t index)
   {
     auto cppDlg = cast(dialogue);
     return cast(cppDlg->dialogueEntry(index));
   }
 
-  void removeDialogueEntry(HDialogue *dialogue, dlgmgr_size index)
+  void removeDialogueEntry(HDialogue *dialogue, _size_t index)
   {
     auto cppDlg = cast(dialogue);
     cppDlg->removeDialogueEntry(index);
   }
 
-  HChoice *addChoiceWithDest(HDialogue *dialogue,
+  HDialogueChoice *addDialogueChoiceWithDest(HDialogue *dialogue,
     HDialogueEntry *dialogueEntry,
     const char *name,
-    dlgmgr_size size,
+    _size_t size,
     HDialogueEntry *destDialogueEntry)
   {
     auto cppDlg = cast(dialogue);
-    return cast(cppDlg->addChoice(cast(dialogueEntry), std::string(name, size), cast(destDialogueEntry)));
+    return cast(cppDlg->addDialogueChoice(cast(dialogueEntry), std::string(name, size), cast(destDialogueEntry)));
   }
 
-  HChoice *addChoice(HDialogue *dialogue,
+  HDialogueChoice *addDialogueChoice(HDialogue *dialogue,
     HDialogueEntry *dialogueEntry,
     const char *name,
-    dlgmgr_size size)
+    _size_t size)
   {
     auto cppDlg = cast(dialogue);
-    return cast(cppDlg->addChoice(cast(dialogueEntry), std::string(name, size)));
+    return cast(cppDlg->addDialogueChoice(cast(dialogueEntry), std::string(name, size)));
   }
 
-  dlgmgr_size numChoices(HDialogue *dialogue)
+  _size_t numDialogueChoices(HDialogue *dialogue)
   {
     auto cppDlg = cast(dialogue);
-    return cppDlg->numChoices();
+    return cppDlg->numDialogueChoices();
   }
 
-  HChoice *choiceFromIndex(HDialogue *dialogue, dlgmgr_size index)
+  HDialogueChoice *dialogueChoiceFromIndex(HDialogue *dialogue, _size_t index)
   {
     auto cppDlg = cast(dialogue);
     return cast(cppDlg->choice(index));
   }
 
-  HChoice *choiceFromName(HDialogue *dialogue, const char *name, dlgmgr_size size)
+  HDialogueChoice *dialogueChoiceFromName(HDialogue *dialogue, const char *name, _size_t size)
   {
     auto cppDlg = cast(dialogue);
     return cast(cppDlg->choice(std::string(name, size)));
   }
 
-  void removeChoice(HDialogue *dialogue, const char *name, dlgmgr_size size)
+  void removeDialogueChoice(HDialogue *dialogue, const char *name, _size_t size)
   {
     auto cppDlg = cast(dialogue);
-    cppDlg->removeChoice(std::string(name, size));
+    cppDlg->removeDialogueChoice(std::string(name, size));
   }
 
-  void dialogueName(HDialogue *dialogue, char *name, dlgmgr_size bufferSize)
+  void dialogueName(HDialogue *dialogue, char *name, _size_t bufferSize)
   {
     auto cppDlg = cast(dialogue);
     returnString(cppDlg->name, name, bufferSize);
   }
 
-  void setDialogueName(HDialogue *dialogue, char *name, dlgmgr_size bufferSize)
+  void setDialogueName(HDialogue *dialogue, char *name, _size_t bufferSize)
   {
     auto cppDlg = cast(dialogue);
     setString(cppDlg->name, name, bufferSize);
   }
 
-  void participantName(HParticipant *participant, char *name, dlgmgr_size bufferSize)
+  void participantName(HParticipant *participant, char *name, _size_t bufferSize)
   {
     auto cppPart = cast(participant);
     returnString(cppPart->name, name, bufferSize);
   }
 
-  void setParticipantName(HParticipant *participant, char *name, dlgmgr_size bufferSize)
+  void setParticipantName(HParticipant *participant, char *name, _size_t bufferSize)
   {
     auto cppPart = cast(participant);
     setString(cppPart->name, name, bufferSize);
   }
 
-  void dialogueEntryContent(HDialogueEntry *entry, char *content, dlgmgr_result bufferSize)
+  void dialogueEntryContent(HDialogueEntry *entry, char *content, _result_t bufferSize)
   {
     auto cppEntry = cast(entry);
     returnString(cppEntry->entry, content, bufferSize);
   }
 
-  void setDialogueEntryContent(HDialogueEntry *entry, char *content, dlgmgr_result bufferSize)
+  void setDialogueEntryContent(HDialogueEntry *entry, char *content, _result_t bufferSize)
   {
     auto cppEntry = cast(entry);
     setString(cppEntry->entry, content, bufferSize);
   }
 
-  dlgmgr_size dialogueEntryNumChoices(HDialogueEntry *entry)
+  _size_t dialogueEntryNumDialogueChoices(HDialogueEntry *entry)
   {
     auto cppEntry = cast(entry);
     return cppEntry->choices.size();
   }
 
-  HChoice *dialogueEntryChoiceFromIndex(HDialogueEntry *entry, dlgmgr_size index)
+  HDialogueChoice *dialogueEntryDialogueChoiceFromIndex(HDialogueEntry *entry, _size_t index)
   {
     auto cppEntry = cast(entry);
     return cast(cppEntry->choices[index]);
@@ -307,33 +295,33 @@ extern "C"
     cppEntry->rReaction = static_cast<floofy::eReaction>(reaction);
   }
 
-  void choiceContent(HChoice *choice, char *content, dlgmgr_size bufferSize)
+  void dialogueChoiceContent(HDialogueChoice *choice, char *content, _size_t bufferSize)
   {
-    auto cppChoice = cast(choice);
-    returnString(cppChoice->choice, content, bufferSize);
+    auto cppDialogueChoice = cast(choice);
+    returnString(cppDialogueChoice->choice, content, bufferSize);
   }
 
-  void setChoiceContent(HChoice *choice, char *content, dlgmgr_size bufferSize)
+  void setDialogueChoiceContent(HDialogueChoice *choice, char *content, _size_t bufferSize)
   {
-    auto cppChoice = cast(choice);
-    setString(cppChoice->choice, content, bufferSize);
+    auto cppDialogueChoice = cast(choice);
+    setString(cppDialogueChoice->choice, content, bufferSize);
   }
 
-  HDialogueEntry *choiceSrcEntry(HChoice *choice)
+  HDialogueEntry *dialogueChoiceSrcEntry(HDialogueChoice *choice)
   {
-    auto cppChoice = cast(choice);
-    return cast(cppChoice->src);
+    auto cppDialogueChoice = cast(choice);
+    return cast(cppDialogueChoice->src);
   }
 
-  HDialogueEntry *choiceDstEntry(HChoice *choice)
+  HDialogueEntry *dialogueChoiceDstEntry(HDialogueChoice *choice)
   {
-    auto cppChoice = cast(choice);
-    return cast(cppChoice->dst);
+    auto cppDialogueChoice = cast(choice);
+    return cast(cppDialogueChoice->dst);
   }
 
-  void setChoiceDstEntry(HChoice *choice, HDialogueEntry *entry)
+  void setDialogueChoiceDstEntry(HDialogueChoice *choice, HDialogueEntry *entry)
   {
-    auto cppChoice = cast(choice);
-    cppChoice->dst = cast(entry);
+    auto cppDialogueChoice = cast(choice);
+    cppDialogueChoice->dst = cast(entry);
   }
 }

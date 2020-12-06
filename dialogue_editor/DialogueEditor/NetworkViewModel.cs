@@ -91,7 +91,7 @@ namespace DialogueEditor
 
             for (int i = 0; i < _dialogue.NumChoices; ++i)
             {
-                Choice choice = _dialogue.Choice(i);
+                DialogueChoice choice = _dialogue.Choice(i);
                 if (choice != null)
                 {
                     var connection = new ConnectionViewModel(cmdExe, choice);

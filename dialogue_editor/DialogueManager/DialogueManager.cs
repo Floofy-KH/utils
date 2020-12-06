@@ -191,29 +191,29 @@ namespace floofy
         private static extern void removeDialogueEntry(IntPtr dialogue, int index);
 
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr addChoiceWithDest(IntPtr dialogue,
+        private static extern IntPtr addDialogueChoiceWithDest(IntPtr dialogue,
                                               IntPtr dialogueEntry,
                                               string name,
                                               int size,
                                               IntPtr destDialogueEntry);
 
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr addChoice(IntPtr dialogue,
+        private static extern IntPtr addDialogueChoice(IntPtr dialogue,
                                               IntPtr dialogueEntry,
                                               string name,
                                               int size);
 
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int numChoices(IntPtr dialogue);
+        private static extern int numDialogueChoices(IntPtr dialogue);
 
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr choiceFromIndex(IntPtr dialogue, int index);
+        private static extern IntPtr dialogueChoiceFromIndex(IntPtr dialogue, int index);
 
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr choiceFromName(IntPtr dialogue, string name, int size);
+        private static extern IntPtr dialogueChoiceFromName(IntPtr dialogue, string name, int size);
 
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void removeChoice(IntPtr dialogue, string name, int size);
+        private static extern void removeDialogueChoice(IntPtr dialogue, string name, int size);
 
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern void dialogueName(IntPtr dialogue, StringBuilder name, int bufferSize);
@@ -256,7 +256,7 @@ namespace floofy
         {
             get
             {
-                return numChoices(_ptr);
+                return numDialogueChoices(_ptr);
             }
         }
 
@@ -351,9 +351,9 @@ namespace floofy
             removeDialogueEntry(_ptr, index);
         }
 
-        public Choice AddChoice(DialogueEntry src, string name, DialogueEntry dst)
+        public DialogueChoice AddChoice(DialogueEntry src, string name, DialogueEntry dst)
         {
-            var choice = new Choice(addChoiceWithDest(_ptr, src._ptr, name, name.Length, dst._ptr));
+            var choice = new DialogueChoice(addDialogueChoiceWithDest(_ptr, src._ptr, name, name.Length, dst._ptr));
             if (choice._ptr == IntPtr.Zero)
             {
                 return null;
@@ -364,9 +364,9 @@ namespace floofy
             }
         }
 
-        public Choice AddChoice(DialogueEntry src, string name)
+        public DialogueChoice AddChoice(DialogueEntry src, string name)
         {
-            var choice = new Choice(addChoice(_ptr, src._ptr, name, name.Length));
+            var choice = new DialogueChoice(addDialogueChoice(_ptr, src._ptr, name, name.Length));
             if (choice._ptr == IntPtr.Zero)
             {
                 return null;
@@ -377,9 +377,9 @@ namespace floofy
             }
         }
 
-        public Choice Choice(int index)
+        public DialogueChoice Choice(int index)
         {
-            var choice = new Choice(choiceFromIndex(_ptr, index));
+            var choice = new DialogueChoice(dialogueChoiceFromIndex(_ptr, index));
             if (choice._ptr == IntPtr.Zero)
             {
                 return null;
@@ -390,9 +390,9 @@ namespace floofy
             }
         }
 
-        public Choice Choice(string name)
+        public DialogueChoice Choice(string name)
         {
-            var choice = new Choice(choiceFromName(_ptr, name, name.Length));
+            var choice = new DialogueChoice(dialogueChoiceFromName(_ptr, name, name.Length));
             if (choice._ptr == IntPtr.Zero)
             {
                 return null;
@@ -405,7 +405,7 @@ namespace floofy
 
         public void RemoveChoice(string name)
         {
-            removeChoice(_ptr, name, name.Length);
+            removeDialogueChoice(_ptr, name, name.Length);
         }
 
         public override bool Equals(object obj)
@@ -501,10 +501,10 @@ namespace floofy
         private static extern void setDialogueEntryContent(IntPtr entry, StringBuilder content, int bufferSize);
 
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int dialogueEntryNumChoices(IntPtr entry);
+        private static extern int dialogueEntryNumDialogueChoices(IntPtr entry);
 
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr dialogueEntryChoiceFromIndex(IntPtr entry, int index);
+        private static extern IntPtr dialogueEntryDialogueChoiceFromIndex(IntPtr entry, int index);
 
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr dialogueEntryActiveParticipant(IntPtr entry);
@@ -544,7 +544,7 @@ namespace floofy
         {
             get
             {
-                return dialogueEntryNumChoices(_ptr);
+                return dialogueEntryNumDialogueChoices(_ptr);
             }
         }
 
@@ -587,9 +587,9 @@ namespace floofy
             }
         }
 
-        public Choice Choice(int index)
+        public DialogueChoice Choice(int index)
         {
-            return new Choice(dialogueEntryChoiceFromIndex(_ptr, index));
+            return new DialogueChoice(dialogueEntryDialogueChoiceFromIndex(_ptr, index));
         }
 
         public Vector2 Pos
@@ -648,28 +648,28 @@ namespace floofy
         public IntPtr _ptr;
     }
 
-    public class Choice
+    public class DialogueChoice
     {
         #region PInvoke
 
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void choiceContent(IntPtr choice, StringBuilder content, int bufferSize);
+        private static extern void dialogueChoiceContent(IntPtr choice, StringBuilder content, int bufferSize);
 
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void setChoiceContent(IntPtr choice, StringBuilder content, int bufferSize);
+        private static extern void setDialogueChoiceContent(IntPtr choice, StringBuilder content, int bufferSize);
 
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr choiceSrcEntry(IntPtr choice);
+        private static extern IntPtr dialogueChoiceSrcEntry(IntPtr choice);
 
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr choiceDstEntry(IntPtr choice);
+        private static extern IntPtr dialogueChoiceDstEntry(IntPtr choice);
 
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void setChoiceDstEntry(IntPtr choice, IntPtr dst);
+        private static extern void setDialogueChoiceDstEntry(IntPtr choice, IntPtr dst);
 
         #endregion PInvoke
 
-        public Choice(IntPtr ptr)
+        public DialogueChoice(IntPtr ptr)
         {
             _ptr = ptr;
         }
@@ -679,14 +679,14 @@ namespace floofy
             get
             {
                 StringBuilder sb = new StringBuilder(1024);
-                choiceContent(_ptr, sb, 1024);
+                dialogueChoiceContent(_ptr, sb, 1024);
                 return sb.ToString();
             }
 
             set
             {
                 StringBuilder sb = new StringBuilder(value);
-                setChoiceContent(_ptr, sb, value.Length);
+                setDialogueChoiceContent(_ptr, sb, value.Length);
             }
         }
 
@@ -694,7 +694,7 @@ namespace floofy
         {
             get
             {
-                var entry = new DialogueEntry(choiceSrcEntry(_ptr));
+                var entry = new DialogueEntry(dialogueChoiceSrcEntry(_ptr));
                 if (entry._ptr == IntPtr.Zero)
                 {
                     return null;
@@ -710,7 +710,7 @@ namespace floofy
         {
             get
             {
-                var entry = new DialogueEntry(choiceDstEntry(_ptr));
+                var entry = new DialogueEntry(dialogueChoiceDstEntry(_ptr));
                 if (entry._ptr == IntPtr.Zero)
                 {
                     return null;
@@ -723,13 +723,13 @@ namespace floofy
 
             set
             {
-                setChoiceDstEntry(_ptr, value == null ? IntPtr.Zero : value._ptr);
+                setDialogueChoiceDstEntry(_ptr, value == null ? IntPtr.Zero : value._ptr);
             }
         }
 
         public override bool Equals(object obj)
         {
-            var choice = obj as Choice;
+            var choice = obj as DialogueChoice;
 
             if (choice == null)
             {

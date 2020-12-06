@@ -1,6 +1,7 @@
 add_library(DialogueManager src/dialogue_manager.cpp src/dialogue_manager.hpp src/dialogue_manager_api.cpp dialogue_manager_api.h)
 
 target_include_directories(DialogueManager PUBLIC ../ PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
+target_link_libraries(DialogueManager PRIVATE Common)
 target_link_libraries(DialogueManager PRIVATE CONAN_PKG::jsonformoderncpp)
 
 set_target_properties(DialogueManager PROPERTIES CXX_STANDARD 17)

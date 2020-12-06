@@ -18,7 +18,7 @@ namespace DialogueEditor
         /// </summary>
         private Point hotspot;
 
-        private Choice _choice;
+        private DialogueChoice _choice;
 
         private CommandExecutor _cmdExec = null;
 
@@ -52,7 +52,7 @@ namespace DialogueEditor
             }
         }
 
-        public Choice Choice
+        public DialogueChoice Choice
         {
             get { return _choice; }
         }
@@ -65,7 +65,7 @@ namespace DialogueEditor
             }
         }
 
-        public ConnectorViewModel(CommandExecutor cmdExec, Choice choice, NodeViewModel parent)
+        public ConnectorViewModel(CommandExecutor cmdExec, DialogueChoice choice, NodeViewModel parent)
         {
             _cmdExec = cmdExec;
 

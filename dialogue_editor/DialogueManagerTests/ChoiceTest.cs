@@ -1,59 +1,35 @@
 ﻿using floofy;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace DialogueManagerTests
+namespace ChoiceManagerTests
 {
     [TestClass]
     public class ChoiceTest
     {
-        private DialogueManager _mgr;
-        private string _dlgName = "A Dialogue";
-        private Dialogue _dlg;
-        private string _partName = "A Participant";
-        private Participant _part;
-        private string entryContent = "Some content";
-        private string entryContent2 = "Some other content";
-        private DialogueEntry _entry1;
-        private DialogueEntry _entry2;
-        private string choiceContent = "A choice";
+        private ChoiceManager _mgr;
+        private string _choiceName = "A Choice";
         private Choice _choice;
 
         [TestInitialize()]
         public void MyTestInitialize()
         {
-            _mgr = new DialogueManager();
-            _dlg = _mgr.AddDialogue(_dlgName);
-            _part = _dlg.AddParticipant(_partName);
-            _entry1 = _dlg.AddEntry(_part, entryContent);
-            _entry2 = _dlg.AddEntry(_part, entryContent2);
-            _choice = _dlg.AddChoice(_entry1, choiceContent, _entry2);
+            _mgr = new ChoiceManager();
+            _choice = _mgr.AddChoice(_choiceName);
         }
 
         [TestMethod]
-        public void ContentReturnsCorrectValue()
+        public void NameReturnsCorrectValue()
         {
-            Assert.AreEqual(_choice.Content, choiceContent);
+            Assert.AreEqual(_choice.Name, _choiceName);
         }
 
         [TestMethod]
-        public void CanSetContent()
+        public void CanSetName()
         {
-            string newContent = "Some new content";
-            _choice.Content = newContent;
+            string newName = "Some new name";
+            _choice.Name = newName;
 
-            Assert.AreEqual(_choice.Content, newContent);
-        }
-
-        [TestMethod]
-        public void SourceEntryReturnsCorrectValue()
-        {
-            Assert.AreEqual(_choice.SourceEntry, _entry1);
-        }
-
-        [TestMethod]
-        public void DestinationEntryReturnsCorrectValue()
-        {
-            Assert.AreEqual(_choice.DestinationEntry, _entry2);
+            Assert.AreEqual(_choice.Name, newName);
         }
     }
 }

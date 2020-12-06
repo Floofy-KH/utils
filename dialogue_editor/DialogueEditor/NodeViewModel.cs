@@ -194,7 +194,7 @@ namespace DialogueEditor
 
             for (int i = 0; i < entry.NumChoices; ++i)
             {
-                Choice choice = entry.Choice(i);
+                DialogueChoice choice = entry.Choice(i);
                 if (choice != null)
                 {
                     OutgoingConnectors.Add(new ConnectorViewModel(_cmdExec, choice, this));
