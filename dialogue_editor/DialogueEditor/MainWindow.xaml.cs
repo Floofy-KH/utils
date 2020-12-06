@@ -84,6 +84,11 @@ namespace DialogueEditor
             this.ViewModel.CreateNode("New Node!", newNodeLocation);
         }
 
+        private void CanCreateNode(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = ViewModel.DlgModel != null && ViewModel.DlgModel.Network != null && ViewModel.DlgModel.Network.Participants.Count != 0;
+        }
+
         private void AddNewDialogue_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.AddNewDialogue();

@@ -185,7 +185,8 @@
             Executed="DeleteSelectedNodes_Executed" />
 		<CommandBinding
             Command="{StaticResource Commands.CreateNode}"
-            Executed="CreateNode_Executed" />
+            Executed="CreateNode_Executed"
+						CanExecute="CanCreateNode" />
 	</Window.CommandBindings>
 
 	<Window.DataContext>
