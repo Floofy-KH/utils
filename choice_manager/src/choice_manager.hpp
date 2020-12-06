@@ -21,7 +21,6 @@ namespace floofy
   {
   public:
     ChoicePtr addChoice(std::string name);
-    ChoicePtr addChoice(ID id, std::string name);
     bool addChoice(ChoicePtr choice);
     ChoicePtr choice(const std::string &name) const;
     ChoicePtr choice(size_t index) const;
@@ -37,6 +36,7 @@ namespace floofy
     std::vector<ChoicePtr> choices;
     std::vector<DependentPtr> dependents;
     private:
+    ChoicePtr addChoice(ID id, std::string name);
     size_t m_curChoiceId = 0;
   };
 

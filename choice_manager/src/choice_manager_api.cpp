@@ -11,19 +11,15 @@ namespace
   CAST_OPERATIONS(HChoice, Choice);
   CAST_OPERATIONS(HDependent, Dependent);
 
-  void returnString(const std::string &dst, char **buf, _size_t *bufSize)
+  void returnString(const std::string &dst, char *buf, _size_t bufSize)
   {
-    if (!buf || !bufSize)
+    if (!buf || bufSize < 1)
       return;
-
-    *buf = new char [dst.size() + 1];
-    
-    auto length = dst.copy(*buf, dst.size());
-    (*buf)[length] = '\0';
-    *bufSize = length;
+    auto length = dst.copy(buf, bufSize);
+    buf[length] = '\0';
   }
 
-  void setString(std::string &str, char *buf, _size_t bufSize)
+  void setString(std::string &str, const char *buf, _size_t bufSize)
   {
     str.assign(buf, bufSize);
   }
@@ -99,9 +95,15 @@ extern "C"
     delete cast(choice);
   }
 
-  void choiceName(HChoice *choice, char **name, _size_t *size)
+  void choiceName(HChoice *choice, char *name, _size_t size)
   {
     auto cppChoice = cast(choice);
     returnString(cppChoice->name, name, size);
+  }
+
+  void setChoiceName(HChoice *choice, const char *name, _size_t size)
+  {
+    auto cppChoice = cast(choice);
+    setString(cppChoice->name, name, size);
   }
 }

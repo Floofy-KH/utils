@@ -102,6 +102,14 @@ namespace DialogueEditor
             }
         }
 
+        private void AddNewChoice_Click(object sender, RoutedEventArgs e)
+        {
+            if (ViewModel.ChoiceModel != null)
+            {
+                ViewModel.ChoiceModel.Add("New Choice" + ViewModel.ChoiceModel.ChoiceItems.Count);
+            }
+        }
+
         private void Open_Click(object sender, RoutedEventArgs e)
         {
             var openFileDlg = new OpenFileDialog
@@ -231,6 +239,38 @@ namespace DialogueEditor
             if (item != null)
             {
                 ViewModel.DlgModel.Network.Participants.Remove(item);
+            }
+        }
+
+        private void Rename_Choice_Click(object sender, RoutedEventArgs e)
+        {
+            var item = ((FrameworkElement)e.OriginalSource).DataContext as ChoiceViewModel;
+            if (item != null)
+            {
+                // Instantiate the dialog box
+                var dlg = new TextInputDialog
+                {
+                    // Configure the dialog box
+                    Owner = this,
+                    Text = item.Name
+                };
+
+                // Open the dialog box modally
+                dlg.ShowDialog();
+
+                if (dlg.DialogResult == true)
+                {
+                    item.Name = dlg.Text;
+                }
+            }
+        }
+
+        private void Delete_Choice_Click(object sender, RoutedEventArgs e)
+        {
+            var item = ((FrameworkElement)e.OriginalSource).DataContext as ChoiceViewModel;
+            if (item != null)
+            {
+                ViewModel.ChoiceModel.Remove(item.Name);
             }
         }
     }

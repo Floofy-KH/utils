@@ -89,8 +89,26 @@ protected:
   HChoiceManager *choiceMgr;
   HChoice *choice;
   std::string choiceName = "A new choice";
-  std::string choiceContents = "Hello there";
 };
+
+TEST_F(ChoiceTest, ChoiceNameRetrieved)
+{
+  char name [1024];
+  ::choiceName(choice, name, 1024);
+  EXPECT_STREQ(name, choiceName.c_str());
+}
+
+TEST_F(ChoiceTest, ChoiceNameModified)
+{
+  std::string newName = "Another choice";
+
+  setChoiceName(choice, newName.c_str(), newName.size());
+
+  char name [1024];
+  ::choiceName(choice, name, 1024);
+
+  EXPECT_STREQ(name, newName.c_str());
+}
 
 
 
@@ -117,11 +135,9 @@ TEST(MultipleChoices, fileIO)
     auto choice = choiceFromIndex(mgr, 0);
     ASSERT_NE(choice, nullptr);
 
-    _size_t bufSize{};
-
-    char **strBuf = new char*();
-    choiceName(choice, strBuf, &bufSize);
-    EXPECT_STREQ(*strBuf, choice1Name.data());    
+    char *strBuf = new char[1024];
+    choiceName(choice, strBuf, 1024);
+    EXPECT_STREQ(strBuf, choice1Name.data());    
   }
 
   //Choice 2
@@ -131,9 +147,9 @@ TEST(MultipleChoices, fileIO)
 
     _size_t bufSize{};
 
-    char **strBuf = new char*();
-    choiceName(choice, strBuf, &bufSize);
-    EXPECT_STREQ(*strBuf, choice2Name.data());
+    char *strBuf = new char[1024];
+    choiceName(choice, strBuf, 1024);
+    EXPECT_STREQ(strBuf, choice2Name.data());
   }
 }
 

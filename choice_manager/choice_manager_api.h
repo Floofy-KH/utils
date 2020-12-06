@@ -25,7 +25,8 @@ EXPORT HChoice *choiceFromName(HChoiceManager *mgr, const char *name, _size_t si
 EXPORT HChoice *choiceFromIndex(HChoiceManager *mgr, _size_t index);
 EXPORT void freeChoice(HChoice *choice);
 
-EXPORT void choiceName(HChoice *choice, char **name, _size_t *size);
+EXPORT void choiceName(HChoice *choice, char *name, _size_t size);
+EXPORT void setChoiceName(HChoice *choice, const char *name, _size_t size);
 
 #if __cplusplus
 }

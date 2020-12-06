@@ -163,6 +163,9 @@ namespace floofy
         [DllImport("ChoiceManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern void choiceName(IntPtr Choice, StringBuilder name, int size);
 
+        [DllImport("ChoiceManager.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void setChoiceName(IntPtr Choice, StringBuilder name, int size);
+
         #endregion PInvoke
 
         public Choice(IntPtr ptr)
@@ -187,7 +190,7 @@ namespace floofy
             set
             {
                 StringBuilder sb = new StringBuilder(value);
-                choiceName(_ptr, sb, value.Length);
+                setChoiceName(_ptr, sb, value.Length);
             }
         }
 

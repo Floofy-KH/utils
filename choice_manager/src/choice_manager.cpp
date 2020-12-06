@@ -39,14 +39,8 @@ namespace floofy
 
   ChoicePtr ChoiceManager::addChoice(ID id, std::string name)
   {
-    if (choices.size() <= id._id)
-    {
-      choices.resize((id._id+1) * 2);
-    }
-
-    ChoicePtr &choice = choices[id._id];
-    assert(choice == nullptr);
-    choice = new Choice(id, name);
+    auto choice = new Choice(id, name);
+    choices.push_back(choice);
 
     return choice;
   }
