@@ -1,4 +1,4 @@
-add_library(ChoiceManager src/choice_manager.cpp src/choice_manager.hpp src/choice_manager_api.cpp choice_manager_api.h)
+add_library(ChoiceManager SHARED src/choice_manager.cpp src/choice_manager.hpp src/choice_manager_api.cpp choice_manager_api.h)
 
 target_include_directories(ChoiceManager PUBLIC ../ PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(ChoiceManager PRIVATE Common)

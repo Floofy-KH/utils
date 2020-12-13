@@ -3,6 +3,7 @@
 #include "common/id.hpp"
 
 #include <vector>
+#include <string>
 
 namespace floofy
 {

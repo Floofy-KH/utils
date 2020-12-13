@@ -1,4 +1,4 @@
-add_library(DialogueManager src/dialogue_manager.cpp src/dialogue_manager.hpp src/dialogue_manager_api.cpp dialogue_manager_api.h)
+add_library(DialogueManager SHARED src/dialogue_manager.cpp src/dialogue_manager.hpp src/dialogue_manager_api.cpp dialogue_manager_api.h)
 
 target_include_directories(DialogueManager PUBLIC ../ PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(DialogueManager PRIVATE Common)
