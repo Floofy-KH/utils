@@ -148,6 +148,9 @@ namespace floofy
     if (stream.good())
     {
       auto mgr = std::make_unique<ChoiceManager>();
+      
+      if(stream.gcount() <= 0)
+        return mgr.release();
 
       nlohmann::json json;
       json << stream;
