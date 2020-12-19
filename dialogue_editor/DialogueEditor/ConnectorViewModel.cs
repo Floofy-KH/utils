@@ -136,6 +136,11 @@ namespace DialogueEditor
             }
         }
 
+        public string ChoiceName
+        {
+            get; set;
+        }
+
         /// <summary>
         /// Event raised when the connector hotspot has been updated.
         /// </summary>

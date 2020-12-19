@@ -61,18 +61,24 @@
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="*" />
 					<ColumnDefinition Width="Auto" />
+					<ColumnDefinition Width="Auto" />
 				</Grid.ColumnDefinitions>
 				<Grid.RowDefinitions>
 					<RowDefinition Height="Auto" />
 				</Grid.RowDefinitions>
 
-				<TextBox Grid.Column="0" Grid.Row="1"
+				<ComboBox Grid.Column="0" Grid.Row="1"
+							  ItemsSource="{Binding ChoiceModel.ChoiceItems}"
+					          ItemTemplate="{StaticResource ChoiceNameTemplate}"
+							  SelectedValue="{Binding ChoiceName}">
+				</ComboBox>
+				<TextBox Grid.Column="1" Grid.Row="1"
 								 Text="{Binding Content}"
 								 HorizontalAlignment="Center" VerticalAlignment="Center"
 								 TextWrapping="Wrap"
 								 MaxLines="8" MaxLength="256"
 								 AcceptsReturn="True" />
-				<NetworkUI:ConnectorItem Grid.Column="1" Grid.Row="1" />
+				<NetworkUI:ConnectorItem Grid.Column="2" Grid.Row="1" />
 			</Grid>
 		</DataTemplate>
 
