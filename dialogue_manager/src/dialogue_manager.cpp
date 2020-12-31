@@ -18,7 +18,7 @@ namespace
         }
     };
 
-    static constexpr int FILE_VERSION = 2;
+    static constexpr int FILE_VERSION = 3;
     constexpr unsigned E_REACTION_VERSION = 1;
 
     floofy::eReaction ReactionFromInt(int val, unsigned reactionVersion)
@@ -156,10 +156,15 @@ namespace floofy
                         choicesJs.reserve(dlg->choices.size());
                         for (size_t i = 0; i < dlg->choices.size(); ++i)
                         {
-                            choicesJs.push_back({{"id", dlg->choices[i]->id._id},
+                            nlohmann::json obj{{"id", dlg->choices[i]->id._id},
                                                  {"choice", dlg->choices[i]->choice},
                                                  {"src", dlg->choices[i]->src->id._id},
-                                                 {"dst", dlg->choices[i]->dst ? dlg->choices[i]->dst->id._id : -1}});
+                                                 {"dst", dlg->choices[i]->dst ? dlg->choices[i]->dst->id._id : -1}};
+                            if(dlg->choices[i]->guidAssigned)
+                            {
+                                obj.push_back({"guid", dlg->choices[i]->guid.value()});
+                            }
+                            choicesJs.push_back(obj);
                         }
                         dialogueJs["choices"] = choicesJs;
                     }
@@ -324,13 +329,26 @@ namespace floofy
                         return nullptr;
                     }
 
+                    DialogueChoicePtr choicePtr = nullptr;
                     if (dst)
                     {
-                        dlgPtr->addDialogueChoice(src, choice["choice"], dst, ID{choice["id"]});
+                        choicePtr = dlgPtr->addDialogueChoice(src, choice["choice"], dst, ID{choice["id"]});
                     }
                     else
                     {
-                        dlgPtr->addDialogueChoice(src, choice["choice"], ID{choice["id"]});
+                        choicePtr = dlgPtr->addDialogueChoice(src, choice["choice"], ID{choice["id"]});
+                    }
+
+                    if(fileVersion >= 3 && choice.contains("guid"))
+                    {
+                        Guid::GuidT data;
+                        auto array = choice["guid"];
+                        for(int i=0; i<data.size(); ++i)
+                        {
+                            data[i] = array[i];
+                        }
+                        choicePtr->guid = data;
+                        choicePtr->guidAssigned = true;
                     }
                 }
             }

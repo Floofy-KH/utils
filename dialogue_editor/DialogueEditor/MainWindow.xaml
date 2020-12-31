@@ -59,7 +59,7 @@
 		<DataTemplate x:Key="OutgoingConnectorsTemplate">
 			<Grid>
 				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="Auto" />
 					<ColumnDefinition Width="Auto" />
 					<ColumnDefinition Width="Auto" />
 				</Grid.ColumnDefinitions>
@@ -67,11 +67,9 @@
 					<RowDefinition Height="Auto" />
 				</Grid.RowDefinitions>
 
-				<ComboBox Grid.Column="0" Grid.Row="1"
-							  ItemsSource="{Binding ChoiceModel.ChoiceItems}"
-					          ItemTemplate="{StaticResource ChoiceNameTemplate}"
-							  SelectedValue="{Binding ChoiceName}">
-				</ComboBox>
+				<Button Grid.Column="0" Grid.Row="1" Height="40" Width="40" Command="{Binding Path=GuidClicked}">
+					<TextBlock Text="{Binding Guid}" TextWrapping="Wrap" />
+				</Button>
 				<TextBox Grid.Column="1" Grid.Row="1"
 								 Text="{Binding Content}"
 								 HorizontalAlignment="Center" VerticalAlignment="Center"

@@ -667,6 +667,15 @@ namespace floofy
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern void setDialogueChoiceDstEntry(IntPtr choice, IntPtr dst);
 
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void assignDialogueChoiceGuid(IntPtr choice);
+
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern bool dialogueChoiceGuidAssigned(IntPtr choice);
+
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern IntPtr dialogueChoiceGuid(IntPtr choice);
+
         #endregion PInvoke
 
         public DialogueChoice(IntPtr ptr)
@@ -727,6 +736,26 @@ namespace floofy
             }
         }
 
+        public Guid Guid
+        {
+            get
+            {
+                if (dialogueChoiceGuidAssigned(_ptr))
+                {
+                    return new Guid(dialogueChoiceGuid(_ptr));
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
+        public void AssignGuid()
+        {
+            assignDialogueChoiceGuid(_ptr);
+        }
+
         public override bool Equals(object obj)
         {
             var choice = obj as DialogueChoice;
@@ -742,6 +771,50 @@ namespace floofy
         public override int GetHashCode()
         {
             return _ptr.GetHashCode();
+        }
+
+        public IntPtr _ptr;
+    }
+
+    public class Guid
+    {
+        #region PInvoke
+
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern bool guidsAreEqual(IntPtr lhs, IntPtr rhs);
+
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void guidToString(IntPtr guid, StringBuilder content, int bufferSize);
+
+        #endregion PInvoke
+
+        public Guid(IntPtr ptr)
+        {
+            _ptr = ptr;
+        }
+
+        public override bool Equals(object obj)
+        {
+            var other = obj as Guid;
+            if (other == null)
+            {
+                return false;
+            }
+
+            return guidsAreEqual(_ptr, other._ptr);
+        }
+
+        public override int GetHashCode()
+        {
+            return _ptr.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            int size = 8 + 1 + 4 + 1 + 4 + 1 + 4 + 1 + 12;
+            StringBuilder sb = new StringBuilder(size);
+            guidToString(_ptr, sb, size);
+            return sb.ToString();
         }
 
         public IntPtr _ptr;

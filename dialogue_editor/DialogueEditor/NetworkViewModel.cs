@@ -102,7 +102,7 @@ namespace DialogueEditor
                         NodeViewModel srcNode = entryToModel[choice.SourceEntry];
                         foreach (ConnectorViewModel connector in srcNode.OutgoingConnectors)
                         {
-                            if (connector.Choice.Equals(choice))
+                            if (connector.DialogueChoice.Equals(choice))
                             {
                                 connection.SourceConnector = connector;
                                 break;

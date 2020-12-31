@@ -7,6 +7,7 @@ struct HDialogue;
 struct HParticipant;
 struct HDialogueEntry;
 struct HDialogueChoice;
+struct HGuid;
 
 #if __cplusplus
 extern "C"
@@ -79,6 +80,12 @@ extern "C"
   EXPORT HDialogueEntry *dialogueChoiceSrcEntry(HDialogueChoice *choice);
   EXPORT HDialogueEntry *dialogueChoiceDstEntry(HDialogueChoice *choice);
   EXPORT void setDialogueChoiceDstEntry(HDialogueChoice *choice, HDialogueEntry *entry);
+  EXPORT void assignDialogueChoiceGuid(HDialogueChoice *choice);
+  EXPORT bool dialogueChoiceGuidAssigned(HDialogueChoice *choice);
+  EXPORT HGuid *dialogueChoiceGuid(HDialogueChoice *choice);
+
+  EXPORT bool guidsAreEqual(HGuid *lhs, HGuid *rhs);
+  EXPORT void guidToString(HGuid *guid, char *content, _size_t bufferSize);
 
 #if __cplusplus
 }

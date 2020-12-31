@@ -260,6 +260,11 @@ TEST(MultipleDialogues, fileIO)
   auto dlg2Entry3H = addDialogueEntry(dlg2, dlg2Part3, dlg2Entry3.c_str(), dlg2Entry3.length());
 
   auto dlg1Choice1H = addDialogueChoiceWithDest(dlg1, dlg1Entry1H, dlg1Choice1.c_str(), dlg1Choice1.length(), dlg1Entry2H);
+  assignDialogueChoiceGuid(dlg1Choice1H);
+  std::string guidVal;
+  guidVal.resize(36);
+  auto guid = dialogueChoiceGuid(dlg1Choice1H);
+  guidToString(guid, &guidVal[0], guidVal.size());
   auto dlg1Choice2H = addDialogueChoiceWithDest(dlg1, dlg1Entry2H, dlg1Choice2.c_str(), dlg1Choice2.length(), dlg1Entry3H);
   auto dlg1Choice3H = addDialogueChoiceWithDest(dlg1, dlg1Entry3H, dlg1Choice3.c_str(), dlg1Choice3.length(), dlg1Entry1H);
   auto dlg2Choice1H = addDialogueChoiceWithDest(dlg2, dlg2Entry1H, dlg2Choice1.c_str(), dlg2Choice1.length(), dlg2Entry2H);
@@ -339,14 +344,22 @@ TEST(MultipleDialogues, fileIO)
     auto choice1 = dialogueChoiceFromIndex(dlg, 0);
     dialogueChoiceContent(choice1, strBuf, bufSize);
     EXPECT_STREQ(strBuf, dlg1Choice1.c_str());
+    EXPECT_TRUE(dialogueChoiceGuidAssigned(choice1));
+    std::string guidVal2;
+    guidVal2.resize(36);
+    auto guid = dialogueChoiceGuid(choice1);
+    guidToString(guid, &guidVal2[0], guidVal2.size());
+    EXPECT_EQ(guidVal, guidVal2);
 
     auto choice2 = dialogueChoiceFromIndex(dlg, 1);
     dialogueChoiceContent(choice2, strBuf, bufSize);
     EXPECT_STREQ(strBuf, dlg1Choice2.c_str());
+    EXPECT_FALSE(dialogueChoiceGuidAssigned(choice2));
 
     auto choice3 = dialogueChoiceFromIndex(dlg, 2);
     dialogueChoiceContent(choice3, strBuf, bufSize);
     EXPECT_STREQ(strBuf, dlg1Choice3.c_str());
+    EXPECT_FALSE(dialogueChoiceGuidAssigned(choice3));
 
     //Edges
     EXPECT_EQ(dialogueEntryDialogueChoiceFromIndex(entry1, 0), choice1);
@@ -418,14 +431,17 @@ TEST(MultipleDialogues, fileIO)
     auto choice1 = dialogueChoiceFromIndex(dlg, 0);
     dialogueChoiceContent(choice1, strBuf, bufSize);
     EXPECT_STREQ(strBuf, dlg2Choice1.c_str());
+    EXPECT_FALSE(dialogueChoiceGuidAssigned(choice1));
 
     auto choice2 = dialogueChoiceFromIndex(dlg, 1);
     dialogueChoiceContent(choice2, strBuf, bufSize);
     EXPECT_STREQ(strBuf, dlg2Choice2.c_str());
+    EXPECT_FALSE(dialogueChoiceGuidAssigned(choice2));
 
     auto choice3 = dialogueChoiceFromIndex(dlg, 2);
     dialogueChoiceContent(choice3, strBuf, bufSize);
     EXPECT_STREQ(strBuf, dlg2Choice3.c_str());
+    EXPECT_FALSE(dialogueChoiceGuidAssigned(choice3));
 
     //Edges
     EXPECT_EQ(dialogueEntryDialogueChoiceFromIndex(entry1, 0), choice1);

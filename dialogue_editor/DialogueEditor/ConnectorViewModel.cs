@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Input;
 
 namespace DialogueEditor
 {
@@ -18,7 +19,7 @@ namespace DialogueEditor
         /// </summary>
         private Point hotspot;
 
-        private DialogueChoice _choice;
+        private DialogueChoice _dialogueChoice;
 
         private CommandExecutor _cmdExec = null;
 
@@ -38,7 +39,7 @@ namespace DialogueEditor
 
             public void Execute()
             {
-                _connector._choice.Content = _newContent;
+                _connector._dialogueChoice.Content = _newContent;
             }
 
             public void Redo()
@@ -48,28 +49,57 @@ namespace DialogueEditor
 
             public void Undo()
             {
-                _connector._choice.Content = _oldContent;
+                _connector._dialogueChoice.Content = _oldContent;
             }
         }
 
-        public DialogueChoice Choice
+        public class GuidCommand : ICommand
         {
-            get { return _choice; }
+            public event EventHandler CanExecuteChanged;
+
+            public GuidCommand(DialogueChoice dlgChoice)
+            {
+                _dlgChoice = dlgChoice;
+            }
+
+            public bool CanExecute(object parameter)
+            {
+                return true;
+            }
+
+            public void Execute(object parameter)
+            {
+                if (_dlgChoice.Guid == null)
+                {
+                    _dlgChoice.AssignGuid();
+                }
+                else
+                {
+                    Clipboard.SetText(_dlgChoice.Guid.ToString());
+                }
+            }
+
+            private DialogueChoice _dlgChoice;
+        }
+
+        public DialogueChoice DialogueChoice
+        {
+            get { return _dialogueChoice; }
         }
 
         public bool IsChoice
         {
             get
             {
-                return _choice != null;
+                return _dialogueChoice != null;
             }
         }
 
-        public ConnectorViewModel(CommandExecutor cmdExec, DialogueChoice choice, NodeViewModel parent)
+        public ConnectorViewModel(CommandExecutor cmdExec, DialogueChoice dlgChoice, NodeViewModel parent)
         {
             _cmdExec = cmdExec;
 
-            _choice = choice;
+            _dialogueChoice = dlgChoice;
 
             ParentNode = parent;
 
@@ -121,11 +151,11 @@ namespace DialogueEditor
         {
             get
             {
-                return _choice.Content;
+                return _dialogueChoice.Content;
             }
             set
             {
-                if (_choice.Content == value)
+                if (_dialogueChoice.Content == value)
                 {
                     return;
                 }
@@ -136,9 +166,27 @@ namespace DialogueEditor
             }
         }
 
-        public string ChoiceName
+        public string Guid
         {
-            get; set;
+            get
+            {
+                if (_dialogueChoice.Guid == null)
+                {
+                    return "Assign ID";
+                }
+                else
+                {
+                    return "Copy ID";
+                }
+            }
+        }
+
+        public ICommand GuidClicked
+        {
+            get
+            {
+                return new GuidCommand(_dialogueChoice);
+            }
         }
 
         /// <summary>

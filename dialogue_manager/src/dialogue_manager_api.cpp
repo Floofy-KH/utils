@@ -2,6 +2,7 @@
 
 #include "dialogue_manager.hpp"
 #include "common/defines.hpp"
+#include "common/guid.hpp"
 
 using namespace floofy;
 
@@ -12,6 +13,7 @@ namespace
   CAST_OPERATIONS(HParticipant, Participant);
   CAST_OPERATIONS(HDialogueEntry, DialogueEntry);
   CAST_OPERATIONS(HDialogueChoice, DialogueChoice);
+  CAST_OPERATIONS(HGuid, Guid);
 
   void returnString(const std::string &dst, char *buf, _size_t bufSize)
   {
@@ -324,4 +326,36 @@ extern "C"
     auto cppDialogueChoice = cast(choice);
     cppDialogueChoice->dst = cast(entry);
   }
+
+  void assignDialogueChoiceGuid(HDialogueChoice *choice)
+  {
+    auto cppDialogueChoice = cast(choice);
+    cppDialogueChoice->guidAssigned = true;
+  }
+
+  bool dialogueChoiceGuidAssigned(HDialogueChoice *choice)
+  {
+    auto cppDialogueChoice = cast(choice);
+    return cppDialogueChoice->guidAssigned;
+  }
+
+  EXPORT HGuid *dialogueChoiceGuid(HDialogueChoice *choice)
+  {
+    auto cppDialogueChoice = cast(choice);
+    return cast(&cppDialogueChoice->guid);
+  }
+
+  EXPORT bool guidsAreEqual(HGuid *lhs, HGuid *rhs)
+  {
+    auto cppGuidLhs = cast(lhs);
+    auto cppGuidRhs = cast(rhs);
+    return (*cppGuidLhs)==(*cppGuidRhs);
+  }
+
+  EXPORT void guidToString(HGuid *guid, char *content, _size_t bufferSize)
+  {
+    auto cppGuid = cast(guid);
+    returnString(cppGuid->toString(), content, bufferSize);
+  }
+
 }

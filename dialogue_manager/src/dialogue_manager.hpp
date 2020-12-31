@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/id.hpp"
+#include "common/guid.hpp"
 
 #include <string>
 #include <vector>
@@ -166,6 +167,8 @@ namespace floofy
     bool operator!=(const DialogueChoice &other) const;
 
     ID id;
+    Guid guid; 
+    bool guidAssigned = false;
     std::string choice;
     DialogueEntryPtr src, dst;
   };
