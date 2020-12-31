@@ -6,9 +6,9 @@ target_link_libraries(DialogueManager PRIVATE CONAN_PKG::jsonformoderncpp)
 
 set_target_properties(DialogueManager PROPERTIES CXX_STANDARD 17)
 
-set(DialogueManagerCSBuildPath  "${CMAKE_SOURCE_DIR}/dialogue_editor/DialogueManager/bin/x64/$<CONFIG>/netstandard1.4")
-set(DialogueManagerCSTestsBuildPath  "${CMAKE_SOURCE_DIR}/dialogue_editor/DialogueManagerTests/bin/x64/$<CONFIG>")
-set(DialogueEditorBuildPath  "${CMAKE_SOURCE_DIR}/dialogue_editor/DialogueEditor/bin/x64/$<CONFIG>")
+set(DialogueManagerCSBuildPath  "${CMAKE_SOURCE_DIR}/dialogue_editor/DialogueManager/bin/$<CONFIG>/netstandard1.4")
+set(DialogueManagerCSTestsBuildPath  "${CMAKE_SOURCE_DIR}/dialogue_editor/DialogueManagerTests/bin/$<CONFIG>")
+set(DialogueEditorBuildPath  "${CMAKE_SOURCE_DIR}/dialogue_editor/DialogueEditor/bin/$<CONFIG>")
 
 add_custom_command(
     TARGET DialogueManager
