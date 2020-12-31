@@ -34,17 +34,6 @@
 			</TextBlock>
 		</DataTemplate>
 
-		<DataTemplate x:Key="ChoiceNameTemplate">
-			<TextBlock Text="{Binding Path=Name}">
-				<TextBlock.ContextMenu>
-					<ContextMenu StaysOpen="True">
-						<MenuItem Header="Rename" Click="Rename_Choice_Click" />
-						<MenuItem Header="Delete" Click="Delete_Choice_Click" />
-					</ContextMenu>
-				</TextBlock.ContextMenu>
-			</TextBlock>
-		</DataTemplate>
-
 		<DataTemplate x:Key="ParticipantNameTemplate">
 			<TextBlock Text="{Binding Path=Name}">
 				<TextBlock.ContextMenu>
@@ -227,8 +216,6 @@
 				<RowDefinition Height="20" />
 				<RowDefinition Height="*" />
 				<RowDefinition Height="20" />
-				<RowDefinition Height="*" />
-				<RowDefinition Height="20" />
 			</Grid.RowDefinitions>
 
 			<ListView Grid.Row="0"
@@ -243,12 +230,6 @@
 					  ItemTemplate="{StaticResource ParticipantNameTemplate}"
 					  HorizontalAlignment="Left" Width="147" />
 			<Button  Grid.Row="3"  Content="Add new participant" Click="AddNewParticipant_Click" />
-
-			<ListView Grid.Row="4"
-					  ItemsSource="{Binding ChoiceModel.ChoiceItems}"
-					  ItemTemplate="{StaticResource ChoiceNameTemplate}"
-					  HorizontalAlignment="Left" Width="147" />
-			<Button  Grid.Row="5"  Content="Add new choice" Click="AddNewChoice_Click" />
 		</Grid>
 		<ScrollViewer CanContentScroll="True"
 					  HorizontalScrollBarVisibility="Visible"

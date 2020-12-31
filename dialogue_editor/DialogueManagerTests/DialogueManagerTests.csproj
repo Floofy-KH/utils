@@ -67,8 +67,6 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ChoiceManagerTest.cs" />
-    <Compile Include="ChoiceTest.cs" />
     <Compile Include="DialogueManagerTest.cs" />
     <Compile Include="DialogueTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

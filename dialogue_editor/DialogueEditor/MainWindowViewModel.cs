@@ -108,11 +108,6 @@ namespace DialogueEditor
                 MessageBox.Show("An error occurred while saving the dialogue file.", "Error Saving");
                 _successful = false;
             }
-            if (!m_model.ChoiceModel.Save(m_model.CurrentChoicesFile))
-            {
-                MessageBox.Show("An error occurred while saving the choices file.", "Error Saving");
-                _successful = false;
-            }
             m_model.Dirty = false;
             _successful = true;
         }
@@ -164,11 +159,6 @@ namespace DialogueEditor
                 MessageBox.Show("An error occurred while saving the dialogue file.", "Error Saving");
                 _successful = false;
             }
-            if (!m_model.ChoiceModel.Save(m_model.CurrentChoicesFile))
-            {
-                MessageBox.Show("An error occurred while saving the choices file.", "Error Saving");
-                _successful = false;
-            }
             m_model.Dirty = false;
             _successful = true;
         }
@@ -189,7 +179,6 @@ namespace DialogueEditor
         private ICommand _saveCommand;
         private ICommand _saveAsCommand;
         private DialogueModel _dlgModel = null;
-        private ChoiceModel _choiceModel = null;
 
         //private Point currentPoint = new Point();
 
@@ -205,16 +194,6 @@ namespace DialogueEditor
             }
         }
 
-        public ChoiceModel ChoiceModel
-        {
-            get { return _choiceModel; }
-            set
-            {
-                _choiceModel = value;
-                OnPropertyChanged("ChoiceModel");
-            }
-        }
-
         public ICommand UndoCommand { get { return _undoCommand; } }
         public ICommand RedoCommand { get { return _redoCommand; } }
         public ICommand SaveCommand { get { return _saveCommand; } }
@@ -222,7 +201,6 @@ namespace DialogueEditor
         public bool Dirty { get; set; }
         public string CurrentFile { get; set; }
         public string CurrentDir { get; private set; }
-        public string CurrentChoicesFile { get; private set; }
         public LinkedList<string> RecentFiles { get; set; }
 
         private const int MAX_RECENT_FILES = 10;
@@ -442,22 +420,6 @@ namespace DialogueEditor
             {
                 CurrentFile = filepath;
                 CurrentDir = new DirectoryInfo(CurrentFile).Parent.FullName;
-                CurrentChoicesFile = CurrentDir + @"\_choices.json";
-                if (!File.Exists(CurrentChoicesFile))
-                {
-                    File.Create(CurrentChoicesFile);
-                    var choicesMgr = new ChoiceManager();
-                    ChoiceModel = new ChoiceModel(choicesMgr, _cmdExec);
-                }
-                else
-                {
-                    var choicesMgr = ChoiceManager.LoadFile(CurrentChoicesFile);
-                    if (choicesMgr == null)
-                    {
-                        MessageBox.Show(string.Format("Failed to load choices file {0}", CurrentChoicesFile), "Loading Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
-                    ChoiceModel = new ChoiceModel(choicesMgr, _cmdExec);
-                }
                 DlgModel = new DialogueModel(mgr, _cmdExec);
                 if (!RecentFiles.Contains(filepath))
                 {
