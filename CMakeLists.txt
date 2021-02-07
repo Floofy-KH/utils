@@ -25,6 +25,16 @@ conan_cmake_run(REQUIRES ${CONAN_REQUIRES}
              BASIC_SETUP CMAKE_TARGETS
              BUILD missing)
 
+#Shamelessly stolen from conan script above.
+#Get the target architecture, currently only MSVC.            
+if (MSVC_CXX_ARCHITECTURE_ID MATCHES "64")
+    set(TARGET_ARCH x64)
+elseif (MSVC_CXX_ARCHITECTURE_ID MATCHES "86")
+    set(TARGET_ARCH x86)
+else ()
+    message(FATAL_ERROR "Conan: Unhandled MSVC architecture [${MSVC_CXX_ARCHITECTURE_ID}]")
+endif()
+
 add_subdirectory(common)
 if(Build_DialogueManager)
     add_subdirectory(dialogue_manager)
