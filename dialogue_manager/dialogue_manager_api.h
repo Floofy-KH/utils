@@ -86,6 +86,8 @@ extern "C"
 
   EXPORT bool guidsAreEqual(HGuid *lhs, HGuid *rhs);
   EXPORT void guidToString(HGuid *guid, char *content, _size_t bufferSize);
+  EXPORT HGuid *guidFromString(const char *content, _size_t bufferSize);
+  EXPORT bool guidIsValid(HGuid *guid);
 
 #if __cplusplus
 }

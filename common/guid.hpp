@@ -1,6 +1,8 @@
 #pragma once
 
 #include <array>
+#include <cassert>
+#include <charconv>
 #include <chrono>
 #include <string>
 #include <random>
@@ -40,6 +42,48 @@ namespace floofy
 
     }
 
+    Guid(const std::string& string)
+    {
+      if(string.size() == (8 + 1 + 4 + 1 + 4 + 1 + 4 + 1 + 12))
+      {
+        assert(false);
+        return; 
+      } 
+      const char* strData = string.data();
+
+      #define parseValue(offset) \
+      {\
+        std::from_chars_result result = std::from_chars(strData + (offset*2), strData + (offset*2 + 1), m_value[offset], 16);\
+        if(result.ec != std::errc::invalid_argument && result.ec != std::errc::result_out_of_range)\
+        {\
+          assert(false);\
+          m_value.fill(0);\
+          return;\
+        }\
+      };
+
+      parseValue(0);
+      parseValue(1);
+      parseValue(2);
+      parseValue(3);
+      // -
+      parseValue(5);
+      parseValue(6);
+      // -
+      parseValue(8);
+      parseValue(9);
+      // - 
+      parseValue(11);
+      parseValue(12);
+      // -
+      parseValue(13);
+      parseValue(14);
+      parseValue(15);
+      parseValue(16);
+      parseValue(17);
+      parseValue(18);
+    }
+
     ~Guid() = default;
 
     GuidT value() const
@@ -60,15 +104,20 @@ namespace floofy
       return val;
     }
 
-  bool operator==(const floofy::Guid& rhs) const
-  {
-    return m_value == rhs.m_value;
-  }
+    bool operator==(const floofy::Guid& rhs) const
+    {
+      return m_value == rhs.m_value;
+    }
 
-  bool operator!=(const floofy::Guid& rhs) const
-  {
-    return !(*this == rhs);
-  }
+    bool operator!=(const floofy::Guid& rhs) const
+    {
+      return !(*this == rhs);
+    }
+
+    bool isValid() const
+    {
+      return m_value != GuidT{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+    }
 
   private:
     GuidT m_value;

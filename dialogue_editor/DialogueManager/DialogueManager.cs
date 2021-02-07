@@ -786,11 +786,27 @@ namespace floofy
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern void guidToString(IntPtr guid, StringBuilder content, int bufferSize);
 
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern IntPtr guidFromString(string guidStr);
+
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern bool guidIsValid(IntPtr guid);
+
         #endregion PInvoke
+
+        public Guid()
+        {
+            _ptr = IntPtr.Zero;
+        }
 
         public Guid(IntPtr ptr)
         {
             _ptr = ptr;
+        }
+
+        public Guid(string guidStr)
+        {
+            _ptr = guidFromString(guidStr);
         }
 
         public override bool Equals(object obj)
@@ -815,6 +831,11 @@ namespace floofy
             StringBuilder sb = new StringBuilder(size);
             guidToString(_ptr, sb, size);
             return sb.ToString();
+        }
+
+        public bool IsValid()
+        {
+            return _ptr != IntPtr.Zero && guidIsValid(_ptr);
         }
 
         public IntPtr _ptr;

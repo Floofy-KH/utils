@@ -358,4 +358,16 @@ extern "C"
     returnString(cppGuid->toString(), content, bufferSize);
   }
 
+  EXPORT HGuid* guidFromString(const char *content, _size_t bufferSize)
+  {
+    auto guid = new Guid(std::string{content, bufferSize});
+    return cast(guid);
+  }
+
+  EXPORT bool guidIsValid(HGuid *guid)
+  {
+    auto cppGuid = cast(guid);
+    return cppGuid->isValid();
+  }
+
 }
