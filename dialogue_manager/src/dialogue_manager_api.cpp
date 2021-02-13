@@ -360,6 +360,9 @@ extern "C"
 
   EXPORT HGuid* guidFromString(const char *content, _size_t bufferSize)
   {
+    if(content == 0 || bufferSize == 0)
+      return NULL;
+
     auto guid = new Guid(std::string{content, bufferSize});
     return cast(guid);
   }

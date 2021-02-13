@@ -44,17 +44,17 @@ namespace floofy
 
     Guid(const std::string& string)
     {
-      if(string.size() == (8 + 1 + 4 + 1 + 4 + 1 + 4 + 1 + 12))
+      if(string.size() != (8 + 1 + 4 + 1 + 4 + 1 + 4 + 1 + 12))
       {
         assert(false);
         return; 
       } 
       const char* strData = string.data();
 
-      #define parseValue(offset) \
+      #define parseValue(strOffset, valOffset) \
       {\
-        std::from_chars_result result = std::from_chars(strData + (offset*2), strData + (offset*2 + 1), m_value[offset], 16);\
-        if(result.ec != std::errc::invalid_argument && result.ec != std::errc::result_out_of_range)\
+        std::from_chars_result result = std::from_chars(strData + (strOffset), strData + (strOffset + 2), m_value[valOffset], 16);\
+        if(result.ec == std::errc::invalid_argument || result.ec == std::errc::result_out_of_range)\
         {\
           assert(false);\
           m_value.fill(0);\
@@ -62,26 +62,26 @@ namespace floofy
         }\
       };
 
-      parseValue(0);
-      parseValue(1);
-      parseValue(2);
-      parseValue(3);
+      parseValue(0, 0);
+      parseValue(2, 1);
+      parseValue(4, 2);
+      parseValue(6, 3);
       // -
-      parseValue(5);
-      parseValue(6);
+      parseValue(9, 4);
+      parseValue(11, 5);
       // -
-      parseValue(8);
-      parseValue(9);
+      parseValue(14, 6);
+      parseValue(16, 7);
       // - 
-      parseValue(11);
-      parseValue(12);
+      parseValue(19, 8);
+      parseValue(21, 9);
       // -
-      parseValue(13);
-      parseValue(14);
-      parseValue(15);
-      parseValue(16);
-      parseValue(17);
-      parseValue(18);
+      parseValue(24, 10);
+      parseValue(26, 11);
+      parseValue(28, 12);
+      parseValue(30, 13);
+      parseValue(32, 14);
+      parseValue(34, 15);
     }
 
     ~Guid() = default;
@@ -93,7 +93,7 @@ namespace floofy
 
     std::string toString() const
     {
-      static std::string templateVal{"%X%X%X%X-%X%X-%X%X-%X%X-%X%X%X%X%X%X"};
+      static std::string templateVal{"%.2X%.2X%.2X%.2X-%.2X%.2X-%.2X%.2X-%.2X%.2X-%.2X%.2X%.2X%.2X%.2X%.2X"};
       std::string val; 
       val.resize(8 + 1 + 4 + 1 + 4 + 1 + 4 + 1 + 12);
       sprintf(&val[0], templateVal.c_str(), 
