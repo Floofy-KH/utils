@@ -87,6 +87,7 @@
   <ItemGroup>
     <Compile Include="DialogueManagerTest.cs" />
     <Compile Include="DialogueTest.cs" />
+    <Compile Include="GuidTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ParticipantTest.cs" />
     <Compile Include="DialogueEntryTest.cs" />
