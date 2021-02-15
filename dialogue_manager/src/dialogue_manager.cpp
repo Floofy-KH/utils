@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <fstream>
+#include <iomanip>
 #include <sstream>
 
 namespace
@@ -173,7 +174,7 @@ namespace floofy
                 }
                 js["dialogues"] = dialoguesJs;
 
-                file << js;
+                file << std::setw(2) << js << std::endl;
 
                 return true;
             }
