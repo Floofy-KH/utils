@@ -399,7 +399,7 @@ namespace DialogueEditor
             {
                 if (_addChoiceCommand == null)
                 {
-                    _addChoiceCommand = new AddChoiceCommand(_cmdExec, this, OutgoingConnectors, _dialogueEntry, _dialogue, "New choice");
+                    _addChoiceCommand = new AddChoiceCommand(_cmdExec, this, OutgoingConnectors, _dialogueEntry, _dialogue, "");
                 }
 
                 return _addChoiceCommand;
