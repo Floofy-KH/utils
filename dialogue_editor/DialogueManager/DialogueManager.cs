@@ -216,10 +216,10 @@ namespace floofy
         private static extern void removeDialogueChoice(IntPtr dialogue, string name, int size);
 
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void dialogueName(IntPtr dialogue, StringBuilder name, int bufferSize);
+        private static extern void dialogueName(IntPtr dialogue, byte[] name, int bufferSize);
 
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void setDialogueName(IntPtr dialogue, StringBuilder name, int bufferSize);
+        private static extern void setDialogueName(IntPtr dialogue, byte[] name, int bufferSize);
 
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern void freeDialogue(IntPtr dialogue);
@@ -264,15 +264,15 @@ namespace floofy
         {
             get
             {
-                StringBuilder sb = new StringBuilder(1024);
-                dialogueName(_ptr, sb, 1024);
-                return sb.ToString();
+                byte[] utf8 = new byte[1024];
+                dialogueName(_ptr, utf8, 1024);
+                return Encoding.UTF8.GetString(utf8).Trim('\0');
             }
 
             set
             {
-                StringBuilder sb = new StringBuilder(value);
-                setDialogueName(_ptr, sb, value.Length);
+                byte[] utf8 = Encoding.UTF8.GetBytes(value);
+                setDialogueName(_ptr, utf8, utf8.Length);
             }
         }
 
@@ -433,10 +433,10 @@ namespace floofy
         #region PInvoke
 
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void participantName(IntPtr participant, StringBuilder name, int bufferSize);
+        private static extern void participantName(IntPtr participant, byte[] name, int bufferSize);
 
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void setParticipantName(IntPtr participant, StringBuilder name, int bufferSize);
+        private static extern void setParticipantName(IntPtr participant, byte[] name, int bufferSize);
 
         #endregion PInvoke
 
@@ -449,15 +449,15 @@ namespace floofy
         {
             get
             {
-                StringBuilder sb = new StringBuilder(1024);
-                participantName(_ptr, sb, 1024);
-                return sb.ToString();
+                byte[] utf8 = new byte[1024];
+                participantName(_ptr, utf8, 1024);
+                return Encoding.UTF8.GetString(utf8).Trim('\0');
             }
 
             set
             {
-                StringBuilder sb = new StringBuilder(value);
-                setParticipantName(_ptr, sb, value.Length);
+                byte[] utf8 = Encoding.UTF8.GetBytes(value);
+                setParticipantName(_ptr, utf8, utf8.Length);
             }
         }
 
@@ -495,10 +495,10 @@ namespace floofy
         #region PInvoke
 
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void dialogueEntryContent(IntPtr entry, StringBuilder content, int bufferSize);
+        private static extern void dialogueEntryContent(IntPtr entry, byte[] content, int bufferSize);
 
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void setDialogueEntryContent(IntPtr entry, StringBuilder content, int bufferSize);
+        private static extern void setDialogueEntryContent(IntPtr entry, byte[] content, int bufferSize);
 
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern int dialogueEntryNumDialogueChoices(IntPtr entry);
@@ -552,15 +552,15 @@ namespace floofy
         {
             get
             {
-                StringBuilder sb = new StringBuilder(1024);
-                dialogueEntryContent(_ptr, sb, 1024);
-                return sb.ToString();
+                byte[] utf8 = new byte[1024];
+                dialogueEntryContent(_ptr, utf8, 1024);
+                return Encoding.UTF8.GetString(utf8).Trim('\0');
             }
 
             set
             {
-                StringBuilder sb = new StringBuilder(value);
-                setDialogueEntryContent(_ptr, sb, value.Length);
+                byte[] utf8 = Encoding.UTF8.GetBytes(value);
+                setDialogueEntryContent(_ptr, utf8, utf8.Length);
             }
         }
 
@@ -653,10 +653,10 @@ namespace floofy
         #region PInvoke
 
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void dialogueChoiceContent(IntPtr choice, StringBuilder content, int bufferSize);
+        private static extern void dialogueChoiceContent(IntPtr choice, byte[] content, int bufferSize);
 
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void setDialogueChoiceContent(IntPtr choice, StringBuilder content, int bufferSize);
+        private static extern void setDialogueChoiceContent(IntPtr choice, byte[] content, int bufferSize);
 
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr dialogueChoiceSrcEntry(IntPtr choice);
@@ -687,15 +687,15 @@ namespace floofy
         {
             get
             {
-                StringBuilder sb = new StringBuilder(1024);
-                dialogueChoiceContent(_ptr, sb, 1024);
-                return sb.ToString();
+                byte[] utf8 = new byte[1024];
+                dialogueChoiceContent(_ptr, utf8, 1024);
+                return Encoding.UTF8.GetString(utf8).Trim('\0');
             }
 
             set
             {
-                StringBuilder sb = new StringBuilder(value);
-                setDialogueChoiceContent(_ptr, sb, value.Length);
+                byte[] utf8 = Encoding.UTF8.GetBytes(value);
+                setDialogueChoiceContent(_ptr, utf8, utf8.Length);
             }
         }
 
@@ -784,10 +784,10 @@ namespace floofy
         private static extern bool guidsAreEqual(IntPtr lhs, IntPtr rhs);
 
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void guidToString(IntPtr guid, StringBuilder content, int bufferSize);
+        private static extern void guidToString(IntPtr guid, byte[] content, int bufferSize);
 
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr guidFromString(StringBuilder content, int bufferSize);
+        private static extern IntPtr guidFromString(byte[] content, int bufferSize);
 
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern bool guidIsValid(IntPtr guid);
@@ -806,8 +806,8 @@ namespace floofy
 
         public Guid(string guidStr)
         {
-            StringBuilder sb = new StringBuilder(guidStr);
-            _ptr = guidFromString(sb, guidStr.Length);
+            byte[] utf8 = Encoding.UTF8.GetBytes(guidStr);
+            _ptr = guidFromString(utf8, utf8.Length);
         }
 
         public override bool Equals(object obj)
@@ -832,9 +832,9 @@ namespace floofy
                 return "";
 
             int size = 8 + 1 + 4 + 1 + 4 + 1 + 4 + 1 + 12;
-            StringBuilder sb = new StringBuilder(size);
+            byte[] sb = new byte[size * 2]; // UTF8 -> UTF16, double the chars? Maybe?...
             guidToString(_ptr, sb, size);
-            return sb.ToString();
+            return Encoding.UTF8.GetString(sb).Trim('\0');
         }
 
         public bool IsValid()
