@@ -71,14 +71,14 @@ namespace floofy
     DialogueEntryPtr dialogueEntry(size_t index) const;
     DialogueEntryPtr dialogueEntry(ID id) const;
     void removeDialogueEntry(size_t index);
+    void removeDialogueEntry(ID id);
 
     DialogueChoicePtr addDialogueChoice(DialogueEntryPtr src, std::string choiceStr, DialogueEntryPtr dst);
     DialogueChoicePtr addDialogueChoice(DialogueEntryPtr src, std::string choiceStr);
     size_t numDialogueChoices() const;
     DialogueChoicePtr choice(size_t index) const;
-    DialogueChoicePtr choice(const std::string &name) const;
     DialogueChoicePtr choice(ID id) const;
-    void removeDialogueChoice(const std::string &name);
+    void removeDialogueChoice(ID id);
 
     std::string name;
     std::vector<ParticipantPtr> participants;

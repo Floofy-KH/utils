@@ -191,6 +191,9 @@ namespace floofy
         private static extern void removeDialogueEntry(IntPtr dialogue, int index);
 
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void removeDialogueEntryPtr(IntPtr dialogue, IntPtr entry);
+
+        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr addDialogueChoiceWithDest(IntPtr dialogue,
                                               IntPtr dialogueEntry,
                                               string name,
@@ -210,10 +213,7 @@ namespace floofy
         private static extern IntPtr dialogueChoiceFromIndex(IntPtr dialogue, int index);
 
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr dialogueChoiceFromName(IntPtr dialogue, string name, int size);
-
-        [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void removeDialogueChoice(IntPtr dialogue, string name, int size);
+        private static extern void removeDialogueChoice(IntPtr dialogue, IntPtr choice);
 
         [DllImport("DialogueManager.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern void dialogueName(IntPtr dialogue, byte[] name, int bufferSize);
@@ -351,6 +351,14 @@ namespace floofy
             removeDialogueEntry(_ptr, index);
         }
 
+        public void RemoveEntry(DialogueEntry entry)
+        {
+            if (entry != null && entry._ptr != null)
+            {
+                removeDialogueEntryPtr(_ptr, entry._ptr);
+            }
+        }
+
         public DialogueChoice AddChoice(DialogueEntry src, string name, DialogueEntry dst)
         {
             var choice = new DialogueChoice(addDialogueChoiceWithDest(_ptr, src._ptr, name, name.Length, dst._ptr));
@@ -390,22 +398,12 @@ namespace floofy
             }
         }
 
-        public DialogueChoice Choice(string name)
+        public void RemoveChoice(DialogueChoice choice)
         {
-            var choice = new DialogueChoice(dialogueChoiceFromName(_ptr, name, name.Length));
-            if (choice._ptr == IntPtr.Zero)
+            if(choice != null && choice._ptr != null)
             {
-                return null;
+                removeDialogueChoice(_ptr, choice._ptr);
             }
-            else
-            {
-                return choice;
-            }
-        }
-
-        public void RemoveChoice(string name)
-        {
-            removeDialogueChoice(_ptr, name, name.Length);
         }
 
         public override bool Equals(object obj)

@@ -133,6 +133,7 @@ namespace DialogueEditor
                 if (nodes == null)
                 {
                     nodes = new ImpObservableCollection<NodeViewModel>();
+                    nodes.ItemsRemoved += new EventHandler<CollectionItemsChangedEventArgs>(nodes_ItemsRemoved);
                 }
 
                 return nodes;
@@ -180,6 +181,18 @@ namespace DialogueEditor
             {
                 connection.SourceConnector = null;
                 connection.DestConnector = null;
+            }
+        }
+
+        private void nodes_ItemsRemoved(object sender, CollectionItemsChangedEventArgs e)
+        {
+            foreach (NodeViewModel node in e.Items)
+            {
+                for (int i = 0; i < node.DialogueEntry.NumChoices; ++i)
+                {
+                    _dialogue.RemoveChoice(node.DialogueEntry.Choice(i));
+                }
+                _dialogue.RemoveEntry(node.DialogueEntry);
             }
         }
 

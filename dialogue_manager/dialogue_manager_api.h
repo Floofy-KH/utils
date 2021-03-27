@@ -38,6 +38,7 @@ extern "C"
   EXPORT _size_t numDialogueEntries(HDialogue *dialogue);
   EXPORT HDialogueEntry *dialogueEntryFromIndex(HDialogue *dialogue, _size_t index);
   EXPORT void removeDialogueEntry(HDialogue *dialogue, _size_t index);
+  EXPORT void removeDialogueEntryPtr(HDialogue *dialogue, HDialogueEntry *entry);
 
   EXPORT HDialogueChoice *addDialogueChoiceWithDest(HDialogue *dialogue,
     HDialogueEntry *dialogueEntry,
@@ -52,8 +53,7 @@ extern "C"
 
   EXPORT _size_t numDialogueChoices(HDialogue *dialogue);
   EXPORT HDialogueChoice *dialogueChoiceFromIndex(HDialogue *dialogue, _size_t index);
-  EXPORT HDialogueChoice *dialogueChoiceFromName(HDialogue *dialogue, const char *name, _size_t size);
-  EXPORT void removeDialogueChoice(HDialogue *dialogue, const char *name, _size_t size);
+  EXPORT void removeDialogueChoice(HDialogue *dialogue, HDialogueChoice *choice);
 
   EXPORT void dialogueName(HDialogue *dialogue, char *name, _size_t bufferSize);
   EXPORT void setDialogueName(HDialogue *dialogue, char *name, _size_t bufferSize);

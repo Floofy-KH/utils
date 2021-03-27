@@ -454,6 +454,18 @@ namespace floofy
         entries.erase(entries.begin() + index);
     }
 
+    void Dialogue::removeDialogueEntry(ID id)
+    {
+        auto find = std::find_if(entries.begin(), entries.end(), [id](const DialogueEntryPtr &entry) {
+            return entry->id == id;
+        });
+
+        if(find != entries.end())
+        {            
+            entries.erase(find);
+        }
+    }
+
     DialogueChoicePtr Dialogue::addDialogueChoice(DialogueEntryPtr src, std::string choiceStr, DialogueEntryPtr dst)
     {
         return addDialogueChoice(src, choiceStr, dst, _nextDialogueChoiceId);
@@ -471,23 +483,13 @@ namespace floofy
 
     DialogueChoicePtr Dialogue::choice(size_t index) const
     {
-        return choices.at(index);
-    }
-
-    DialogueChoicePtr Dialogue::choice(const std::string &name) const
-    {
-        const auto pred = [&name](const DialogueChoicePtr &other) {
-            return name == other->choice;
-        };
-
-        auto findDialogueChoice = std::find_if(choices.begin(), choices.end(), pred);
-        if (findDialogueChoice == choices.end())
+        if(choices.size() > index)
         {
-            return {};
+            return choices.at(index);
         }
         else
         {
-            return *findDialogueChoice;
+            return nullptr;
         }
     }
 
@@ -508,10 +510,10 @@ namespace floofy
         }
     }
 
-    void Dialogue::removeDialogueChoice(const std::string &name)
+    void Dialogue::removeDialogueChoice(ID id)
     {
-        const auto pred = [&name](const DialogueChoicePtr &other) {
-            return name == other->choice;
+        const auto pred = [&id](const DialogueChoicePtr &other) {
+            return id == other->id;
         };
 
         choices.erase(std::remove_if(choices.begin(), choices.end(), pred));

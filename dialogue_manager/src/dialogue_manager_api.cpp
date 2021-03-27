@@ -152,6 +152,13 @@ extern "C"
     cppDlg->removeDialogueEntry(index);
   }
 
+  void removeDialogueEntryPtr(HDialogue *dialogue, HDialogueEntry *entry)
+  {
+    auto cppDlg = cast(dialogue);
+    auto cppEntry = cast(entry);
+    cppDlg->removeDialogueEntry(cppEntry->id);
+  }
+
   HDialogueChoice *addDialogueChoiceWithDest(HDialogue *dialogue,
     HDialogueEntry *dialogueEntry,
     const char *name,
@@ -183,16 +190,11 @@ extern "C"
     return cast(cppDlg->choice(index));
   }
 
-  HDialogueChoice *dialogueChoiceFromName(HDialogue *dialogue, const char *name, _size_t size)
+  void removeDialogueChoice(HDialogue *dialogue, HDialogueChoice *choice)
   {
     auto cppDlg = cast(dialogue);
-    return cast(cppDlg->choice(std::string(name, size)));
-  }
-
-  void removeDialogueChoice(HDialogue *dialogue, const char *name, _size_t size)
-  {
-    auto cppDlg = cast(dialogue);
-    cppDlg->removeDialogueChoice(std::string(name, size));
+    auto cppChoice = cast(choice);
+    cppDlg->removeDialogueChoice(cppChoice->id);
   }
 
   void dialogueName(HDialogue *dialogue, char *name, _size_t bufferSize)

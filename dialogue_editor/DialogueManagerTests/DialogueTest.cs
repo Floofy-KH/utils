@@ -155,11 +155,11 @@ namespace DialogueManagerTests
             var addedEntry1 = _dlg.AddEntry(addedPart, "An Entry");
             var addedEntry2 = _dlg.AddEntry(addedPart, "Another Entry");
 
-            _dlg.AddChoice(addedEntry1, "A Choice", addedEntry2);
-            _dlg.AddChoice(addedEntry2, "Another Choice", addedEntry1);
-            _dlg.RemoveChoice("A Choice");
+            var choice1 = _dlg.AddChoice(addedEntry1, "A Choice", addedEntry2);
+            var choice2 = _dlg.AddChoice(addedEntry2, "Another Choice", addedEntry1);
+            _dlg.RemoveChoice(choice1);
             Assert.AreEqual(_dlg.NumChoices, 1);
-            _dlg.RemoveChoice("Another Choice");
+            _dlg.RemoveChoice(choice2);
             Assert.AreEqual(_dlg.NumChoices, 0);
         }
 
@@ -171,7 +171,7 @@ namespace DialogueManagerTests
             var addedEntry2 = _dlg.AddEntry(addedPart, "Another Entry");
             _dlg.AddChoice(addedEntry1, "A Name", addedEntry2);
 
-            var choiceName = _dlg.Choice("Not A Name");
+            var choiceName = _dlg.Choice(2);
             Assert.IsNull(choiceName);
         }
 
@@ -184,18 +184,6 @@ namespace DialogueManagerTests
             var addedChoice = _dlg.AddChoice(addedEntry1, "A Choice", addedEntry2);
 
             var retrievedChoice = _dlg.Choice(0);
-            Assert.AreEqual(addedChoice, retrievedChoice);
-        }
-
-        [TestMethod]
-        public void CanGetChoiceByName()
-        {
-            var addedPart = _dlg.AddParticipant("A Participant");
-            var addedEntry1 = _dlg.AddEntry(addedPart, "An Entry");
-            var addedEntry2 = _dlg.AddEntry(addedPart, "Another Entry");
-            var addedChoice = _dlg.AddChoice(addedEntry1, "A Choice", addedEntry2);
-
-            var retrievedChoice = _dlg.Choice("A Choice");
             Assert.AreEqual(addedChoice, retrievedChoice);
         }
     }

@@ -66,7 +66,7 @@ namespace DialogueEditor
 
             public void Undo()
             {
-                _dialogue.RemoveChoice(_content);
+                _dialogue.RemoveChoice(_connector.DialogueChoice);
                 _outgoingConnectors.Remove(_connector);
                 _connector = null;
             }

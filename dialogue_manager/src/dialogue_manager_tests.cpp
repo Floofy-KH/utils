@@ -202,6 +202,42 @@ TEST_F(DialogueTestWithParticipants, RemoveDialogueEntryDecrementsNumEntries)
   EXPECT_EQ(numDialogueEntries(dlg), 2);
 }
 
+TEST_F(DialogueTestWithParticipants, RemoveDialogueEntryByPointerDecrementsNumEntries)
+{
+  auto entry1 = addDialogueEntry(dlg, part1, "1", 1);
+  removeDialogueEntryPtr(dlg, entry1);
+  EXPECT_EQ(numDialogueEntries(dlg), 0);
+
+  entry1 = addDialogueEntry(dlg, part1, "1", 1);
+  auto entry2 = addDialogueEntry(dlg, part2, "2", 1);
+  removeDialogueEntryPtr(dlg, entry1);
+  EXPECT_EQ(numDialogueEntries(dlg), 1);
+
+  entry1 = addDialogueEntry(dlg, part1, "1", 1);
+  auto entry3 = addDialogueEntry(dlg, part3, "3", 1);
+  removeDialogueEntryPtr(dlg, entry2);
+  EXPECT_EQ(numDialogueEntries(dlg), 2);
+}
+
+TEST_F(DialogueTestWithParticipants, RemoveChoiceByPointerDecrementsNumChoices)
+{
+  auto entry = addDialogueEntry(dlg, part1, "1", 1);
+
+  auto choice1 = addDialogueChoice(dlg, entry, "1", 1);
+  removeDialogueChoice(dlg, choice1);
+  EXPECT_EQ(numDialogueChoices(dlg), 0);
+
+  choice1 = addDialogueChoice(dlg, entry, "1", 1);
+  auto choice2 = addDialogueChoice(dlg, entry, "2", 1);
+  removeDialogueChoice(dlg, choice1);
+  EXPECT_EQ(numDialogueChoices(dlg), 1);
+
+  choice1 = addDialogueChoice(dlg, entry, "1", 1);
+  auto choice3 = addDialogueChoice(dlg, entry, "3", 1);
+  removeDialogueChoice(dlg, choice2);
+  EXPECT_EQ(numDialogueChoices(dlg), 2);
+}
+
 TEST_F(DialogueTestWithParticipants, CanSetAndRetrieveReactionsOfEntries)
 {
   auto entry = addDialogueEntry(dlg, part1, "1", 1);
