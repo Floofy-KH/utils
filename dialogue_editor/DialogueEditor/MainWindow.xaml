@@ -249,16 +249,16 @@
 					<NetworkUI:NetworkView.InputBindings>
 						<KeyBinding Key="Delete" Command="{StaticResource Commands.DeleteSelectedNodes}" />
 					</NetworkUI:NetworkView.InputBindings>
+				</NetworkUI:NetworkView>
 
-					<NetworkUI:NetworkView.ContextMenu>
-						<ContextMenu>
-							<MenuItem
+				<paz:ZoomBorder.ContextMenu>
+					<ContextMenu>
+						<MenuItem
 								Header="Create Node"
 								Command="{StaticResource Commands.CreateNode}"
 								ToolTip="Creates a new node" />
-						</ContextMenu>
-					</NetworkUI:NetworkView.ContextMenu>
-				</NetworkUI:NetworkView>
+					</ContextMenu>
+				</paz:ZoomBorder.ContextMenu>
 			</paz:ZoomBorder>
 		</ScrollViewer>
 	</DockPanel>
